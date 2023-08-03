@@ -1,0 +1,148 @@
+﻿@model SMO.Service.BP.COST_PL.OtherCostPLReviewService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+    var frmIndex = Guid.NewGuid().ToString();
+    var frmIndexOfChild = Guid.NewGuid().ToString();
+    var frmIndexHistory = Guid.NewGuid().ToString();
+}
+<div id='@Model.ViewId' class="container-fluid child-content">
+    <style>
+        @@media (min-width: 992px) {
+            #divLeft {
+                padding-right: 2px !important;
+            }
+
+            #divRight {
+                padding-left: 2px !important;
+            }
+        }
+    </style>
+    <div class="row">
+        <div class="col-md-8 col-xs-12" id="divLeft">
+            @using (Ajax.BeginForm("ReviewIndex", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = frmIndex }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.ViewId)
+                @Html.HiddenFor(m => m.ObjDetail.DATA_VERSION, new { @class = "hddVersion" })
+                @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR, new { @class = "hddYear" })
+                <div class="tab-content" id="divResult">
+
+                </div>
+            }
+        </div>
+        <div class="col-md-4 col-xs-12" id="divRight">
+            <div class="card border-grey" style="margin-bottom: 2px;">
+                <div class="body">
+                    <label class="col-deep-orange">CHỌN NĂM KẾ HOẠCH</label>
+                    <div class="input-group">
+                        <select id="dllYear" class="form-control  selectpicker show-tick" data-container="body" data-live-search="true" data-val="False" onchange="OnChangeYearIndex(this);">
+                            @{Html.RenderPartial("_PartialViewTimeYear", Model.ObjDetail.TIME_YEAR); }
+                        </select>
+
+                        <label class="col-deep-orange m-t-10">CHỌN VERSION</label>
+                        @Html.MyDropDownListFor(x => x.ObjDetail.DATA_VERSION, new SelectList(new List<string>()),
+                             new
+                             {
+                                 @class = "selectpicker show-tick dropdown",
+                                 @data_container = "body",
+                                 @data_live_search = "true",
+                                 @onchange = "OnChangeVersionIndex(this)"
+                             })
+                        <span class="input-group-addon" onclick="RefreshData();" style="padding-left: 10px; cursor: pointer;">
+                            <i class="material-icons">refresh</i>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card border-grey " style="margin-bottom: 2px;">
+                <div class="body" style="padding-top: 0px;">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a style="padding-left:0px">
+                                <i class="material-icons col-fecon">history</i>LỊCH SỬ
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        @using (Ajax.BeginForm("ReviewHistoryIndex", null, FormDataUtils.GetAjaxOptions(Model.ViewId, "#divResultHistory"), new { @id = frmIndexHistory }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(m => m.ViewId)
+                            @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR, new { @class = "hddYear" })
+                            @Html.HiddenFor(m => m.ObjDetail.DATA_VERSION, new { @class = "hddVersion" })
+                            <div id="divResultHistory">
+
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+
+        function RefreshData() {
+            $("#@Model.ViewId #divResult").html("");
+            $("#@Model.ViewId #divResultChild").html("");
+
+            SubmitIndex();
+            SubmitHistory();
+        }
+
+        function OnChangeYearIndex(obj) {
+            var year = $(obj).val();
+            $("#@Model.ViewId .hddYear").val(year);
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("GetVersions")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {  year },
+                success: function (response) {
+                    var lstVersion = $('#@Model.ViewId #ObjDetail_DATA_VERSION');
+                    lstVersion.html('');
+                    if (response && response.length > 0) {
+                        $.each(response, function (index, value) {
+                            lstVersion.append($('<option>', { value: value, text: value }));
+                        });
+
+                        lstVersion.val(response[0]);
+                    } else {
+                        lstVersion.append($('<option>', { value: '-1', text: 'Nothing version' }))
+                    }
+                    lstVersion.selectpicker('refresh');
+                    lstVersion.change();
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function OnChangeVersionIndex(obj) {
+            $("#@Model.ViewId .hddVersion").val(obj.value);
+            RefreshData();
+        }
+
+        function SubmitIndex() {
+            Forms.SubmitForm('@frmIndex');
+        }
+
+
+        function SubmitHistory() {
+            Forms.SubmitForm('@frmIndexHistory');
+        }
+
+        $(function () {
+            $("#@Model.ViewId #dllYear").change();
+            Forms.CompleteUI();
+            Forms.SubmitByEnter("@Model.FormId");
+        });
+    </script>
+</div>

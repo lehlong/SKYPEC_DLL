@@ -1,0 +1,31 @@
+﻿@model IEnumerable<SMO.Core.Entities.BP.REVENUE_PL.T_BP_REVENUE_PL_REVIEW_COMMENT>
+@using SMO.Core.Entities.BP.REVENUE_PL;
+
+@foreach (var item in Model)
+{
+    foreach (var comment in item.Comments.OrderByDescending(x => x.CREATE_DATE))
+    {
+        <div class="row-comment font-13">
+            <label>@comment.USER_CREATE.FULL_NAME</label>
+            <div class="comment-time">
+                <span>@comment.CREATE_DATE.Value.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                <br>
+                <span>Version: @item.DATA_VERSION</span>
+            </div>
+            <br />
+            <span class="comment-content">@comment.CONTENTS</span>
+        </div>
+    }
+}
+
+<script type="text/javascript">
+    $(function () {
+        $(".comment-content").each(function (index) {
+            $(this).html($(this).html().replace(/((http|https|ftp):\/\/[\w?=&.\/-;#~%-]+(?![\w\s?&.\/;#~%"=-]*>))/g, '<a target="_blank" href="$1">$1</a> '));
+        });
+        setTimeout(()=> $('#txtContent').focus(), 1000);
+        return;
+    });
+</script>
+
+

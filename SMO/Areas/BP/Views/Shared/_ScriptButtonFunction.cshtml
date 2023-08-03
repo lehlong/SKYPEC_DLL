@@ -1,0 +1,201 @@
+﻿@{ 
+    var controllerName = @HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    controllerName = controllerName.ToUpper().Replace("REVIEW", string.Empty);
+}
+<script>
+
+    function ChuyenTKS(code) {
+        if (!confirm("Bạn chắc chắn chuyển Tổng kiếm soát không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("ChuyenTKS", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function KetThucKiemSoat(code) {
+        if (!confirm("Bạn chắc chắn kết thúc Tổng kiểm soát không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("KetThucKiemSoat", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function DieuChinh(code) {
+        if (!confirm("Bạn chắc chắn Điều chỉnh dữ liệu không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("DieuChinh", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function ChuyenHDNS(code) {
+        if (!confirm("Bạn chắc chắn Chuyển cho Hội đồng kế hoạch không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("ChuyenHDNS", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function TrinhTGD(code) {
+        if (!confirm("Bạn chắc chắn Trình kế hoạch cho Tổng Giám Đốc phê duyệt không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("TrinhTGD", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function TrinhDuyet(code) {
+        if (!confirm("Bạn chắc chắn trình duyệt không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("TrinhDuyet", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function HuyTrinhDuyet(code) {
+        if (!confirm("Bạn chắc chắn hủy trình duyệt không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("HuyTrinhDuyet", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function TGDHuyPheDuyet(code) {
+        if (!confirm("Bạn chắc chắn hủy phê duyệt không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("TGDHuyPheDuyet", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function TGDTuChoi(code) {
+        if (!confirm("Bạn chắc chắn từ chối không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("TGDTuChoi", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function PheDuyet(code) {
+        if (!confirm("Bạn chắc chắn phê duyệt không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("PheDuyet", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+    function TGDPheDuyet(code) {
+        if (!confirm("Bạn chắc chắn phê duyệt không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("TGDPheDuyet", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function HuyPheDuyet(code) {
+        if (!confirm("Bạn chắc chắn hủy phê duyệt không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("HuyPheDuyet", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function TuChoi(code) {
+        if (!confirm("Bạn chắc chắn từ chối không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("TuChoi", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { code: code },
+            success: refreshBtn
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+</script>

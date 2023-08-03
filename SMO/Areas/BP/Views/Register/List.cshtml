@@ -1,0 +1,63 @@
+﻿@model SMO.Service.BP.RegisterService
+@{ 
+    Model.ObjList = Model.ObjList.OrderBy(x => x.BpType.NAME).ToList();
+}
+<div class="table-responsive">
+    <table class="table table-condensed table-bordered table-striped">
+        <thead>
+            <tr>
+                <th style="max-width: 120px;">Đơn vị</th>
+                <th>Loại kế hoạch</th>
+                <th>Ghi chú</th>
+                <th>Đăng ký</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(var i = 0; i < Model.ObjList.Count; i++)
+            {
+                    @Html.HiddenFor(x => x.ObjList[i].ID)
+                    @Html.HiddenFor(x => x.ObjList[i].TYPE_ID)
+                    @Html.HiddenFor(x => x.ObjList[i].TIME_YEAR)
+                    @Html.HiddenFor(x => x.ObjList[i].ORG_CODE)
+            <tr>
+                <td>
+                    @ProfileUtilities.User.Organize.NAME
+                </td>
+                <td>
+                    @(Model.ObjList[i].BpType.NAME.ToLower().Contains("kế hoạch thu thường xuyên") ? "Kế hoạch thu tiền" : Model.ObjList[i].BpType.NAME )
+                </td>
+                <td>
+                    @Html.MyTextAreaFor(x => x.ObjList[i].DESCRIPTION)
+                </td>
+                <td>
+                    @Html.HiddenFor(x => x.ObjList[i].IS_REGISTER)
+                    <div class="m-b-5">
+                        <div class="form-group">
+                            <input name="cbxIsBase_@Model.ObjList[i].ID"
+                                   class="filled-in"
+                                   id="cbxIsBase_@Model.ObjList[i].ID"
+                                   @(Model.ObjList[i].IS_REGISTER ? "checked" : "")
+                                   review-temp-name="checkOne"
+                                   type="checkbox"
+                                   value="@Model.ObjList[i].IS_REGISTER"
+                                   onchange="$('#ObjList_@(i)__IS_REGISTER').val($(this).is(':checked') ? 'True' : 'False');"
+                                   data-val="true">
+                            <label for="cbxIsBase_@Model.ObjList[i].ID" class="p-r-5"></label>
+                            @if (Model.ObjList[i].IS_REGISTER)
+                            {
+                                <text><span class="text-success">Có</span></text>
+                            }
+                            else
+                            {
+                                <text><span class="text-danger">Không</span></text>
+                            }
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{ Html.RenderPartial("Paging", Model); }
+

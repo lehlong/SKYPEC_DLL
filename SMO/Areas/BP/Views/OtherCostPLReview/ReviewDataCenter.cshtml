@@ -1,0 +1,267 @@
+﻿@model SMO.Service.Class.ReviewDataCenterModel
+@{
+    var viewId = Guid.NewGuid().ToString();
+    var formId = Guid.NewGuid().ToString();
+}
+
+<div id='@viewId' class="container-fluid child-content">
+    <div class="card border-grey">
+        <div style="margin: 5px; border-bottom: 1px dotted #e4e4e4; padding-bottom: 5px; display: flex">
+            <div class="fixed-btn">
+                @Html.MyButton("cmdBack", "Quay lại", string.Format("Forms.Close('{0}');", viewId), "Alt+N", "arrow_back")
+                @if (SMOUtilities.CheckRight("R321"))
+                {
+                    @Html.MyButton("cmdBack", "Kết xuất", $"Forms.SubmitForm('{formId}');", "Alt+N", "search")
+                }
+                </div>
+            <div style="position: absolute; right: 15px; top: 15px;"><b>KẾT QUẢ TKS TĐ KẾ HOẠCH CHI PHÍ KHÁC</b></div>
+        </div>
+        <div class="export-data" id="divExport_@viewId">
+            <div class="export-left" id="divExportLeft_@viewId">
+                <div class="export-left-header" id="divExportHeader_@viewId">
+                    @using (Ajax.BeginForm("SummaryReviewDataCenter", null, FormDataUtils.GetAjaxOptions(viewId, $"#divExportRight_{viewId}"), new { @id = formId }))
+                    {
+                        Html.RenderPartial("_PartialViewReviewDataHeader", Model);
+                    }
+                </div>
+                <div class="export-left-tab" id="divExportTab_@viewId">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active" style="cursor: pointer; left: 0;">
+                            <a href="#historyControl" title="Lịch sử tổng kiểm soát" data-toggle="tab">Lịch sử TKS</a>
+                        </li>
+                        <li role="presentation" style="cursor: pointer;">
+                            <a title="Lịch sử thẩm định" data-toggle="tab" href="#historyReview">Lịch sử thẩm định</a>
+                        </li>
+                        <li role="presentation" style="cursor: pointer;">
+                            <a href="#comment" data-toggle="tab" title="Comment">Comment</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" style="overflow-y: scroll; overflow-x: scroll;" id="divExportTabContent_@viewId">
+                        <div role="tabpanel" class="tab-pane fade in active" id="historyControl">
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="historyReview">
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="comment">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="export-right" id="divExportRight_@viewId">
+
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            Forms.CompleteUI();
+            ResizeReviewExportTab();
+            OnChangeYear(null, null, true)
+        });
+
+        var lastScrollLeft = 0;
+        $('#divExportRight_@viewId').scroll(function () {
+            var documentScrollLeft = $('#divExportRight_@viewId').scrollLeft();
+            if (lastScrollLeft != documentScrollLeft && $('#divExportRight_@viewId #table').width() - $('#divExportRight_@viewId').width() > documentScrollLeft - 5) {
+                $('#divExportRight_@viewId #text-search-table').closest('.col-lg-3').css('margin-left', documentScrollLeft);
+                $('#divExportRight_@viewId #number-unit').parent().css('margin-right', documentScrollLeft * -1);
+            }
+        });
+
+        $(window).on('resize', () => ResizeReviewExportTab());
+
+        function ResizeReviewExportTab() {
+            var windowHeight = $(window).height();
+            $("#divExport_@viewId").height(windowHeight - 120);
+
+            //$("#divFixKetXuat").height(110);
+            $("#divExportTab_@viewId").height($("#divExport_@viewId").height() - $("#divExportHeader_@viewId").height() - 21);
+            $("#divExportTabContent_@viewId").height($("#divExportTab_@viewId").height() - 66);
+            $("#divExportRight_@viewId").height(windowHeight - 160);
+        }
+
+        function OnChangeReviewUsers(submitForm) {
+            GetInformationActiveTab();
+            if (submitForm === true) {
+                Forms.SubmitForm('@formId');
+            }
+        }
+
+
+        function OnChangeYear(version, orgCode, submitForm) {
+            var year = $("#@viewId #YEAR").val();
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("GetVersions")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { year },
+                success: function (response) {
+                    var lstVersion = $('#@viewId #VERSION');
+                    lstVersion.html('');
+                    if (response && response.length > 0) {
+                        lstVersion.append($('<option>', { value: '', text: 'Version' }));
+                        $.each(response, function (index, value) {
+                            let td = '';
+                            if ('' !== '@Model.VERSION' && value == '@Model.VERSION' && year == @Model.YEAR) {
+                                td = $('<option>', { value: value, text: value, selected: "selected" });
+                            }
+                            else {
+                                td = $('<option>', { value: value, text: value });
+                            }
+                            lstVersion.append(td);
+                        });
+                        if (version) {
+                            lstVersion.val(version);
+                        }
+                        if (lstVersion.val() === '') {
+                            $('#@viewId #VERSION').val(response[0]);
+                        }
+                    } else {
+                        lstVersion.append($('<option>', { value: '-1', text: 'Nothing version' }));
+                    }
+                    lstVersion.selectpicker('refresh');
+                    OnChangeVersion(orgCode, submitForm);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function OnChangeVersion(orgCode, submitForm) {
+            var year = $("#@viewId #YEAR").val();
+            var version = $("#@viewId #VERSION").val();
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("GetReviewUsers")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { year, version },
+                success: function (response) {
+                    var lst = $('#@viewId #ORG_CODE');
+                    var oldValue = lst.val();
+                    var hasValue = false;
+                    lst.html('');
+                    if (response && response.length > 0) {
+                        lst.append($('<option>', { value: '', text: 'Tất cả người thẩm định' }))
+                        $.each(response, function (index, value) {
+                            let td = '';
+                            if ('' !== '@Model.ORG_CODE' && value == '@Model.ORG_CODE' && year == @Model.YEAR && version == '@Model.VERSION') {
+                                td = $('<option>', { value: value, text: value, selected: "selected" });
+                                hasValue = true;
+                            }
+                            else {
+                                td = $('<option>', { value: value, text: value });
+                            }
+                            lst.append(td);
+                        });
+                        if (orgCode) {
+                            lst.val(orgCode);
+                            hasValue = true;
+                        }
+                        if (!hasValue) {
+                            if ($(`#@viewId #ORG_CODE option[value='${oldValue}']`).length > 0) {
+                                lst.val(oldValue);
+                            } else {
+                                lst[0].selectedIndex = 0;
+                            }
+                        }
+
+                    } else {
+                        lst.append($('<option>', { value: '', text: 'Chưa có người thẩm định' }))
+                    }
+                    OnChangeReviewUsers(submitForm)
+                    lst.selectpicker('refresh');
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        $('#divExportTab_@viewId a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            GetInformationTab(e.target);
+        });
+
+        function GetInformationTab(a) {
+            var href = $(a).attr("href");
+            var year = $("#@viewId #YEAR").val();
+            var version = $("#@viewId #VERSION").val();
+
+            var params = {
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                data: { year, version },
+            };
+            params.data.viewId = "@viewId";
+            params.data.formId = "@formId";
+            Forms.ShowLoading();
+            switch (href) {
+                case "#historyControl": {
+                    // check if tab has value, not call server
+                    // else call to server to get information
+                    let url = "@Url.Action("HistoryControl")";
+                    params.url = url;
+                    params.success = function (response) {
+                        $("#@viewId #historyControl").html(response);
+                    };
+                    Forms.Ajax(params);
+                    break;
+                }
+                case "#comment": {
+                    break;
+                }
+                case "#historyReview": {
+                    // call to server to get information
+                    let url = "@Url.Action("HistoryReview")";
+                    params.url = url;
+                    params.success = function (response) {
+                        $("#@viewId #historyReview").html(response);
+                    };
+                    Forms.Ajax(params);
+                    break;
+                }
+                default:
+            }
+            Forms.HideLoading();
+
+        }
+
+        function GetInformationActiveTab() {
+            // clear data in the right div
+            $("#divExportRight_@viewId").html("");
+
+            var anchor = $("#divExportTab_@viewId li.active").children();
+            GetInformationTab(anchor);
+        }
+
+        function RemoveActiveTabContent() {
+            var href = $("#divExportTab_@viewId li.active").children().attr("href");
+            $(`#@viewId ${href}`).html("");
+        }
+
+        function LoadComments(elementCode, year, version, orgCode, onOrgCode) {
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("Index", "OtherCostPLReviewComment")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                data: { elementCode, year, orgCode, version, onOrgCode },
+                success: function (response) {
+                    $(`#@viewId #comment`).html(response);
+
+                    $('#divExportTab_@viewId a[href="#comment"]').tab('show');
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function ViewDataVersion(version, orgCode) {
+            OnChangeYear(version, orgCode, true);
+        }
+    </script>
+
+</div>
+

@@ -1,0 +1,17 @@
+﻿@model SMO.Service.AD.UserService
+
+    <div class="page-function">
+        <div class="page-function-button m-r-20">
+            @Html.MyButton("cmdCapNhat", "Cập nhật", "UpdateOrgOfUser();", "Alt+S", "done_all")
+        </div>
+    </div>
+
+<div id="divTreeUserOrg">
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        BuildTreeOrg();
+        Forms.CompleteUI();
+    });
+</script>

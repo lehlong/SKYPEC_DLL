@@ -1,0 +1,117 @@
+﻿@model SMO.Models.StepBudgetModel
+@using Newtonsoft.Json; 
+
+<div id='budget-step' class="container-fluid child-content">
+    <link href="~/Content/stepper-budget.css" rel="stylesheet" />
+    <div class="card border-grey">
+        <div class="body" style="padding-top: 0px;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a style="padding-left:0px"><i class="material-icons col-fecon">clear_all</i> THEO DÕI TRẠNG THÁI KẾ HOẠCH</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="page-function">
+                    <div class="page-function-button m-r-20">
+                        @Html.MyButton("cmdBack", "Quay lại", string.Format("Forms.Close('{0}');", "budget-step"), "Alt+N", "arrow_back")
+                    </div>
+                </div>
+                <div id="divResult">
+                    <p>Năm kế hoạch: @Model.Year</p>
+                    <p>Đơn vị: @Model.CenterName</p>
+                    <p>Loại kế hoạch: @Model.BudgetName</p>
+
+                    <table class="table table-borderless align-middle">
+                        <thead>
+                            <tr>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="~/Theme/plugins/momentjs/moment.js"></script>
+    <script type="text/javascript">
+
+        $(function () {
+            const steps = JSON.parse(`@Html.Raw(JsonConvert.SerializeObject(Model.Steps, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }))`);
+
+            buildSteps(steps);
+
+            $(window).on('resize', () => buildSteps(steps));
+        });
+
+        function buildSteps(steps) {
+            $('#budget-step #divResult .table tbody').html('');
+            // tính độ rộng của màn hình
+            const width = $('#budget-step #divResult').width();
+
+            // tính số step tối đa trên 1 row
+            const widthEachStep = 250;
+            const maxStepsEachRow = Math.floor((width - 120) / widthEachStep) > 0 ? Math.floor((width - 120) / widthEachStep) : 1;
+
+            // tính số rows cần build
+            const rows = Math.ceil(steps.length / maxStepsEachRow);
+
+            // build steps
+            for (var i = 0; i < rows; i++) {
+                // lấy các steps cần build trên row i
+                const tr = $('<tr>');
+                // luôn luôn có 1 td rỗng bắt đầu
+                tr.append($('<td>'));
+
+                // nếu i chẵn sẽ build từ trái sang phải
+                // nếu i lẻ sẽ build từ phải sang trái
+                if (i % 2 === 0) {
+                    for (var j = i * maxStepsEachRow + 1; j <= i * maxStepsEachRow + maxStepsEachRow && j <= steps.length; j++) {
+                        tr.append(buildCell(steps, j - 1));
+                    }
+                } else {
+                    for (var j = i * maxStepsEachRow + maxStepsEachRow; j >= i * maxStepsEachRow + 1; j--) {
+                        if (j > steps.length) {
+                            // nếu dòng cuối có ít step hơn so với mức max steps trong row, thêm empty step phía trước
+                            for (var k = 0; k < j - steps.length; k++) {
+                                tr.append($('<td>'));
+                            }
+                            j = steps.length;
+
+                        }
+
+                        tr.append(buildCell(steps, j - 1));
+                    }
+                }
+
+                $('#budget-step #divResult .table tbody').append(tr);
+            }
+        }
+
+        function buildCell(steps, index) {
+            const tdStep = $('<td>', { class: 'has-step' });
+            const stepHasDoneClass = steps[index].Status === true ? 'step-done' : '';
+            const divInformation = $('<div>', { class: 'text-align-left pt-3' })
+                .append($('<p>', { text: steps[index].ActionUser }))
+                .append($('<p>', { text: steps[index].ActionUserFullname }))
+                .append($('<p>', { text: steps[index].CenterName }))
+                .append($('<p>', { text: steps[index].ActionDate ? moment(steps[index].ActionDate).format('DD/MM/YYYY HH:mm') : '' }));
+
+            const divStep = $('<div>', { class: 'stepper' })
+                .append($('<div>', { class: 'circle' })
+                    .append($('<div>', { class: `circle__inner ${stepHasDoneClass}` })
+                        .append($('<div>', { class: 'circle__wrapper' })
+                            .append($('<div>', { class: 'circle__content', text: steps[index].DisplayText })
+                        ))))
+                .append(divInformation);
+            
+            tdStep.append(divStep);
+
+            return tdStep;
+        }
+    </script>
+</div>
+
+

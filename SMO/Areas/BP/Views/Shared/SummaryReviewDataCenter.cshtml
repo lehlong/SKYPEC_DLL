@@ -1,0 +1,257 @@
+﻿@model SMO.Models.SummaryReviewDataCenterModel
+@using System.Text;
+@using SMO.Service.Class;
+
+@if (Model.ReviewCenterViewModel.Elements == null || Model.ReviewCenterViewModel.Elements.Count == 0)
+{
+    Html.RenderPartial("_NothingData");
+    return;
+}
+else
+{
+    var myModel = Model.ReviewCenterViewModel;
+    var viewId = Guid.NewGuid().ToString();
+    var formId = Guid.NewGuid().ToString();
+    var viewModel = ViewBag.model as ReviewDataCenterModel;
+    var realControllerName = @HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var controllerName = realControllerName.ToUpper().Replace("REVIEW", string.Empty);
+    var controllerNameComment = controllerName + "comment";
+
+    // có ngân sách dự phòng
+    var hasPreventiveBudget = !controllerName.ToUpper().Contains("REVENUE");
+
+    <div id="@viewId" style="height: 100%">
+        @{
+            Html.RenderPartial("_PartialViewReviewSearchAndDetail", viewModel);
+        }
+        <div class="sticky-table sticky-headers sticky-ltr-cells body">
+            <table class="table-condensed table-bordered table-striped font-13" id="table">
+                <tbody>
+                    <tr class="sticky-row">
+                        <td class="sticky-cell"></td>
+                        <td class="sticky-cell align-center"><i class="material-icons p-t-5">comment</i></td>
+                        @if (viewModel.IS_COUNCIL_BUDGET)
+                        {
+
+                            <td class="sticky-cell strong">THẨM ĐỊNH</td>
+                        }
+                        @if (viewModel.IS_CONTROL)
+                        {
+                            <td class="sticky-cell strong">TKS</td>
+                        }
+                        <td class="sticky-cell strong">MÃ KHOẢN MỤC</td>
+                        <td class="sticky-cell strong">TÊN KHOẢN MỤC</td>
+                        <td class="strong">THÁNG 1</td>
+                        <td class="strong">THÁNG 2</td>
+                        <td class="strong">THÁNG 3</td>
+                        <td class="strong">THÁNG 4</td>
+                        <td class="strong">THÁNG 5</td>
+                        <td class="strong">THÁNG 6</td>
+                        <td class="strong">THÁNG 7</td>
+                        <td class="strong">THÁNG 8</td>
+                        <td class="strong">THÁNG 9</td>
+                        <td class="strong">THÁNG 10</td>
+                        <td class="strong">THÁNG 11</td>
+                        <td class="strong">THÁNG 12</td>
+                        <td class="strong">TỔNG NĂM</td>
+                        @if(hasPreventiveBudget)
+                        {
+                            <td class="strong">NS DỰ PHÒNG</td>
+                        }
+                        <td class="strong">TRUNG BÌNH THÁNG</td>
+                    </tr>
+
+                    @for (int i = 0; i < myModel.Elements.Count; i++)
+                    {
+                        var item = myModel.Elements[i];
+                        var space = new StringBuilder();
+                        var childClass = item.IsChildren ? "child" : string.Empty;
+                        var parentClass = item.IS_GROUP ? "strong" : string.Empty;
+                        for (int j = 0; j < item.LEVEL; j++)
+                        {
+                            space.Append("\t");
+                        }
+                <tr class="@parentClass">
+                    @if (item.IsChildren)
+                    {
+                        <td id="@item.CODE"
+                            centerCode="@myModel.OrgCode"
+                            version="@myModel.Version"
+                            level="@item.LEVEL"
+                            root="true"
+                            class="@childClass sticky-cell"
+                            onclick="DrillDown(this);">
+                            <i class="material-icons swap-icon-drill-down">unfold_more</i>
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="sticky-cell"></td>
+                    }
+                    @if (!item.IS_GROUP)
+                    {
+                        <td class="align-center sticky-cell nowrap-white-space">
+                            <a href="#"
+                               id="comment-@item.CODE-@item.ORG_CODE"
+                               onclick="LoadComments('@item.CODE', @myModel.Year, @myModel.Version, '@myModel.OrgCode', '@myModel.OrgCode')">
+                                @myModel.Elements[i].Comments | @myModel.Elements[i].CommentsInOrg
+                            </a>
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="sticky-cell"></td>
+                    }
+
+                    @if (viewModel.IS_COUNCIL_BUDGET)
+                    {
+                        if (item.Success == null)
+                        {
+                            <td class="sticky-cell"></td>
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(viewModel.ORG_CODE))
+                            {
+                                var resultSingleUserReview = item.Success.Contains(viewModel.ORG_CODE) ? true : item.Failure.Contains(viewModel.ORG_CODE) ? false : (bool?)null;
+                                <td class="text-center sticky-cell">
+                                    <input class="filled-in @(resultSingleUserReview.HasValue && !resultSingleUserReview.Value ? "elm-denied-cbx" : string.Empty)"
+                                           id="@($"reviewSummaryResultCbxStatus{i}")"
+                                           @(resultSingleUserReview.HasValue ? "checked" : string.Empty)
+                                           type="checkbox"
+                                           readonly
+                                           value="@(resultSingleUserReview.HasValue && resultSingleUserReview.Value)"
+                                           data-val="true"
+                                           onclick="return false;">
+                                    <label for="@($"reviewSummaryResultCbxStatus{i}")"></label>
+                                </td>
+                            }
+                            else
+                            {
+                                var successWidth = (double)item.Success.Count / (item.Success.Count + item.Failure.Count + item.NotReviewed.Count);
+                                var failureWidth = (double)item.Failure.Count / (item.Success.Count + item.Failure.Count + item.NotReviewed.Count);
+                                var userSuccess = string.Join(", ", item.Success);
+                                var userFailure = string.Join(", ", item.Failure);
+                                var userNotReviewed = string.Join(", ", item.NotReviewed);
+                                <td class="text-center sticky-cell">
+                                    <div class="progress text-center" style="margin-bottom: 0;">
+                                        <div class="progress-bar bg-green"
+                                             role="progressbar"
+                                             title="@userSuccess"
+                                             style="width: @(successWidth * 100)%">
+                                            @item.Success.Count
+                                        </div>
+                                        <div class="progress-bar bg-red"
+                                             role="progressbar"
+                                             title="@userFailure"
+                                             style="width: @(failureWidth * 100)%">
+                                            @item.Failure.Count
+                                        </div>
+                                        <div class="progress-bar bg-grey"
+                                             role="progressbar"
+                                             title="@userNotReviewed"
+                                             style="width: @((1 - failureWidth - successWidth) * 100)%">
+                                            @item.NotReviewed.Count
+                                        </div>
+                                    </div>
+                                </td>
+                            }
+                        }
+                    }
+                    @if (viewModel.IS_CONTROL)
+                    {
+                        <td class="text-center sticky-cell">
+                            @if (!item.IS_GROUP)
+                            {
+                                <input name="@($"Elements[{i}].Status")"
+                                       class="filled-in @((item.Status.HasValue && !item.Status.Value) ? "elm-denied-cbx" : string.Empty)"
+                                       id="@($"reviewSummaryResultCbx{i}")"
+                                       @(item.Status.HasValue ? "checked" : string.Empty)
+                                       type="checkbox"
+                                       readonly
+                                       data-val="true"
+                                       onclick="return false;">
+                                <label for="@($"reviewSummaryResultCbx{i}")"></label>
+
+                            }
+                        </td>
+                    }
+                    <td id="@item.CODE" level="@item.LEVEL" class="@childClass sticky-cell">@item.CODE</td>
+                    <td class="sticky-cell @parentClass">@($"{space.ToString()}{item.NAME}")</td>
+                    <td class="align-right">@item.Values[0].ToStringVN()</td>
+                    <td class="align-right">@item.Values[1].ToStringVN()</td>
+                    <td class="align-right">@item.Values[2].ToStringVN()</td>
+                    <td class="align-right">@item.Values[3].ToStringVN()</td>
+                    <td class="align-right">@item.Values[4].ToStringVN()</td>
+                    <td class="align-right">@item.Values[5].ToStringVN()</td>
+                    <td class="align-right">@item.Values[6].ToStringVN()</td>
+                    <td class="align-right">@item.Values[7].ToStringVN()</td>
+                    <td class="align-right">@item.Values[8].ToStringVN()</td>
+                    <td class="align-right">@item.Values[9].ToStringVN()</td>
+                    <td class="align-right">@item.Values[10].ToStringVN()</td>
+                    <td class="align-right">@item.Values[11].ToStringVN()</td>
+
+                    @if (hasPreventiveBudget)
+                    {
+                        <td class="align-right">@item.Values[12].ToStringVN()</td>
+                        <td class="align-right">@item.Values[13].ToStringVN()</td>
+                        <td class="align-right">@((item.Values[12]/12).ToStringVN())</td>
+                    }
+                    else
+                    {
+                        <td class="align-right">@item.Values.Sum().ToStringVN()</td>
+                        <td class="align-right">@((item.Values.Sum() / 12).ToStringVN())</td>
+                    }
+                </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {
+            Html.RenderPartial("_ScriptSummaryReviewDataCenter", new ViewDataDictionary {
+                                    { "url", Url.Action("GetDetailSumUpReview", controllerName) },
+                { "viewModel", viewModel }
+                                });
+    }
+    <script>
+        $(function () {
+            @if (viewModel.IS_COUNCIL_BUDGET && viewModel.IS_CONTROL)
+            {
+                <text>
+            $(document).on("keyup", "#text-search-table", () => SearchTable(5, 4, 4, 5));
+            </text>
+            } else
+            {
+                <text>
+            $(document).on("keyup", "#text-search-table", () => SearchTable(4, 3, 3, 4));
+            </text>
+            }
+            StickyTable();
+            setCellPadding();
+        });
+
+        function RefreshComment(elementCode, onOrgCode) {
+            if (!elementCode) {
+                return;
+            } else {
+                Forms.ShowLoading();
+                var ajaxParams = {
+                    url: '@Url.Action("RefreshComment", controllerNameComment)',
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: { elementCode, year: @myModel.Year, orgCode: '@myModel.OrgCode', onOrgCode },
+                    success: function (comment) {
+                        $(`#@viewId #comment-${elementCode}-${onOrgCode}`).html(comment);
+                    }
+                };
+                Forms.Ajax(ajaxParams);
+            }
+        }
+
+    </script>
+
+    
+}

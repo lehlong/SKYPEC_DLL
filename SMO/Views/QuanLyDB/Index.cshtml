@@ -1,0 +1,135 @@
+﻿@model SMO.Service.DynamicSqlService
+@{ 
+    Layout = null;
+    Model.FormId = Guid.NewGuid().ToString();
+    Model.ViewId = Guid.NewGuid().ToString();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="~/Theme/css/google_roboto.css" rel="stylesheet" type="text/css">
+    <link href="~/Theme/css/google_material_icon.css" rel="stylesheet" type="text/css">
+
+    <!-- Bootstrap Core Css -->
+    <link href="~/Theme/plugins/bootstrap-3.4.1/css/bootstrap.css" rel="stylesheet">
+
+
+    <!-- Bootstrap Select Css -->
+    <link href="~/Theme/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+
+    <!-- Custom Css -->
+    <link href="~/Theme/css/style.css?v=1" rel="stylesheet">
+
+    <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
+    <link href="~/Theme/css/themes/theme-indigo.min.css" rel="stylesheet" />
+
+    <!-- Jquery Core Js -->
+    @*<script src="~/Theme/plugins/jquery/jquery.min.js"></script>*@
+
+    <link href="~/Theme/css/materialize.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.js?v=1.1"></script>
+</head>
+<body class="theme-indigo">
+    <!-- Page Loader -->
+    <div class="page-loader-wrapper" id="divLoading">
+        <div class="loader">
+            <div class="preloader pl-size-xl">
+                <div class="spinner-layer pl-orange">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <p>Hệ thống đang xử lý ...</p>
+        </div>
+    </div>
+    <!-- #END# Page Loader -->
+
+    <!-- Overlay For Sidebars -->
+    <div class="overlay"></div>
+    <!-- #END# Overlay For Sidebars -->
+
+    <div style="padding: 20px;" id="@Model.ViewId">
+        @using (Ajax.BeginForm("Run", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.FormId)
+            <div>
+                <div class="page-function-button m-r-20" style="float:left">
+                </div>
+
+                <div style="width: 350px; float: left; margin-right: 30px;">
+
+                    <select data-virtual-scroll="false" data-container="body" onchange="OnchangeTableName(this)"
+                            data-live-search="true" data-show-subtext="false"
+                            class="selectpicker show-tick dropdown form-control">
+                        @foreach (var item in SelectListUtilities.GetAllDatatableName())
+                        {
+                            <option value="@item.Value">
+                                @item.Text
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    @Html.MyButton("cmdRunSQL", "Run", "Submit();", "Alt+N", "play_circle_outline")
+                </div>
+
+                <div style="margin-top: 20px;">
+                    @Html.MyTextAreaFor(x => x.ObjDetail.TextSql, new { @id = "textSQL" })
+                </div>
+                <div id="divResult" style="margin-top: 20px;">
+
+                </div>
+            </div>
+        }
+    </div>
+
+    <script src="~/Theme/plugins/momentjs/moment.js"></script>
+    <script src="~/Theme/plugins/bootstrap-datepicker-1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/Theme/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/Theme/plugins/bootstrap-datepicker-1.6.4/locales/bootstrap-datepicker.vi.min.js"></script>
+    <!-- Bootstrap Core Js -->
+    <script src="~/Theme/plugins/bootstrap-3.4.1/js/bootstrap.js"></script>
+
+    <script src="~/Theme/plugins/node-waves/waves.js"></script>
+
+    <!-- Jquery CountTo Plugin Js -->
+    <!-- Morris Plugin Js -->
+    <script src="~/Theme/plugins/bootstrap-select/js/bootstrap-select.js"></script>
+    <script src="~/Theme/plugins/bootstrap-notify/bootstrap-notify.js"></script>
+    <!-- Custom Js -->
+
+    <script src="~/Theme/js/admin.js?v=1"></script>
+    <script src="~/Scripts/D2SCoreJS/D2SCoreJS.js?v=1"></script>
+    <script src="~/Scripts/D2SCoreJS/Utilities.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+
+    <script type="text/javascript">
+        function OnchangeTableName(obj) {
+            var tablename = $(obj).val();
+            if (tablename.length) {
+                var codesql = "SELECT * FROM ";
+                codesql += tablename;
+                $('#textSQL').val("");
+                $('#textSQL').val(codesql);
+                $('#@Model.FormId').submit();
+            }
+        }
+
+        function Submit() {
+            $('#@Model.FormId').submit();
+        }
+
+        $(function () {
+            Forms.CompleteUI();
+        })
+    </script>
+</body>
+</html>

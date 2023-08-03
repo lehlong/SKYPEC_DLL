@@ -1,0 +1,117 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_Portal.cshtml";
+}
+
+@{
+    var lang = "vi";
+    if (Request.Cookies["lang"] != null)
+    {
+        lang = Request.Cookies["lang"].Value;
+    }
+
+    if (lang != "vi" && lang != "en")
+    {
+        lang = "vi";
+    }
+}
+
+<div class="top_heading  _out">
+    <div class="top_site_main " style="color: rgb(255, 255, 255); background-image: url('/Content/Images/gioi-thieu-fecon.jpg'); padding-top: 140px;">
+        <span class="overlay-top-header" style="background:rgba(0,0,0,0.5);"></span>
+    </div>
+    <div class="breadcrumbs-wrapper">
+        <div class="container">
+            @if (lang == "vi")
+            {
+                <ul itemprop="breadcrumb" itemscope="" id="breadcrumbs" class="breadcrumbs">
+                    <li itemprop="itemListElement"><a href="https://fecon.com.vn"><span>TRANG CHỦ</span></a></li>
+                    <li itemprop="itemListElement"><span>ĐIỀU KHOẢN VÀ ĐIỀU KIỆN SỬ DỤNG</span></li>
+                </ul>
+            }
+            else
+            {
+                <ul itemprop="breadcrumb" itemscope="" id="breadcrumbs" class="breadcrumbs">
+                    <li itemprop="itemListElement"><a href="https://fecon.com.vn"><span>HOME</span></a></li>
+                    <li itemprop="itemListElement"><span>TERMS</span></li>
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+<div class="container site-content sidebar-right" style="transform: none;">
+    <div class="text-center">
+        <h4>ĐIỀU KHOẢN VÀ ĐIỀU KIỆN SỬ DỤNG</h4>
+    </div>
+
+    <p>
+        <p><b>Điều 1: Quy định chung  </b></p>
+        <p>
+            Đây là các điều khoản và điều kiện áp dụng cho trang FECON EBIDDING (sau đây gọi là “Website”). Việc truy cập, đăng ký tài khoản hoặc sử dụng Website này được xác định là bạn/công ty của bạn đã đồng ý với toàn bộ điều khoản và điều kiện, cũng như các chính sách khác trên Website. Các nghĩa vụ, trách nhiệm, cam kết của bạn theo Điều khoản và Điều kiện sử dụng này cũng là nghĩa vụ, trách nhiệm, cam kết của Công ty của bạn. Vậy nên, xin vui lòng đọc các điều khoản, điều kiện và chính sách một cách cẩn thận, và liên hệ với chúng tôi nếu có bất kỳ câu hỏi nào. Trường hợp không đồng ý với các quy định này, bạn vui lòng ngừng truy cập và sử dụng Website.
+        </p>
+    </p>
+
+    <p>
+        <p><b>Điều 2: Tài khoản    </b></p>
+        <p>Bạn có quyền tạo Tài khoản để sử dụng trên Website mà không phải trả bất kỳ loại phí nào.  </p>
+        <p>Để bảo vệ Tài khoản của bạn trên Website, hãy giữ bí mật ID và mật khẩu của bạn. Bạn chịu trách nhiệm đối với hoạt động xảy ra trên hoặc thông qua Tài khoản của bạn. </p>
+    </p>
+
+    <p>
+        <p><b>Điều 3: Các thông tin mà bạn cung cấp trên Website  </b></p>
+        <p>Bạn phải chịu trách nhiệm về tính chính xác, hợp pháp và trung thực hoàn toàn trước mọi thông tin mà bạn cung cấp trên Website khi đăng ký tài khoản và trong quá trình sử dụng Website. </p>
+        <p>Bạn giữ quyền sở hữu mọi quyền sở hữu trí tuệ mà bạn có đối với những thông tin mà bạn cung cấp trên trang Website. Nói một cách dễ hiểu, những gì thuộc về bạn sẽ luôn thuộc về bạn. </p>
+        <p>Khi bạn đưa thông tin, tải lên hình ảnh, tài liệu, đệ trình, lưu trữ, gửi hoặc nhận nội dung đến trên Website của chúng tôi, bạn cấp phép cho Chúng tôi (công ty, đơn vị thành viên và những người chúng tôi làm việc cùng) quyền sử dụng đối với những thông tin, hình ảnh, tài liệu này. Tuy nhiên, Chúng tôi chỉ sử dụng những nội dung này trong phạm vi mục đích sử dụng được quy định tại Chính sách bảo mật.  </p>
+        <p>Bạn có quyền sửa đổi, cập nhật các thông tin mà bạn cung cấp trên Website. </p>
+    </p>
+
+    <p>
+        <p><b>Điều 4: Các thông tin mà bạn biết được trên Website  </b></p>
+        <p>Tất cả các thông tin, hình ảnh, tài liệu mà bạn có được, nhận được hoặc biết được bằng bất cứ hình thức nào do Chúng tôi cung cấp hoặc thông qua Website đều thuộc quyền quản lý, sở hữu của chúng tôi và sẽ luôn luôn là như vậy. Việc bạn nhận được hoặc biết được thông tin, hình ảnh, tài liệu thông qua Website không có nghĩa chúng tôi chuyển quyền sở hữu hoặc cho phép bạn tự do sử dụng các nội dung này. </p>
+        <p>Bạn có nghĩa vụ bảo mật tuyệt đối và không được phép sử dụng bất cứ thông tin, hình ảnh, tài liệu nào có sẵn hoặc nhận được/biết được do chúng tôi cung cấp hoặc thông qua Website với bất cứ mục đích nào (ngoại trừ phục vụ cho mục đích đấu thầu gói thầu liên quan của Fecon), nếu chưa được sự cho phép của chúng tôi. </p>
+    </p>
+
+    <p>
+        <p><b>Điều 5. Cam kết của bạn  </b></p>
+        <p>Cam kết đã đủ các điều kiện theo quy định pháp luật, được công ty của bạn cho phép thay mặt công ty tạo tài khoản và sử dụng tài khoản trên Website.  </p>
+        <p>Cam kết công ty mà bạn thay mặt cũng chấp nhận toàn bộ các Điều khoản và điều kiện, cũng như các chính sách khác trên Website này.  </p>
+        <p>Mọi trao đổi, thông tin, hình ảnh, tài liệu mà bạn cung cấp trên Website thuộc sở hữu của bạn hoặc đều đã được công ty của bạn/hoặc bên thứ ba sở hữu nội dung đó chấp thuận cho phép sử dụng, cung cấp trên Website. Tuyệt đối không sử dụng Dịch Vụ hoặc đăng tải Nội Dung cho mục đích gian lận, không hợp lý, sai trái, gây hiểu nhầm hoặc gây nhầm lẫn, hoặc vi phạm pháp luật, quyền lợi của bên thứ ba; </p>
+        <p>Mọi thông tin, hình ảnh, tài liệu mà bạn cung cấp trên Website là không vi phạm quy định pháp luật về thuần phong, mỹ tục hoặc bất cứ nội dung nào trái quy định của pháp luật, có hại, đe dọa, lạm dụng, quấy rối, gây hoang mang, lo lắng, xuyên tạc, phỉ báng, xúc phạm, khiêu dâm, bôi nhọ, xâm phạm quyền riêng tư của người khác, gây căm phẫn, hoặc phân biệt chủng tộc, dân tộc hoặc bất kỳ nội dung không đúng đắn nào khác. </p>
+        <p>Tự giải quyết các khiếu kiện có liên quan đến các thông tin, hình ảnh, tài liệu mà bạn cung cấp trên Website. Nói một cách rõ ràng, Chúng tôi không có bất cứ trách nhiệm nào trong việc này. </p>
+        <p>Đảm bảo cho Fecon và/hoặc các công ty thành viên của Fecon không bị ảnh hưởng, không phải chịu bất kỳ trách nhiệm pháp lý nào liên quan đến việc sử dụng các trao đổi, thông tin, hình ảnh, tài liệu mà bạn cung cấp. </p>
+        <p>Không xâm phạm các quyền của FECON và/hoặc các công ty thành viên của FECON, bao gồm bất kỳ quyền sở hữu trí tuệ và gây nhầm lẫn cho các quyền đó; </p>
+        <p>Không được truy cập hệ thống FECON EBIDDING, mở tài khoản hoặc bằng cách khác truy cập tài khoản người dùng của mình thông qua phần mềm giả lập, thiết bị giả lập, phần mềm tự động hoặc bất kỳ phần mềm, thiết bị hoặc phần cứng nào có chức năng tương tự. </p>
+        <p>Không thực hiện bất kỳ hành động hoặc hành vi nào có thể trực tiếp hoặc gián tiếp phá hủy, vô hiệu hóa, làm quá tải, hoặc làm suy yếu Dịch Vụ hoặc máy chủ hoặc hệ thống liên kết với Dịch Vụ.</p>
+        <p>Không tải lên, gửi thư điện tử, đăng, chuyển tải hoặc bằng cách khác công khai bất cứ tài liệu chứa các loại vi-rút, worm, trojan hoặc bất kỳ các mã, tập tin hoặc chương trình máy tính được thiết kế để trực tiếp hoặc gián tiếp gây cản trở, điều khiển, gián đoạn, phá hỏng hoặc hạn chế các chức năng hoặc tổng thể của bất kỳ phần mềm hoặc phần cứng hoặc dữ liệu hoặc thiết bị viễn thông của máy tính; </p>
+        <p>Không sử dụng Dịch Vụ để xâm hại tới quyền riêng tư của người khác hoặc để “lén theo dõi” hoặc bằng cách khác quấy rối người khác; </p>
+        <p>Không sử dụng hoặc liệt kê các hàng hóa, dịch vụ xâm phạm quyền tác giả, nhãn hiệu hoặc các quyền sở hữu trí tuệ khác của các bên thứ ba hoặc sử dụng Dịch Vụ theo các cách thức có thể xâm phạm đến quyền sở hữu trí tuệ của các bên khác. </p>
+        <p>Đồng ý/Chấp nhận với mọi thay đổi, sửa đổi có liên quan đến Website hoặc việc tạm hoãn, ngừng hoạt động Website mà Chúng tôi thực hiện.</p>
+    </p>
+
+    <p>
+        <p><b>Điều 6. Cam kết của chúng tôi </b></p>
+        <p>Bảo mật thông tin mà bạn cung cấp một cách an toàn nhất, đảm bảo đúng Chính sách bảo mật thông tin của Website; </p>
+        <p>Thực hiện nghiêm chỉnh các chính sách, quy định pháp luật. </p>
+        <p>Trong trường hợp bạn có bất cứ thắc mắc hay quan ngại nào, hoặc gặp các vấn đề/khó khăn khi truy cập và sử dụng Website, hãy liên hệ với chúng tôi thông qua những hình thức sau đây: </p>
+        <p>- Số điện thoại: +84 24 62690481 </p>
+        <p>- Mail: support.ebidding@fecon.com.vn </p>
+        <p>Chúng tôi cam kết sẽ hỗ trợ, giải đáp, giải quyết các vấn đề mà bạn đề nghị/gặp phải sớm nhất trong khả năng của mình. </p>
+    </p>
+
+    <p>
+        <p><b>Điều 7. Vi phạm Điều khoản và điều kiện sử dụng </b></p>
+        <p>Trong trường hợp, bạn hoặc công ty mà bạn thay mặt vi phạm bất cứ nội dung nào tại Bản điều khoản và điều kiện sử dụng này, chúng tôi có quyền chấm dứt/hủy bỏ tài khoản của bạn và xóa mọi thông tin được lưu trữ cùng với tài khoản, đồng thời bạn và công ty bạn thay mặt liên đới chịu trách nhiệm bồi thường tất cả những thiệt hại do hành vi vi phạm gây ra cho Chúng tôi hoặc bên thứ ba. </p>
+    </p>
+
+    <p>
+        <p><b>Điều 8. Từ chối bảo đảm </b></p>
+        <p>Chúng tôi không chịu trách nhiệm hay bảo đảm, một cách rõ ràng hay ngụ ý, bao gồm sự bảo đảm về tính chính xác, mức độ tin cậy, hoàn thiện, phù hợp cho mục đích cụ thể, sự không xâm phạm quyền của bên thứ 3 và/hoặc tính an toàn của nội dụng Website này, và những tuyên bố, đảm bảo có liên quan. </p>
+        <p>Chúng tôi không chịu trách nhiệm cho bất kỳ sự thiệt hại hay mất mát phát sinh từ việc truy cập và sử dụng Website hay việc không thể sử dụng Website. </p>
+        <p>Chúng tôi không chịu trách nhiệm trong trường hợp các thông tin, hình ảnh, file, tài liệu mà bạn cung cấp, tải lên Website hoặc gửi cho chúng tôi bị mất mát. </p>
+        <p>Chúng tôi có thể thay đổi và/hoặc thay thế nội dung của Website này, hoặc tạm hoãn hoặc ngừng hoạt động Website này vào bất kỳ thời điểm nào mà không cần thông báo trước. Chúng tôi sẽ không chịu trách nhiệm cho bất cứ thiệt hại nào phát sinh do sự thay đổi hoặc thay thế nội dung của website. Trong trường hợp ngừng hoạt động Website, chúng tôi có quyền xóa toàn bộ thông tin đang lưu trữ trên Website bao gồm nhưng không giới hạn: Tài khoản của bạn, Các thông tin mà bạn cung cấp, các thông tin mà chúng tôi cung cấp trong quá trình sử dụng Website,… </p>
+    </p>
+
+    <p>
+        <p><b>Điều 9. Thay đổi Điều khoản và điều kiện sử dụng </b></p>
+        <p>Điều khoản và điều kiện sử dụng có thể thay đổi theo thời gian. Chúng tôi bảo lưu quyền thay đổi hoặc sửa đổi bất kỳ điều khoản và điều kiện cũng như các quy định khác, bất cứ lúc nào và theo ý mình. Việc tiếp tục sử dụng Website này sau khi đăng các thay đổi tức là bạn đã chấp nhận các thay đổi đó. </p>
+    </p>
+</div>

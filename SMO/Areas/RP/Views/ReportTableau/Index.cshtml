@@ -1,0 +1,37 @@
+﻿@model SMO.Service.MD.ConfigTableauService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+}
+
+<div id='@Model.ViewId' class="container-fluid child-content">
+    <div class="card border-grey">
+        @foreach (var group in Model.ObjList.Where(x => x.IS_GROUP).OrderBy(x => x.C_ORDER))
+        {
+            <div class="body" style="padding-top: 0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a style="padding-left:0px" class="text-uppercase"><i class="material-icons col-fecon">clear_all</i> @group.NAME</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" style="padding: 20px;">
+                    <div class="row">
+                        @foreach (var view in Model.ObjList.Where(x => x.PARENT_ID == group.PKID).OrderBy(x => x.C_ORDER))
+                        {
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                            <div class="border-grey">
+                                <a href="#" onclick="@($"Forms.LoadAjax('{Url.Action("ViewTableau", new { @id = view.PKID})}');")" 
+                                   style="height: 200px; display: block; background-size: cover; background-image: url(/PreviewViewTableau/@view.PATH_IMAGE_PREVIEW)">
+                                </a>
+                            </div>
+
+                            <div class="align-center m-t-10" style="width: 100%;">@view.NAME</div>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

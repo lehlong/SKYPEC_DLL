@@ -1,0 +1,34 @@
+﻿@model SMO.Service.DynamicSqlService
+@using System.Data
+
+@if(Model.ObjListResult == null)
+{
+    return;
+}
+
+@foreach (DataTable tbl in Model.ObjListResult)
+{
+    <div class="table-responsive font-13" style="margin-bottom: 30px; max-height: 500px; margin-bottom: 30px; background-color: white;">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    @foreach (DataColumn col in tbl.Columns)
+                    {
+                        <th>@col.Caption</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DataRow row in tbl.Rows)
+                {
+                    <tr>
+                        @foreach (var cell in row.ItemArray)
+                        {
+                            <td>@cell.ToString()</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

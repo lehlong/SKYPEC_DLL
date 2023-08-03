@@ -1,0 +1,57 @@
+﻿@model SMO.Service.BP.RevenueCFService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    var viewParentId = ViewBag.ViewId as string;
+    var formParentId = ViewBag.FormId as string;
+}
+
+<div id='@Model.ViewId'>
+    <table class="table font-13 table-nowrap">
+        <thead>
+            <tr>
+                <th class="align-center">Version</th>
+                <th class="align-center">Người dùng</th>
+                <th>Hành động</th>
+                <th class="align-center"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjListHistory.OrderByDescending(x => x.ACTION_DATE))
+            {
+            <tr>
+                <td class="align-center">
+                    <b class="col-deep-orange font-14">@item.VERSION</b>
+                </td>
+                <td class="align-center">
+                    @item.ACTION_USER
+                    <div>@item.ActionUser.FULL_NAME</div>
+                </td>
+                <td class="align-center">
+                    @Approve_Action.GetStatusText(item.ACTION)
+                    <div>@item.ACTION_DATE.ToString(Global.DateTimeToStringFormat)</div>
+                </td>
+                <td class="align-center">
+                    @Html.MyButton("cmdBack", "", $"ViewData({item.VERSION}, '{item.ORG_CODE}', {item.TIME_YEAR});", "Alt+N", "search")
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <script>
+        function ViewData(version, orgCode, year) {
+            $("#@viewParentId #ORG_CODE").val(orgCode);
+            $('#@viewParentId #ORG_CODE').selectpicker('refresh');
+
+            $("#@viewParentId #YEAR").val(year);
+            $('#@viewParentId #YEAR').selectpicker('refresh');
+
+            $("#@viewParentId #VERSION").val(version);
+            $('#@viewParentId #VERSION').selectpicker('refresh');
+
+            Forms.SubmitForm('@formParentId');
+            GetInformationActiveTab();
+            RefreshHeaderBtns();
+        }
+    </script>
+</div>

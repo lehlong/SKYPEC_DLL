@@ -1,0 +1,194 @@
+﻿@model IDictionary<string, IList<T_MD_REVENUE_PL_ELEMENT>>
+@using SMO.Core.Entities.MD;
+@using System.Text;
+@using Newtonsoft.Json;
+@{
+    Layout = null;
+    var dataRevenueSource = Model["source"];
+    var dataRevenueCompare = Model["compare"];
+    //var detailRevenueElementsSource = ViewBag.detailRevenueElementsSource as IList<T_MD_TEMPLATE_DETAIL_REVENUE>;
+    //var detailRevenueElementsCompare = ViewBag.detailRevenueElementsCompare as IList<T_MD_TEMPLATE_DETAIL_REVENUE>;
+    var detailRevenueElements = ViewBag.detailRevenueElements as IList<T_MD_TEMPLATE_DETAIL_REVENUE_PL>;
+    var different = ViewBag.different as IDictionary<string, DiffType>;
+}
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ViewTemplateDiffRevenue</title>
+
+    <link href="~/Properties/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="table-responsive">
+                    <table class="table table-condensed table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn vị</th>
+                                <th>Tên đơn vị</th>
+                                <th>Mã khoản mục</th>
+                                <th>Tên khoản mục</th>
+                                <th>Tháng 1</th>
+                                <th>Tháng 2</th>
+                                <th>Tháng 3</th>
+                                <th>Tháng 4</th>
+                                <th>Tháng 5</th>
+                                <th>Tháng 6</th>
+                                <th>Tháng 7</th>
+                                <th>Tháng 8</th>
+                                <th>Tháng 9</th>
+                                <th>Tháng 10</th>
+                                <th>Tháng 11</th>
+                                <th>Tháng 12</th>
+                                <th>Tổng năm</th>
+                                <th>Trung bình tháng</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var detail in detailRevenueElements.GroupBy(x => x.CENTER_CODE).Select(x => x.First()))
+                            {
+                                foreach (var item in dataRevenueSource
+                                    .Where(x => x.CENTER_CODE == detail.CENTER_CODE)
+                                    .OrderBy(x => x.C_ORDER)
+                                    .GroupBy(x => x.CODE)
+                                    .Select(x => x.First()))
+                                {
+                                    var space = new StringBuilder();
+                                    for (int i = 0; i < item.LEVEL; i++)
+                                    {
+                                        space.Append("\t");
+                                    }
+                            <tr>
+                                <td>@(detail.CENTER_CODE)</td>
+                                <td>@(detail.ProfitCenter.NAME)</td>
+                                <td>@item.CODE</td>
+                                <td class="pre-whitespace">@($"{space.ToString()}{item.NAME}")</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_0")">@item.Values[0]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_1")">@item.Values[1]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_2")">@item.Values[2]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_3")">@item.Values[3]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_4")">@item.Values[4]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_5")">@item.Values[5]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_6")">@item.Values[6]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_7")">@item.Values[7]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_8")">@item.Values[8]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_9")">@item.Values[9]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_10")">@item.Values[10]</td>
+                                <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_11")">@item.Values[11]</td>
+                                <td>@item.Values.Sum()</td>
+                                <td>@(item.Values.Sum() / 12)</td>
+                                <td></td>
+                            </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="table-responsive">
+                    <table class="table table-condensed table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn vị</th>
+                                <th>Tên đơn vị</th>
+                                <th>Mã khoản mục</th>
+                                <th>Tên khoản mục</th>
+                                <th>Tháng 1</th>
+                                <th>Tháng 2</th>
+                                <th>Tháng 3</th>
+                                <th>Tháng 4</th>
+                                <th>Tháng 5</th>
+                                <th>Tháng 6</th>
+                                <th>Tháng 7</th>
+                                <th>Tháng 8</th>
+                                <th>Tháng 9</th>
+                                <th>Tháng 10</th>
+                                <th>Tháng 11</th>
+                                <th>Tháng 12</th>
+                                <th>Tổng năm</th>
+                                <th>Trung bình tháng</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var detail in detailRevenueElements.GroupBy(x => x.CENTER_CODE).Select(x => x.First()))
+                            {
+                                foreach (var item in dataRevenueCompare
+                                    .Where(x => x.CENTER_CODE == detail.CENTER_CODE)
+                                    .OrderBy(x => x.C_ORDER)
+                                    .GroupBy(x => x.CODE)
+                                    .Select(x => x.First()))
+                                {
+                                    var space = new StringBuilder();
+                                    for (int i = 0; i < item.LEVEL; i++)
+                                    {
+                                        space.Append("\t");
+                                    }
+                                    <tr>
+                                        <td>@(detail.CENTER_CODE)</td>
+                                        <td>@(detail.ProfitCenter.NAME)</td>
+                                        <td>@item.CODE</td>
+                                        <td class="pre-whitespace">@($"{space.ToString()}{item.NAME}")</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_0")">@item.Values[0]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_1")">@item.Values[1]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_2")">@item.Values[2]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_3")">@item.Values[3]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_4")">@item.Values[4]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_5")">@item.Values[5]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_6")">@item.Values[6]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_7")">@item.Values[7]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_8")">@item.Values[8]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_9")">@item.Values[9]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_10")">@item.Values[10]</td>
+                                        <td class="@($"{item.CENTER_CODE}_{item.CODE}_Values_11")">@item.Values[11]</td>
+                                        <td>@item.Values.Sum()</td>
+                                        <td>@(item.Values.Sum() / 12)</td>
+                                        <td></td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script src="~/Scripts/jquery-1.10.2.js?v=1.1"></script>
+
+<script>
+    $(function () {
+        var lstDiff = JSON.parse('@Html.Raw(JsonConvert.SerializeObject(different))');
+        $.each(lstDiff, function (index, value) {
+            if (value === @((int)DiffType.MODIFIED)) {
+                $(`.${index}`).addClass("border border-warning");
+            } else if (value === @((int)DiffType.ADD)) {
+                $(`.${index}`).addClass("border border-success");
+            } else {
+                $(`.${index}`).addClass("border border-danger");
+            }
+        });
+
+        $.each($('td.border'), function (index, value) {
+            if (!$(value).parent('tr').hasClass("bg-change")) {
+                $(value).parent('tr').addClass("bg-change");
+            }
+        });
+    });
+</script>

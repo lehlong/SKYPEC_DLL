@@ -1,0 +1,446 @@
+﻿@model SMO.Service.CF.ConfigTemplateNotifyService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+}
+
+<div id='@Model.ViewId' class="container-fluid child-content">
+    <div class="card border-grey m-b-20">
+        <div class="body">
+            @Html.MyButton("cmdSave", "Cập nhật thông tin", "Submit()", "", "done_all")
+        </div>
+    </div>
+
+    @using (Ajax.BeginForm("Update", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.ObjDetail.PKID)
+        <div class="card border-grey">
+            <div class="body" style="padding-top: 0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation"  class="active">
+                        <a href="#tabTemplateInvite" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> T.B M.THẦU (NHÀ THẦU)</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tabTemplateInviteCouncil" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> T.B M.THẦU (HỘI ĐỒNG)</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tabTemplateScore" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> T.B CHẤM THẦU</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tabTemplateWin" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> T.B TRÚNG THẦU</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tabTemplateFail" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> T.B TRƯỢT THẦU</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tabTemplateInfo" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> CẬP NHẬT T.TIN THẦU</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="tabTemplateInvite">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Mã gói thầu">{MA_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng việt">{TEN_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng anh">{TEN_GOI_THAU_EN}</span>
+                            <span class="badge bg-blue" title="Tên ngắn nhà thầu">{TEN_NHA_THAU_NGAN}</span>
+                            <span class="badge bg-blue" title="Tên dài nhà thầu">{TEN_NHA_THAU_DAI}</span>
+                            <span class="badge bg-blue" title="Ngày mở thầu">{NGAY_MO_THAU}</span>
+                            <span class="badge bg-blue" title="Ngày đóng thầu">{NGAY_DONG_THAU}</span>
+                            <span class="badge bg-blue" title="Link chi tiết">{LINK_CHI_TIET}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.INVITE_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.INVITE_BODY, new { @id = "txtInviteBody" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tabTemplateInviteCouncil">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Mã gói thầu">{MA_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng việt">{TEN_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng anh">{TEN_GOI_THAU_EN}</span>
+                            <span class="badge bg-blue" title="User name của người được mời">{USER_NAME}</span>
+                            <span class="badge bg-blue" title="Họ tên của người được mời">{HO_TEN}</span>
+                            <span class="badge bg-blue" title="Ngày mở thầu">{NGAY_MO_THAU}</span>
+                            <span class="badge bg-blue" title="Ngày đóng thầu">{NGAY_DONG_THAU}</span>
+                            <span class="badge bg-blue" title="Link chi tiết">{LINK_CHI_TIET}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.INVITE_COUNCIL_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.INVITE_COUNCIL_BODY, new { @id = "txtInviteCouncilBody" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tabTemplateScore">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Mã gói thầu">{MA_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng việt">{TEN_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng anh">{TEN_GOI_THAU_EN}</span>
+                            <span class="badge bg-blue" title="User name của người được mời">{USER_NAME}</span>
+                            <span class="badge bg-blue" title="Họ tên của người được mời">{HO_TEN}</span>
+                            <span class="badge bg-blue" title="Ngày mở thầu">{NGAY_MO_THAU}</span>
+                            <span class="badge bg-blue" title="Ngày đóng thầu">{NGAY_DONG_THAU}</span>
+                            <span class="badge bg-blue" title="Ngày kết thúc chấm thầu">{NGAY_KET_THUC_CHAM_THAU}</span>
+                            <span class="badge bg-blue" title="Link chi tiết">{LINK_CHI_TIET}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.SCORE_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.SCORE_BODY, new { @id = "txtScoreCouncilBody" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tabTemplateWin">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Mã gói thầu">{MA_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng việt">{TEN_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng anh">{TEN_GOI_THAU_EN}</span>
+                            <span class="badge bg-blue" title="Tên ngắn nhà thầu">{TEN_NHA_THAU_NGAN}</span>
+                            <span class="badge bg-blue" title="Tên dài nhà thầu">{TEN_NHA_THAU_DAI}</span>
+                            <span class="badge bg-blue" title="Ngày mở thầu">{NGAY_MO_THAU}</span>
+                            <span class="badge bg-blue" title="Ngày đóng thầu">{NGAY_DONG_THAU}</span>
+                            <span class="badge bg-blue" title="Link chi tiết">{LINK_CHI_TIET}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.WIN_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.WIN_BODY, new { @id = "txtWinBody" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tabTemplateFail">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Mã gói thầu">{MA_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng việt">{TEN_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng anh">{TEN_GOI_THAU_EN}</span>
+                            <span class="badge bg-blue" title="Tên ngắn nhà thầu">{TEN_NHA_THAU_NGAN}</span>
+                            <span class="badge bg-blue" title="Tên dài nhà thầu">{TEN_NHA_THAU_DAI}</span>
+                            <span class="badge bg-blue" title="Ngày mở thầu">{NGAY_MO_THAU}</span>
+                            <span class="badge bg-blue" title="Ngày đóng thầu">{NGAY_DONG_THAU}</span>
+                            <span class="badge bg-blue" title="Link chi tiết">{LINK_CHI_TIET}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.FAIL_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.FAIL_BODY, new { @id = "txtFailBody" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tabTemplateInfo">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Mã gói thầu">{MA_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng việt">{TEN_GOI_THAU}</span>
+                            <span class="badge bg-blue" title="Tên gói thầu tiếng anh">{TEN_GOI_THAU_EN}</span>
+                            <span class="badge bg-blue" title="Link chi tiết">{LINK_CHI_TIET}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.UPDATE_INFO_BID_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.UPDATE_INFO_BID_BODY, new { @id = "txtInfoBody" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-grey m-t-20">
+            <div class="body" style="padding-top: 0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a style="padding-left:0px" href="#tabTemplateCongViecXuLy" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> CÔNG VIỆC CẦN XỬ LÝ</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tabTemplateCongViecHoanThanh" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> HOÀN THÀNH CÔNG VIỆC</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="tabTemplateCongViecXuLy">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Loại công việc">{LOAI_CONG_VIEC}</span>
+                            <span class="badge bg-blue" title="Mã">{MA}</span>
+                            <span class="badge bg-blue" title="Tên PR">{TEN}</span>
+                            <span class="badge bg-blue" title="Trạng thái">{TRANG_THAI}</span>
+                            <span class="badge bg-blue" title="Đơn vị phòng ban">{DON_VI_PHONG_BAN}</span>
+                            <span class="badge bg-blue" title="Đường dẫn chi tiết">{LINK_CHI_TIET}</span>
+                            <span class="badge bg-blue" title="User name của người đề xuất">{USER_NAME_NGUOI_DE_XUAT}</span>
+                            <span class="badge bg-blue" title="User name của người phê duyệt">{USER_NAME_NGUOI_PHE_DUYET}</span>
+                            <span class="badge bg-blue" title="Họ tên người đề xuất">{HO_TEN_NGUOI_DE_XUAT}</span>
+                            <span class="badge bg-blue" title="Họ tên người phê duyệt">{HO_TEN_NGUOI_PHE_DUYET}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.CONG_VIEC_XU_LY_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.CONG_VIEC_XU_LY_BODY, new { @id = "txtCongViecXuLyBody" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tabTemplateCongViecHoanThanh">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Loại công việc">{LOAI_CONG_VIEC}</span>
+                            <span class="badge bg-blue" title="Mã">{MA}</span>
+                            <span class="badge bg-blue" title="Tên PR">{TEN}</span>
+                            <span class="badge bg-blue" title="Trạng thái">{TRANG_THAI}</span>
+                            <span class="badge bg-blue" title="Đơn vị phòng ban">{DON_VI_PHONG_BAN}</span>
+                            <span class="badge bg-blue" title="Đường dẫn chi tiết">{LINK_CHI_TIET}</span>
+                            <span class="badge bg-blue" title="User name của người đề xuất">{USER_NAME_NGUOI_DE_XUAT}</span>
+                            <span class="badge bg-blue" title="User name của người phê duyệt">{USER_NAME_NGUOI_PHE_DUYET}</span>
+                            <span class="badge bg-blue" title="Họ tên người đề xuất">{HO_TEN_NGUOI_DE_XUAT}</span>
+                            <span class="badge bg-blue" title="Họ tên người phê duyệt">{HO_TEN_NGUOI_PHE_DUYET}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.CONG_VIEC_HOAN_THANH_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.CONG_VIEC_HOAN_THANH_BODY, new { @id = "txtCongViecHoanThanhBody" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-grey m-t-20">
+            <div class="body" style="padding-top: 0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#tabTemplateAccount" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> TB.TẠO TÀI KHOẢN</a>
+                    </li>
+                    <li role="presentation">
+                        <a style="padding-left:0px" href="#tabTemplateRequestAccount" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> TB.XỬ LÝ YÊU CẦU TẠO TÀI KHOẢN</a>
+                    </li>
+                    <li role="presentation">
+                        <a style="padding-left:0px" href="#tabTemplateFeedBack" data-toggle="tab"><i class="material-icons col-fecon">clear_all</i> TRẢ LỜI FEEDBACK</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="tabTemplateAccount">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Tên đăng nhập">{USER_NAME}</span>
+                            <span class="badge bg-blue" title="Mật khẩu đăng nhập">{PASSWORD}</span>
+                            <span class="badge bg-blue" title="Tên nhà thầu dài">{TEN_NHA_THAU_DAI}</span>
+                            <span class="badge bg-blue" title="Tên nhà thầu ngắn">{TEN_NHA_THAU_NGAN}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.ACCOUNT_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.ACCOUNT_BODY, new { @id = "txtAccountBody" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tabTemplateRequestAccount">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Tên đăng nhập">{USER_NAME}</span>
+                            <span class="badge bg-blue" title="Mật khẩu đăng nhập">{PASSWORD}</span>
+                            <span class="badge bg-blue" title="Tên nhà thầu dài">{TEN_NHA_THAU_DAI}</span>
+                            <span class="badge bg-blue" title="Tên nhà thầu ngắn">{TEN_NHA_THAU_NGAN}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.REQUEST_ACCOUNT_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.REQUEST_ACCOUNT_BODY, new { @id = "txtRequestAccountBody" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tabTemplateFeedBack">
+                        <div class="form-group">
+                            <b>Các tham số được sử dụng trong nội dung email bao gồm :</b><br />
+                            <span class="badge bg-blue" title="Tiêu đề của câu hỏi">{TIEU_DE_CAU_HOI}</span>
+                            <span class="badge bg-blue" title="Nội dung câu hỏi">{NOI_DUNG_CAU_HOI}</span>
+                            <span class="badge bg-blue" title="Nội dung câu trả lời">{NOI_DUNG_CAU_TRA_LOI}</span>
+                            <span class="badge bg-blue" title="Ngày khách hàng hỏi">{NGAY_HOI}</span>
+                            <span class="badge bg-blue" title="Ngày khách hàng hỏi">{NGUOI_HOI}</span>
+                        </div>
+
+                        <b>Tiêu đề email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.FEED_BACK_SUBJECT)
+                            </div>
+                        </div>
+
+                        <b>Nội dung Email</b>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.MyTextAreaFor(m => m.ObjDetail.FEED_BACK_BODY, new { @id = "txtFeedBackBody" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <script type="text/javascript">
+        function Submit() {
+            $("#txtAccountBody").val(CKEDITOR.instances.txtAccountBody.getData());
+            $("#txtInviteBody").val(CKEDITOR.instances.txtInviteBody.getData());
+            $("#txtInviteCouncilBody").val(CKEDITOR.instances.txtInviteCouncilBody.getData());
+            $("#txtWinBody").val(CKEDITOR.instances.txtWinBody.getData());
+
+            $("#txtCongViecXuLyBody").val(CKEDITOR.instances.txtCongViecXuLyBody.getData());
+            $("#txtCongViecHoanThanhBody").val(CKEDITOR.instances.txtCongViecHoanThanhBody.getData());
+
+            $("#txtScoreCouncilBody").val(CKEDITOR.instances.txtScoreCouncilBody.getData());
+            $("#txtFailBody").val(CKEDITOR.instances.txtFailBody.getData());
+            $("#txtRequestAccountBody").val(CKEDITOR.instances.txtRequestAccountBody.getData());
+
+            $("#txtFeedBackBody").val(CKEDITOR.instances.txtFeedBackBody.getData());
+            $("#txtInfoBody").val(CKEDITOR.instances.txtInfoBody.getData());
+            Forms.SubmitForm('@Model.FormId');
+        }
+
+        $(function () {
+            CKEDITOR.replace('txtAccountBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtInviteBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtInviteCouncilBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtWinBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtCongViecXuLyBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtCongViecHoanThanhBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtScoreCouncilBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtFailBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtRequestAccountBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtFeedBackBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtInfoBody', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            Forms.CompleteUI();
+        });
+    </script>
+</div>
+
+
+

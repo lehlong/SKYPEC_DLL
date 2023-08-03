@@ -1,0 +1,103 @@
+﻿@model SMO.Core.Entities.BP.T_BP_BASE
+@using SMO.Core.Entities;
+@{
+    var number = ViewBag.number as int?;
+    var periodTime = ViewBag.periodTime as T_MD_PERIOD_TIME;
+    var canDelete = ViewBag.canDelete as bool?;
+}
+<div class="m-b-5">
+    @if (SMOUtilities.CheckRight("R301"))
+    {
+        <button type="button" class="btn btn-default waves-effect col-deep-orange"
+                onclick="@($"Forms.LoadAjax('{Url.Action("ExportData", new { templateCode = Model.TEMPLATE_CODE, year = Model.TIME_YEAR, version = Model.VERSION })}');")">
+            Xem dữ liệu
+        </button>
+    }
+    <div class="btn-group" role="group" style="box-shadow: none;">
+        <button type="button" class="btn btn-default waves-effect" onclick="$('#divFunction_@number').toggle();">
+            <span class="caret"></span>
+        </button>
+    </div>
+</div>
+@if (!string.IsNullOrEmpty(Model.TEMPLATE_CODE) && !Model.Template.ACTIVE)
+{
+    return;
+}
+<div class="div-function" id="divFunction_@number" style="display: none;">
+    <div class="m-b-5">
+        <button type="button" class="btn btn-default waves-effect col-deep-orange" onclick="@($"Forms.LoadAjax('{Url.Action("StepperBudget", new { year = Model.TIME_YEAR, centerCode = Model.ORG_CODE, templateCode = Model.TEMPLATE_CODE })}');")">
+            Quá trình PD
+        </button>
+    </div>
+    @if (ProfileUtilities.User.ORGANIZE_CODE == Model.ORG_CODE && !periodTime.IS_CLOSE)
+    {
+
+        if (Model.STATUS == Approve_Status.ChuaTrinhDuyet || Model.STATUS == Approve_Status.TuChoi)
+        {
+            if (SMOUtilities.CheckRight("R303"))
+            {
+                if (!Model.IS_DELETED)
+                {
+                    <div class="m-b-5">
+                        <button type="button" class="btn btn-default waves-effect col-deep-orange" onclick="@($"TrinhDuyet('{Model.PKID}');")">
+                            Trình duyệt
+                        </button>
+                    </div>
+                }
+                if (canDelete.HasValue && canDelete.Value)
+                {
+                    <div class="m-b-5">
+                        <button type="button" class="btn btn-default waves-effect col-deep-orange" onclick="@($"HuyNop('{Model.PKID}');")">
+                            Hủy nộp
+                        </button>
+                    </div>
+                }
+                else if (!Model.IS_DELETED)
+                {
+                    <div class="m-b-5">
+                        <button type="button" class="btn btn-default waves-effect col-deep-orange disabled" title="Mẫu không ở trạng thái chưa trình duyệt thì không thể hủy nộp" onclick="return false;">
+                            Hủy nộp
+                        </button>
+                    </div>
+                }
+            }
+        }
+
+        if (Model.STATUS == Approve_Status.ChoPheDuyet)
+        {
+            if (SMOUtilities.CheckRight("R304"))
+            {
+                <div class="m-b-5">
+                    <button type="button" class="btn btn-default waves-effect col-deep-orange" onclick="@($"HuyTrinhDuyet('{Model.PKID}');")">
+                        Hủy trình duyệt
+                    </button>
+                </div>
+            }
+            if (SMOUtilities.CheckRight("R305"))
+            {
+                <div class="m-b-5">
+                    <button type="button" class="btn btn-default waves-effect col-deep-orange" onclick="@($"PheDuyet('{Model.PKID}');")">
+                        Phê duyệt
+                    </button>
+                </div>
+            }
+            if (SMOUtilities.CheckRight("R307"))
+            {
+                <div class="m-b-5">
+                    <button type="button" class="btn btn-default waves-effect col-deep-orange" onclick="@($"TuChoi('{Model.PKID}');")">
+                        Từ chối
+                    </button>
+                </div>
+            }
+        }
+        if (Model.STATUS == Approve_Status.DaPheDuyet)
+        {
+            <div class="m-b-5">
+                <button type="button" class="btn btn-default waves-effect col-deep-orange" onclick="@($"HuyPheDuyet('{Model.PKID}');")">
+                    Hủy phê duyệt
+                </button>
+            </div>
+        }
+
+    }
+</div>

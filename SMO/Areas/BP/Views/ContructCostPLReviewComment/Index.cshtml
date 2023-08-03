@@ -1,0 +1,51 @@
+﻿@model SMO.Service.BP.COST_PL.ContructCostPLReviewCommentService
+
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+    var lang = "vi";
+    if (ProfileUtilities.User != null)
+    {
+        lang = ProfileUtilities.User.LANGUAGE;
+    }
+}
+
+<div id='@Model.ViewId' style="padding: 0 10px;">
+        @using (Ajax.BeginForm("CommentDataCenter", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.ObjDetail.PKID)
+            @Html.HiddenFor(m => m.ObjDetail.ORG_CODE)
+            @Html.HiddenFor(m => m.ObjDetail.COST_PL_ELEMENT_CODE)
+            @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR)
+            @Html.HiddenFor(m => m.ObjDetail.DATA_VERSION)
+            @Html.HiddenFor(m => m.ObjDetail.ON_ORG_CODE)
+
+            <div class="input-group" style="margin-bottom:0px;">
+                <div class="form-line">
+                    @Html.MyTextBoxFor(m => m.ObjDetail.CONTENT, new { @id = "txtContent", @placeholder = "Type a comment", rows = "1", @style = "padding: 0 10px;" })
+                </div>
+                <span class="input-group-addon">
+                    <i class="material-icons" style="font-size: 35px; cursor: pointer;" onclick="@string.Format("Forms.SubmitForm('{0}');", @Model.FormId)">send</i>
+                </span>
+            </div>
+        }
+
+        @using (Ajax.BeginForm("List", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.ObjDetail.PKID, @class = "frmListComment" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.ObjDetail.PKID)
+            @Html.HiddenFor(m => m.ObjDetail.ORG_CODE)
+            @Html.HiddenFor(m => m.ObjDetail.COST_PL_ELEMENT_CODE)
+            @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR)
+            @Html.HiddenFor(m => m.ObjDetail.ON_ORG_CODE)
+            <div id="divResult">
+
+            </div>
+        }
+    <script type="text/javascript">
+        $(function () {
+            $("#@Model.ViewId .frmListComment").submit();
+        });
+    </script>
+</div>

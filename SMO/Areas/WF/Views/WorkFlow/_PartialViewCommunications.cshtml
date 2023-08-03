@@ -1,0 +1,65 @@
+﻿@model IEnumerable<SMO.Core.Entities.WF.T_WF_ACTIVITY_COM>
+@{
+    var number = 1;
+}
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="align-center" style="width: 20px;">
+                    <input type="checkbox" id="chkAll" onclick="Forms.CheckAll();" style="margin:0;" class="filled-in" />
+                    <label for="chkAll"></label>
+                </th>
+                <th style="max-width: 100px;">Loại</th>
+                <th style="max-width: 200px;">Tiêu đề</th>
+                <th>Nội dung</th>
+                <th class="align-center" style="width: 100px;">Kích hoạt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var chkActive = "chkActive" + number.ToString();
+                var chkInActive = "chkInActive" + number.ToString();
+                var toggleAction = string.Format("Forms.ToggleActive('{0}',{1}, this);", Url.Action("ToggleActiveCom"), "{ id : '" + item.PKID + "' }");
+                <tr>
+                    <td class="align-center">
+                        <input type="checkbox" class="filled-in chkItem" name="chkItem" id="@(" chkItem" + item.PKID)" modelId="@item.PKID" style="margin:0;" />
+                        <label for="@(" chkItem" + item.PKID)"></label>
+                    </td>
+                    <td style="cursor: pointer;">
+                        <span style="display: none">@item.TYPE_NOTIFY</span>
+                        <a onclick="DetailItem('@item.PKID', $(this).closest('tr'))">
+                            @if (item.TYPE_NOTIFY == "NOTIFY")
+                            {
+                                <text>Thông báo</text>
+                            }
+                            else if (item.TYPE_NOTIFY == "SMS")
+                            {
+                                <text>Sms</text>
+                            }
+                            else if(item.TYPE_NOTIFY == "EMAIL")
+                            {
+                                <text>Email</text>
+                            }
+                        </a>
+                    </td>
+                    <td>@item.SUBJECT</td>
+                    <td>@Html.Raw(item.CONTENTS)</td>
+                    <td class="align-center">
+                        @if (item.ACTIVE)
+                        {
+                            <input onclick="@toggleAction" id="@chkActive" type="checkbox" class="filled-in chk-col-light-blue" checked="checked" />
+                            <label for="@chkActive"></label>
+                        }
+                        else
+                        {
+                            <input onclick="@toggleAction" id="@chkInActive" type="checkbox" class="filled-in chk-col-light-blue" />
+                            <label for="@chkInActive"></label>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

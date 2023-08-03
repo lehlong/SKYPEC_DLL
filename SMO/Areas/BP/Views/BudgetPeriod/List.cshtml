@@ -1,0 +1,50 @@
+﻿@model SMO.Service.BP.BudgetPeriodService
+@{
+    Model.ObjList = Model.ObjList.OrderBy(x => x.Period.ORDER).ToList();
+}
+    <div class="card border-grey p-b-30">
+        <div class="body" style="padding-top: 0px;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a style="padding-left:0px"><i class="material-icons col-fecon">clear_all</i>DANH SÁCH CÁC GIAI ĐOẠN NĂM @Model.ObjDetail.TIME_YEAR</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="timeline timeline-6">
+                    @for (int i = 0; i < Model.ObjList.Count; i++)
+                    {
+                        var item = Model.ObjList[i];
+                        var classTextMuted = !item.STATUS ? "text-muted" : string.Empty;
+                        var strTime = string.Empty;
+                        if (item.AUTO_NEXT_PERIOD)
+                        {
+                            if (item.TIME_NEXT_PERIOD.HasValue)
+                            {
+                                strTime = item.TIME_NEXT_PERIOD.Value.ToString("dd-MMM-yyyy");
+                            } else
+                            {
+                                strTime = "Được thừa kế";
+                            }
+                        }
+                        <!--begin::Item-->
+                        <div class="timeline-item align-items-start">
+                            <!--begin::Label-->
+                            <div class="timeline-label font-weight-bolder cursor-pointer text-dark-50 @classTextMuted">@strTime</div>
+                            <!--end::Label-->
+                            <!--begin::Badge-->
+                            <div class="timeline-badge">
+                                <i class="fa fa-genderless @(item.STATUS ? "text-success": "text-danger") icon-xl"></i>
+                            </div>
+                            <!--end::Badge-->
+                            <!--begin::Text-->
+                            <a class="font-weight-mormal cursor-pointer timeline-content @classTextMuted pl-3"
+                               href="javascript:void(0)"
+                               onclick="editBudgetPeriod('@item.ID', this)">@item.Period.NAME</a>
+                            <!--end::Text-->
+                        </div>
+                        <!--end::Item-->
+                    }
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,41 @@
+﻿@model SMO.Service.BP.BudgetPeriodService
+@using SMO.AppCode.Status;
+<div class="card">
+    <div class="body" style="padding-top: 0px;">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a style="padding-left:0px"><i class="material-icons col-fecon">clear_all</i>LỊCH SỬ THIẾT LẬP</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="table-responsive font-13" style="max-height: 500px">
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Người dùng</th>
+                            <th class="align-center">Thời gian</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.History)
+                        {
+                            <tr>
+                                <td>
+                                    @item.ACTION_USER
+                                    <div>@(item.USER_CREATE?.FULL_NAME)</div>
+                                </td>
+                                <td class="align-center">
+                                    <b>@BudgetPeriodAction.GetBudgetPeriodActionText(item.TYPE)</b>
+                                    <div>@item.ACTION_DATE.ToString(Global.DateTimeToStringFormat)</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>

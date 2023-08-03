@@ -1,0 +1,43 @@
+﻿@model SMO.Service.AD.UserService
+
+    <div class="page-function">
+        <div class="page-function-button m-r-20" style="float:left">
+            @Html.MyButton("cmdCapNhatQuyen", "Cập nhật quyền", "UpdateRightOfUser();", "Alt+S", "done_all")
+            @if (Model.ObjDetail.IS_MODIFY_RIGHT)
+            {
+                @Html.MyButton("cmdResetQuyen", "Lấy lại quyền mặc định", "ResetRightOfUser();", "Alt+S", "refresh")
+            }
+        </div>
+
+        <div class="input-group page-function-search" style="margin-bottom: 7px !important">
+            <select class="form-control selectpicker show-tick" id="ddlUserOrg" onchange="BuildTreeRight();">
+                <option value="@Model.ObjDetail.Organize?.CODE">@(Model.ObjDetail.Organize?.NAME)</option>
+                @foreach (var item in Model.ObjDetail.ListUserOrg)
+                {
+                    <option value="@item.ORG_CODE">@(item.Organize?.NAME)</option>
+                }
+            </select>
+
+            <span class="input-group-addon" onclick="BuildTreeRight();">
+                <i class="material-icons">refresh</i>
+            </span>
+        </div>
+
+        @*<div class="input-group page-function-search" style="margin-bottom: 7px !important">
+            @Html.DropDownList("ddlUs", SelectListUtilities.GetAllRight(), new { @id = "ddlRight", @data_live_search = "true", @class = "form-control selectpicker show-tick", placeholder = "Tìm theo domain", @data_val = false, @OnChange = "SearchRight(this);" })
+
+            <span class="input-group-addon" title="Tìm kiếm" onclick="SearchRight();">
+                <i class="material-icons">search</i>
+            </span>
+        </div>*@
+    </div>
+
+<div id="divTreeUserRight">
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        BuildTreeRight();
+        Forms.CompleteUI();
+    });
+</script>

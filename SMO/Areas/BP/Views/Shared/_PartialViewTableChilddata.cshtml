@@ -1,0 +1,62 @@
+﻿@model SMO.Core.Entities.BP.T_BP_BASE
+@{
+    var number = ViewBag.number as int?;
+}
+<td>
+    <div><b>@Model.ORG_CODE</b></div>
+    <div>@Model.Organize.NAME</div>
+</td>
+<td>
+    @if (Model.IS_SUMUP)
+    {
+        <span>Dữ liệu tổng hợp</span>
+    }
+    else
+    {
+        <div><b>@Model.TEMPLATE_CODE</b></div>
+        <div>@Model.Template.NAME</div>
+        if (!Model.Template.ACTIVE)
+        {
+            <div class="col-red">@Global.DeactiveTemplate</div>
+        }
+    }
+</td>
+<td class="align-center">
+    <b class="col-red font-14">@Model.VERSION</b>
+    <div>@(Model.UPDATE_DATE.HasValue ? Model.UPDATE_DATE?.ToString(Global.DateTimeToStringFormat) : Model.CREATE_DATE.Value.ToString(Global.DateTimeToStringFormat))</div>
+</td>
+<td class="align-center">
+    <span class="badge @Approve_Status.GetStatusColor(Model.STATUS)">@Approve_Status.GetStatusText(Model.STATUS)</span>
+</td>
+<td>
+    <div class="m-b-5">
+        @if (SMOUtilities.CheckRight("R301"))
+        {
+            <button type="button" class="btn btn-default waves-effect col-deep-orange"
+                    onclick="@($"Forms.LoadAjax('{Url.Action("ExportData", new { templateCode = Model.TEMPLATE_CODE, year = Model.TIME_YEAR, version = Model.VERSION, orgCode = Model.ORG_CODE })}');")">
+                Xem dữ liệu
+            </button>
+        }
+        <div class="btn-group" role="group" style="box-shadow: none;">
+            <button type="button" class="btn btn-default waves-effect" onclick="$('#divFunctionChild_@number').toggle();">
+                <span class="caret"></span>
+            </button>
+        </div>
+    </div>
+    <div class="div-function" id="divFunctionChild_@number" style="display: none;">
+        @if (SMOUtilities.CheckRight("R320"))
+        {
+            <div class="m-b-5">
+
+                <button type="button" class="btn btn-default waves-effect col-deep-orange" onclick="YeuCauCapDuoiDieuChinh('@Model.ORG_CODE', '@Model.TEMPLATE_CODE', @Model.TIME_YEAR)">
+                    Yêu cầu điều chỉnh
+                </button>
+            </div>
+        }
+        <div class="m-b-5">
+            <button type="button" class="btn btn-default waves-effect col-deep-orange" onclick="@($"Forms.LoadAjax('{Url.Action("StepperBudget", new { year = Model.TIME_YEAR, centerCode = Model.ORG_CODE, templateCode = Model.TEMPLATE_CODE })}');")">
+                Quá trình PD
+            </button>
+        </div>
+    </div>
+</td>

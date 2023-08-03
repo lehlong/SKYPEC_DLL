@@ -1,0 +1,10 @@
+﻿
+<ul id="treeOrg" class="ztree"></ul>
+
+<script type="text/javascript">
+    var zNodes = jQuery.parseJSON('@Html.Raw(ViewBag.zNode)');
+    $(function () {
+        $.fn.zTree.init($("#treeOrg"), settingOrg, zNodes);
+    });
+</script>
+

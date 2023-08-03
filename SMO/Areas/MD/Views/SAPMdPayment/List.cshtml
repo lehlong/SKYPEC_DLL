@@ -1,0 +1,32 @@
+﻿@model SMO.Service.MD.SAPMdPaymentService
+@{
+    var frmFormCode = "frmProjectIndex";
+    var number = 1;
+}
+@{ Html.RenderPartial("Paging", Model); }
+<div class="table-responsive">
+    <table class="table table-condensed table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Mã</th>
+                <th>Mã cha</th>
+                <th>Tên</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList)
+            {
+                number++;
+                var vdbclickAction = "";
+                <tr>
+                    <td ondblclick="@vdbclickAction">
+                        <a href="#" onclick="@vdbclickAction">@item.CODE</a>
+                    </td>
+                    <td ondblclick="@vdbclickAction">@item.PARENT_CODE</td>
+                    <td ondblclick="@vdbclickAction">@item.NAME</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{ Html.RenderPartial("Paging", Model); }

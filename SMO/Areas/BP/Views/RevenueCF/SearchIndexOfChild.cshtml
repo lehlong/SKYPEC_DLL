@@ -1,0 +1,123 @@
+﻿@model SMO.Service.BP.RevenueCFService
+@{
+    var number = 1;
+    var headerOfParent = ViewBag.HeaderOfParent as SMO.Core.Entities.T_BP_REVENUE_CF;
+    var periodTime = Model.UnitOfWork.Repository<SMO.Repository.Implement.MD.PeriodTimeRepo>().Get(Model.ObjDetail.TIME_YEAR);
+    var isChange = "False";
+}
+@if (SMOUtilities.CheckRight("R308"))
+{
+    <div class="page-function">
+        <div style="">
+            @if (!periodTime.IS_CLOSE
+        && Model.ObjList.Count(x => x.STATUS == Approve_Status.DaPheDuyet) > 0
+        && (headerOfParent == null || headerOfParent.STATUS == Approve_Status.ChuaTrinhDuyet || headerOfParent.STATUS == Approve_Status.TuChoi)
+    )
+            {
+                @Html.MyButton("cmdTongHop", "Tổng hợp dữ liệu", "TongHopDuLieu();", "", "dvr")
+            }
+        </div>
+    </div>
+}
+@if (Model.ObjList.Count() == 0)
+{
+    <div class="align-center border-grey col-indigo font-15" style="padding: 15px;">
+        <b>KẾ HOẠCH NĂM @Model.ObjDetail.TIME_YEAR CÁC CẤP DƯỚI CHƯA KHAI BÁO!</b>
+    </div>
+    return;
+}
+
+<div class="align-center border-grey col-indigo" style="padding: 15px; display: none; margin-bottom: 10px" id="divAlertIsChange">
+    <div><b>DỮ LIỆU TẠI CẤP DƯỚI CÓ SỰ THAY ĐỔI SO VỚI LẦN TỔNG HỢP TRƯỚC.</b></div>
+    <div>(Các dòng bôi đỏ là có sự thay đổi về dữ liệu hoặc trạng thái phê duyệt)</div>
+</div>
+
+<div class="table-responsive">
+    <table class="table font-13">
+        <thead>
+            <tr>
+                <th style="max-width: 120px;">Đơn vị nhập</th>
+                <th>Mẫu khai báo</th>
+                <th class="align-center">Version</th>
+                <th class="align-center">Trạng thái</th>
+                <th style="min-width: 150px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList.Where(x => string.IsNullOrEmpty(x.TEMPLATE_CODE) || x.Template.ACTIVE).OrderByDescending(x => x.UPDATE_DATE).ThenBy(x => x.CREATE_DATE))
+            {
+                var clsChange = "";
+                if (Model.ObjListSumUpHistory.Count() > 0)
+                {
+                    var findSumUpDetail = Model.ObjListSumUpHistory.FirstOrDefault(x => x.FROM_ORG_CODE == item.ORG_CODE);
+
+                    if (!string.IsNullOrWhiteSpace(item.TEMPLATE_CODE))
+                    {
+                        findSumUpDetail = Model.ObjListSumUpHistory.FirstOrDefault(x => x.FROM_ORG_CODE == item.ORG_CODE
+                            && x.TEMPLATE_CODE == item.TEMPLATE_CODE);
+                    }
+
+                    if ((findSumUpDetail == null && item.STATUS == Approve_Status.DaPheDuyet)
+                        || (findSumUpDetail != null && (item.STATUS != Approve_Status.DaPheDuyet || findSumUpDetail.DATA_VERSION != item.VERSION)))
+                    {
+                        clsChange = "col-red";
+                        isChange = "True";
+                    }
+                }
+
+                number++;
+                <tr class="@clsChange">
+
+                    @{
+                        Html.RenderPartial("_PartialViewTableChildData", item,
+                               new ViewDataDictionary
+                                {
+                                               new KeyValuePair<string, object>("number", number)
+});
+                    }
+                </tr>
+            }
+            @foreach (var item in Model.ObjList.Where(x => !string.IsNullOrEmpty(x.TEMPLATE_CODE) && !x.Template.ACTIVE).OrderByDescending(x => x.UPDATE_DATE).ThenBy(x => x.CREATE_DATE))
+            {
+                var clsChange = "";
+                if (Model.ObjListSumUpHistory.Count() > 0)
+                {
+                    var findSumUpDetail = Model.ObjListSumUpHistory.FirstOrDefault(x => x.FROM_ORG_CODE == item.ORG_CODE);
+
+                    if (!string.IsNullOrWhiteSpace(item.TEMPLATE_CODE))
+                    {
+                        findSumUpDetail = Model.ObjListSumUpHistory.FirstOrDefault(x => x.FROM_ORG_CODE == item.ORG_CODE
+                            && x.TEMPLATE_CODE == item.TEMPLATE_CODE);
+                    }
+
+                    if ((findSumUpDetail == null && item.STATUS == Approve_Status.DaPheDuyet)
+                        || (findSumUpDetail != null && (item.STATUS != Approve_Status.DaPheDuyet || findSumUpDetail.DATA_VERSION != item.VERSION)))
+                    {
+                        clsChange = "col-red";
+                        isChange = "True";
+                    }
+                }
+
+                number++;
+                <tr class="@clsChange">
+
+                    @{
+                        Html.RenderPartial("_PartialViewTableChildData", item,
+                               new ViewDataDictionary
+                                {
+                                               new KeyValuePair<string, object>("number", number)
+});
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        if ("@isChange" == "True") {
+            $("#divAlertIsChange").show();
+        }
+    });
+</script>

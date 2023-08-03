@@ -1,0 +1,73 @@
+﻿@model SMO.Service.BP.RegisterService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+    var formMyRegister = Guid.NewGuid().ToString();
+    var selectList = SelectListUtilities.GetTimeYear(isAddBlank: false);
+    Model.ObjDetail.TIME_YEAR = (int?)selectList.SelectedValue ?? 0;
+}
+<div id='@Model.ViewId' class="container-fluid child-content">
+
+    <div class="card border-grey">
+        <div class="body" style="padding-top: 0px;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a style="padding-left:0px"><i class="material-icons col-fecon">clear_all</i>ĐĂNG KÝ LẬP KẾ HOẠCH</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="page-function">
+                    @Html.MyButton("cmdSave", "Lưu lại", string.Format("Forms.SubmitForm('{0}');", formMyRegister), "Alt+N", "done_all")
+                </div>
+                Chọn năm kế hoạch
+                <div class="page-function-button m-r-20" style="max-width: 350px;">
+                    @using (Ajax.BeginForm("List", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.FormId)
+                        @Html.MyDropDownListFor(x => x.ObjDetail.TIME_YEAR, selectList, new { @class = "selectpicker show-tick", onChange = $"Forms.SubmitForm('{Model.FormId}');" })
+                    }
+                </div>
+                @using (Ajax.BeginForm("SaveRegister", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = formMyRegister }))
+                {
+                    <div id="divResult" class="m-t-10">
+
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        function SubmitIndex() {
+            Forms.SubmitForm('@Model.FormId');
+        }
+
+        $(function () {
+            Forms.SubmitForm('@Model.FormId');
+            Forms.CompleteUI();
+            Forms.SubmitByEnter("@Model.FormId");
+        });
+
+        function toggleStatus(year) {
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("ToggleStatus")',
+                type: "POST",
+                data: { year },
+                dataType: "json",
+                contentType: 'application/json; charset=UTF-8',
+                success: function (response) {
+                    Message.execute(response);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+    </script>
+</div>
+
+
+

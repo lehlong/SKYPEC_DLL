@@ -1,0 +1,282 @@
+﻿@model SMO.Service.MD.CostPLElementService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+}
+
+<div id='@Model.ViewId' class="container-fluid child-content">
+    <link href="~/Content/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/Ztree/jquery.ztree.core-3.5.min.js"></script>
+    <script src="~/Scripts/Ztree/jquery.ztree.excheck-3.5.min.js"></script>
+    <script src="~/Scripts/Ztree/jquery.ztree.exedit-3.5.min.js"></script>
+    <script src="~/Scripts/Ztree/jquery.ztree.exhide-3.5.min.js"></script>
+
+    <div class="card">
+        <div class="body" style="padding-top: 0px;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a style="padding-left:0px"><i class="material-icons col-fecon">clear_all</i> CẤU TRÚC KHOẢN MỤC CHI PHÍ KINH DOANH</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="page-function">
+                    <div class="page-function-button m-r-20" style="float:left">
+                        @Html.MyButton("cmdAdd", "Thêm mới nhóm khoản mục", string.Format("Create();"), "Alt+N", "add")
+                        @Html.MyButton("cmdUpdateTree", "Cập nhật", "UpdateTree();", "Alt+N", "done_all")
+                    </div>
+
+                    <div class="input-group page-function-search" style="margin-bottom: 7px !important">
+                        @Html.MyDropDownListFor(m => m.ObjDetail.TIME_YEAR, SelectListUtilities.GetTimeYear(false), new { @onchange = "BuildTree(); BuildTreeSap();", @id = "ddlTimeYear", @data_live_search = "true", @class = "selectpicker show-tick", data_container = "body", @data_val = false })
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <div id="divCopy" class="m-t-10 m-b-10" style="display: none;">
+                            <div>
+                                <label>
+                                    Cấu trúc năm này chưa được định nghĩa. Bạn có thể copy cấu trúc từ năm khác.
+                                </label>
+                            </div>
+
+                            <div style="width: 200px; float: left" class="m-r-10">
+                                @Html.MyDropDownListFor(m => m.ObjDetail.TIME_YEAR, SelectListUtilities.GetTimeYear(false), new { @id = "ddlTimeYearCopy", @data_live_search = "true", @class = "selectpicker show-tick", data_container = "body", @data_val = false })
+                            </div>
+
+                            @Html.MyButton("cmdAdd", "Copy", string.Format("Copy();"), "Alt+N", "transform")
+                        </div>
+
+                        <div id="divTree" style="overflow: auto; border:1px solid #D7D7D7">
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <div id="divTreeSap" style="overflow: auto; border:1px solid #D7D7D7"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var arrayAdd = [];
+        var arrayRemove = [];
+
+        function Search(obj) {
+            var value = $("#ddlCostCenter").val();
+            var zTree = $.fn.zTree.getZTreeObj("treeCostCenter");
+            var node = zTree.getNodesByParamFuzzy("id", value, null);
+            if (node != null) {
+                zTree.selectNode(node[0]);
+            }
+        }
+
+        var setting = {
+            view: {
+                selectedMulti: true,
+                nameIsHTML: true,
+                showTitle: false
+            },
+            edit: {
+                enable: true,
+                showRemoveBtn: false,
+                showRenameBtn: false
+            },
+            data: {
+                keep: {
+					leaf: true,
+					parent: true
+				},
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: OnClick,
+                beforeDrop: BeforeDrop
+            }
+        };
+
+        var settingSap = {
+            view: {
+                selectedMulti: true,
+                nameIsHTML: true,
+                showTitle: false
+            },
+            edit: {
+                enable: true,
+                showRemoveBtn: false,
+                showRenameBtn: false
+            },
+            data: {
+                keep: {
+					leaf: true,
+					parent: true
+				},
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                beforeDrop: BeforeDrop2
+            }
+        };
+
+        function BeforeDrop(treeId, treeNodes, targetNode, moveType, isCopy) {
+            if(treeId == "treeElementSap"){
+				for (var i=0,l=treeNodes.length; i<l; i++) {
+					if (treeNodes[i].isParent === true) {
+						return false;
+					}
+				}
+				
+				for (var i=0,l=treeNodes.length; i<l; i++) {
+					if(treeNodes[i].isSap == "false"){
+						arrayRemove.push(treeNodes[i].id);
+					}else{
+						arrayAdd.splice(arrayAdd.indexOf(treeNodes[i].id), 1);
+					}
+				}
+			}
+        }
+
+        function BeforeDrop2(treeId, treeNodes, targetNode, moveType, isCopy) {
+            if(treeId == "treeElementSap"){
+				return false;
+			}
+			
+			if(treeId == "treeElement"){
+				for (var i=0,l=treeNodes.length; i<l; i++) {
+					if (treeNodes[i].isParent === true) {
+						return false;
+					}
+				}
+				
+				for (var i=0,l=treeNodes.length; i<l; i++) {
+					if(treeNodes[i].isSap == "true"){
+						arrayAdd.push(treeNodes[i].id);
+					}else{
+						arrayRemove.splice(arrayRemove.indexOf(treeNodes[i].id), 1);
+					}
+				}
+			}
+        }
+
+        function OnClick(event, treeId, treeNode) {
+            $("#hddParent").val(treeNode.pId);
+            if (treeNode.isParent === false) {
+                return;
+            }
+            var year = $("#ddlTimeYear").val();
+            var id = treeNode.id;
+            var url = "@Url.Action("Edit")";
+            var ajaxParams = {
+                url: url,
+                data: { id: id , year: year}
+            };
+            Forms.LoadAjaxRight(ajaxParams);
+        };
+
+        function Create() {
+            var year = $("#ddlTimeYear").val();
+            var ajaxParams = {
+                url: "@Url.Action("Create")",
+                data: { parent: $("#hddParent").val(), year: year }
+            };
+            Forms.LoadAjaxRight(ajaxParams);
+        }
+
+        function Copy() {
+            var year = $("#ddlTimeYear").val();
+            var yearCopy = $("#ddlTimeYearCopy").val();
+
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("Copy")',
+                type: "POST",
+                data: { year: year, yearCopy : yearCopy},
+                dataType: "json",
+                contentType: 'application/json; charset=UTF-8',
+                success: function (response) {
+                    BuildTree();
+                    BuildTreeSap();
+                    Message.execute(response);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function BuildTree(elementSelected, isUpdateOrder) {
+            $('#divTree').html("");
+            $("#divCopy").hide();
+            var year = $("#ddlTimeYear").val();
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("BuildTree")',
+                type: "GET",
+                data: { elementSelected: elementSelected , year : year},
+                success: function (response) {
+                    $('#divTree').html(response);
+                    if (zNodes.length == 0) {
+                        $("#divCopy").show();
+                    }
+                    if (isUpdateOrder && isUpdateOrder == true) {
+                        UpdateTree();
+                    }
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function BuildTreeSap() {
+            $('#divTreeSap').html("");
+            Forms.ShowLoading();
+            var year = $("#ddlTimeYear").val();
+            var ajaxParams = {
+                url: '@Url.Action("BuildTreeSap")',
+                data: { year : year},
+                type: "GET",
+                success: function (response) {
+                    $('#divTreeSap').html(response);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function UpdateTree() {
+            var zTree = $.fn.zTree.getZTreeObj("treeElement");
+            var nodes = zTree.transformToArray(zTree.getNodes());
+            var data = nodes.map(function (a) { return { id: a.id, pId: a.pId }; });
+            var year = $("#ddlTimeYear").val();
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("UpdateTree")',
+                type: "POST",
+                data: { lstNode: data, lstRemove : arrayRemove, lstAdd : arrayAdd, year: year},
+                dataType: "json",
+                contentType: 'application/json; charset=UTF-8',
+                success: function (response) {
+                    BuildTree();
+                    BuildTreeSap();
+                    arrayAdd = [];
+                    arrayRemove = [];
+                    Message.execute(response);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function SetHeight() {
+            $("#divTree").height($(window).height() - 150);
+            $("#divTreeSap").height($(window).height() - 150);
+        }
+
+        $(function () {
+            BuildTree();
+            BuildTreeSap();
+            Forms.CompleteUI();
+            SetHeight();
+        });
+    </script>
+</div>
+
+

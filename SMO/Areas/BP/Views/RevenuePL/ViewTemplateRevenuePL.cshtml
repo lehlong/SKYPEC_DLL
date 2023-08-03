@@ -1,0 +1,116 @@
+﻿@model IList<T_MD_REVENUE_PL_ELEMENT>
+@using SMO.Core.Entities.MD;
+@using System.Text;
+
+@{
+    var detailRevenueElements = ViewBag.detailRevenueElements as IList<T_MD_TEMPLATE_DETAIL_REVENUE_PL>;
+    var viewId = Guid.NewGuid().ToString();
+}
+<div id="@viewId" class="container-fluid child-content">
+    <div class="card">
+        <div class="body" style="padding-top: 0px">
+
+            @if (detailRevenueElements == null || detailRevenueElements.Count == 0)
+            {
+                <div class="p-t-10">
+                    @Html.MyButton("cmdBack", "Quay lại", $"Forms.Close('{viewId}');", "Alt+N", "arrow_back")
+                </div>
+                <div class="p-t-10">
+                    @{
+                        Html.RenderPartial("_NothingData");
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="p-t-10">
+                    @Html.MyButton("cmdBack", "Quay lại", $"Forms.Close('{viewId}');", "Alt+N", "arrow_back")
+                    @Html.MyButton("cmdDownloadTemlate",
+                                                "Download mẫu",
+                                                "DownloadTemplate();",
+                                                "Alt+V", "file_download")
+                </div>
+                <div class="p-t-10">
+                    <div class="body-content">
+                        <div class="table-responsive" style="max-height: calc(100vh - 140px)">
+                            <table class="table table-condensed table-bordered table-striped table-pre-whitespace">
+                                <thead>
+                                    <tr class="sticky-row">
+                                        <th>Mã công ty</th>
+                                        <th>Tên công ty</th>
+                                        <th>Mã dự án</th>
+                                        <th>Tên dự án</th>
+                                        <th>Mã loại hình</th>
+                                        <th style="min-width: 200px;">Tên loại hình</th>
+                                        <th>Mã khoản mục</th>
+                                        <th>Tên khoản mục</th>
+                                        <th>Tháng 1</th>
+                                        <th>Tháng 2</th>
+                                        <th>Tháng 3</th>
+                                        <th>Tháng 4</th>
+                                        <th>Tháng 5</th>
+                                        <th>Tháng 6</th>
+                                        <th>Tháng 7</th>
+                                        <th>Tháng 8</th>
+                                        <th>Tháng 9</th>
+                                        <th>Tháng 10</th>
+                                        <th>Tháng 11</th>
+                                        <th>Tháng 12</th>
+                                        <th>Tổng năm</th>
+                                        <th>Trung bình tháng</th>
+                                        <th>Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (var detail in detailRevenueElements.GroupBy(x => x.CENTER_CODE).Select(x => x.First()).OrderByDescending(x => x.CENTER_CODE))
+                                    {
+                                        foreach (var item in Model
+                                            .Where(x => x.CENTER_CODE == detail.CENTER_CODE)
+                                            .OrderBy(x => x.C_ORDER)
+                                            .GroupBy(x => x.CODE)
+                                            .Select(x => x.First()))
+                                        {
+                                            var space = new StringBuilder();
+                                            for (int i = 0; i < item.LEVEL; i++)
+                                            {
+                                                space.Append("\t");
+                                            }
+                                            var classParent = item.IS_GROUP ? "strong" : string.Empty;
+                                            <tr class="@classParent">
+                                                <td>@(detail.Center.COMPANY_CODE)</td>
+                                                <td>@(detail.Center.Company.NAME)</td>
+                                                <td>@(detail.Center.PROJECT_CODE)</td>
+                                                <td>@(detail.Center.Project.NAME)</td>
+                                                <td>@(detail.CENTER_CODE)</td>
+                                                <td>@(detail.Center.NAME)</td>
+                                                <td>@item.CODE</td>
+                                                <td class="pre-whitespace @classParent">@($"{space.ToString()}{item.NAME}")</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

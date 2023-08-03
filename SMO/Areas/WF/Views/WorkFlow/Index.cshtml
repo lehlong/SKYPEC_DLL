@@ -1,0 +1,140 @@
+﻿@model SMO.Service.WF.WorkFlowService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+}
+
+<div id='@Model.ViewId' class="container-fluid child-content">
+    <link href="~/Content/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/Ztree/jquery.ztree.core-3.5.min.js"></script>
+    <script src="~/Scripts/Ztree/jquery.ztree.excheck-3.5.min.js"></script>
+    <script src="~/Scripts/Ztree/jquery.ztree.exedit-3.5.min.js"></script>
+    <script src="~/Scripts/Ztree/jquery.ztree.exhide-3.5.min.js"></script>
+
+    <div class="card">
+        <div class="body" style="padding-top: 0px;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a style="padding-left:0px"><i class="material-icons">clear_all</i> DANH SÁCH WORKFLOW</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="page-function">
+                    <div class="page-function-button m-r-20">
+                        @Html.MyButton("cmdAddWorkFlow", "Tạo mới workflow", string.Format("Create('Process')"), "Alt+N", "add", "", true, new { @tagBtn = "btnInWF" })
+                        @Html.MyButton("cmdAddActivity", "Thêm activity", string.Format("Create('Activity');"), "Alt+N", "add", "", false, new { @tagBtn = "btnInWF" })
+                    </div>
+                </div>
+                <div id="divTree">
+                    <input type="hidden" id="hddParent" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var setting = {
+            view: {
+                selectedMulti: false,
+                nameIsHTML: true,
+                showTitle: false
+            },
+            edit: {
+                enable: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: OnClick,
+                beforeDrop: BeforeDrop
+            }
+        };
+
+        function BeforeDrop(treeId, treeNodes, targetNode, moveType, isCopy) {
+            if (!targetNode) {
+                return false;
+            } else if (targetNode.id == zNodes[0].id) {
+                return false;
+            }
+        }
+
+        function OnClick(event, treeId, treeNode) {
+            $("#hddParent").val(treeNode.id);
+            ControlButton(treeNode.type);
+            if (treeNode.type != null) {
+                Edit(treeNode.id, treeNode.type);
+            }
+        };
+
+        function ControlButton(type) {
+            $("[tagBtn='btnInWF']").hide();
+            if (type == "ALL") {
+                $("#cmdAddWorkFlow").show();
+            } else if (type == "Process") {
+                $("#cmdAddActivity").show();
+            }
+        }
+
+        function Create(type) {
+            var url = "";
+            if (type == "Process") {
+                url = "@Url.Action("CreateProcess")";
+            } else if (type == "Activity") {
+                url = "@Url.Action("CreateActivity")";
+            }
+
+            var idParent = $("#hddParent").val();
+            var ajaxParams = {
+                url: url,
+                data: { idParent: idParent }
+            };
+            Forms.LoadAjaxRight(ajaxParams);
+        }
+
+        function Edit(id, type) {
+            var url = "";
+            if (type == "Process") {
+                url = "@Url.Action("EditProcess")";
+                var ajaxParams = {
+                    url: url,
+                    data: { id: id }
+                };
+                Forms.LoadAjaxRight(ajaxParams);
+            } else if (type == "Activity") {
+                url = "@Url.Action("EditActivity")";
+                var ajaxParams = {
+                    url: url,
+                    data: { id: id }
+                };
+                Forms.LoadAjaxModalLarge(ajaxParams);
+            }
+        }
+
+        function BuildTree(idSelected) {
+            $('#divTree').html("");
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("BuildTree")',
+                type: "GET",
+                data: { idSelected: idSelected },
+                success: function (response) {
+                    $('#divTree').html(response);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+
+        $(function () {
+            BuildTree();
+            Forms.CompleteUI();
+            Forms.SubmitByEnter("@Model.FormId");
+        });
+    </script>
+</div>
+
+
+

@@ -1,0 +1,23 @@
+﻿@model int
+@{
+    var lstPeriodTime = SelectListUtilities.GetPureTimeYear().OrderByDescending(x => x.TIME_YEAR);
+}
+
+@foreach (var item in lstPeriodTime)
+{
+    if (item.TIME_YEAR == Model)
+    {
+        <option isClosed="@item.IS_CLOSE.ToString()" selected="selected" value="@item.TIME_YEAR">@item.TIME_YEAR</option>
+    }
+    else
+    {
+        if (Model == 0 && item.IS_DEFAULT)
+        {
+            <option isClosed="@item.IS_CLOSE.ToString()" selected="selected" value="@item.TIME_YEAR">@item.TIME_YEAR</option>
+        }
+        else
+        {
+            <option isClosed="@item.IS_CLOSE.ToString()" value="@item.TIME_YEAR">@item.TIME_YEAR</option>
+        }
+    }
+}

@@ -1,0 +1,105 @@
+﻿@model IList<CoreElement>
+
+@using SMO.Core.Common;
+@using System.Text;
+@if (Model == null || Model.Count == 0)
+{
+    Html.RenderPartial("_NothingData");
+    return;
+}
+@{
+    var dataCenterModel = ViewBag.dataCenterModel;
+    var hasPreventive = !Model.First().GetType().Name.ToUpper().Contains("REVENUE");
+}
+<div class="sticky-table sticky-headers sticky-ltr-cells">
+    <table class="table-condensed table-bordered table-striped font-13" id="table">
+        <tbody>
+            <tr class="sticky-row strong" data-xls-row="header">
+                <td class="sticky-cell pre-whitespace"></td>
+                <td class="sticky-cell pre-whitespace">MÃ KHOẢN MỤC</td>
+                <td class="sticky-cell pre-whitespace">TÊN KHOẢN MỤC</td>
+                <td>THÁNG 1</td>
+                <td>THÁNG 2</td>
+                <td>THÁNG 3</td>
+                <td>THÁNG 4</td>
+                <td>THÁNG 5</td>
+                <td>THÁNG 6</td>
+                <td>THÁNG 7</td>
+                <td>THÁNG 8</td>
+                <td>THÁNG 9</td>
+                <td>THÁNG 10</td>
+                <td>THÁNG 11</td>
+                <td>THÁNG 12</td>
+                <td>TỔNG NĂM</td>
+                @if (hasPreventive)
+                {
+                    <td>TỔNG NĂM (DP)</td>
+                }
+                <td>TRUNG BÌNH THÁNG</td>
+                <td>GHI CHÚ</td>
+            </tr>
+
+            @foreach (var item in Model?
+            .OrderBy(x => x.C_ORDER)
+            .GroupBy(x => x.CODE)
+            .Select(x => x.First()))
+            {
+                var space = new StringBuilder();
+                var childClass = item.IsChildren ? "child" : string.Empty;
+                var parentClass = item.IS_GROUP ? "strong" : string.Empty;
+                var lstItems = Model.Where(x => x.CODE == item.CODE && x.CENTER_CODE == item.CENTER_CODE);
+                for (int i = 0; i < item.LEVEL; i++)
+                {
+                    space.Append("\t");
+                }
+                <tr class="@parentClass">
+                    @if (item.IsChildren)
+                    {
+                        <td id="@item.CODE"
+                            centerCode="@dataCenterModel.ORG_CODE"
+                            version="@dataCenterModel.VERSION"
+                            level="@item.LEVEL"
+                            root="true"
+                            class="@childClass sticky-cell"
+                            type="preview"
+                            onclick="DrillDown(this);">
+                            <i class="material-icons swap-icon-drill-down">unfold_more</i>
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="sticky-cell"></td>
+                    }
+                    <td class="sticky-cell" level="@item.LEVEL">@item.CODE</td>
+                    <td class="sticky-cell pre-whitespace @parentClass">@($"{space.ToString()}{item.NAME}")</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[0]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[1]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[2]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[3]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[4]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[5]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[6]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[7]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[8]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[9]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[10]).ToStringVN()</td>
+                    <td class="align-right">@lstItems.Sum(x => x.Values[11]).ToStringVN()</td>
+                    @if (hasPreventive)
+                    {
+                        <td class="align-right">@lstItems.Sum(x => x.Values[12]).ToStringVN()</td>
+                        <td class="align-right">@lstItems.Sum(x => x.Values[13]).ToStringVN()</td>
+                        <td class="align-right">@((lstItems.Sum(x => x.Values[12]) / 12).ToStringVN())</td>
+                    }
+                    else
+                    {
+                        <td class="align-right">@lstItems.Sum(x => x.Values.Length == 12 ? x.Values.Sum() : x.Values.Sum()/2).ToStringVN()</td>
+                        <td class="align-right">@((lstItems.Sum(x => x.Values.Length == 12 ? x.Values.Sum() : x.Values.Sum() / 2) / 12).ToStringVN())</td>
+                    }
+                    <td></td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+

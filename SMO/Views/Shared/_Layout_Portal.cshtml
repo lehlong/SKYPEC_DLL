@@ -1,0 +1,390 @@
+﻿@{ 
+    var lang = "vi";
+    if (Request.Cookies["lang"] != null)
+    {
+        lang = Request.Cookies["lang"].Value;
+    }
+
+    if (lang != "vi" && lang != "en")
+    {
+        lang = "vi";
+    }
+}
+<!DOCTYPE html>
+<html itemscope="" itemtype="http://schema.org/WebPage" lang="en-US" prefix="og: http://ogp.me/ns#" class="js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths wf-roboto-n7-active wf-roboto-i4-active wf-robotoslab-n7-active wf-roboto-n4-active wf-roboto-n3-active wf-roboto-i3-active wf-roboto-n5-active wf-roboto-i5-active wf-roboto-i7-active wf-robotoslab-n3-active wf-robotoslab-n4-active wf-active" style="transform: none;">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FECON E-BIDDING</title>
+    <style id="woocommerce-inline-inline-css" type="text/css">
+        .woocommerce form .form-row .required {
+            visibility: visible;
+        }
+    </style>
+    <style id="rs-plugin-settings-inline-css" type="text/css">
+        #rs-demo-id {
+        }
+    </style>
+    <link rel="stylesheet" id="thim-style-options-css" href="~/Education/custom.css?v=1" type="text/css" media="all">
+    @*<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Slab:300,400,700" rel="stylesheet" />*@
+
+    <link href="~/Education/google.fonts.css" rel="stylesheet" />
+
+    
+    <script type="text/javascript" src="~/Education/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript">        var userSettings = {"url":"\/","uid":"0","time":"1559984660","secure":"1"};</script>
+    <script type="text/javascript">        var lpGlobalSettings = {"url":"https:\/\/educationwp.thimpress.com\/blog\/","siteurl":"https:\/\/educationwp.thimpress.com","ajax":"https:\/\/educationwp.thimpress.com\/wp-admin\/admin-ajax.php","theme":"eduma","localize":{"button_ok":"OK","button_cancel":"Cancel","button_yes":"Yes","button_no":"No"}};</script>
+    <noscript>
+        <style>
+            .woocommerce-product-gallery {
+                opacity: 1 !important;
+            }
+        </style>
+    </noscript>
+    
+    <link rel="icon" href="~/Education/faviconFecon.png" sizes="32x32">
+</head>
+<body class="bp-legacy blog woocommerce-js group-blog bg-boxed-image thim-popup-feature js" id="thim-body" style="transform: none;">
+    <div id="preload">
+        <div class="sk-folding-cube">
+            <div class="sk-cube1 sk-cube"></div>
+            <div class="sk-cube2 sk-cube"></div>
+            <div class="sk-cube4 sk-cube"></div>
+            <div class="sk-cube3 sk-cube"></div>
+        </div>
+    </div>
+    <div id="wrapper-container" class="wrapper-container" style="transform: none;">
+        @if (lang == "vi")
+        {
+            <div class="mobile-menu-wrapper" style="">
+                <div class="mobile-menu-close">✖</div>
+                <div class="mobile-menu-inner" style="margin-top: 20px;"><a href="http://fecon.com.vn"><div>Trang chủ</div></a></div>
+                <div class="mobile-menu-inner" id="mobile-menu-goithau"><a href="/"><div>Gói thầu</div></a></div>
+
+                @if (Request.IsAuthenticated)
+                {
+                    <div class="mobile-menu-inner"><a href="/Admin/Index"><div>Trang của tôi</div></a></div>
+                    <div class="mobile-menu-inner"><a href="/DangNhap/Logout"><div>Đăng xuất</div></a></div>
+                }
+                else
+                {
+                    <div class="mobile-menu-inner" id="mobile-menu-dangnhap"><a href="/DangNhap"><div>Đăng nhập</div></a></div>
+                    <div class="mobile-menu-inner" id="mobile-menu-dangky"><a href="/DangKy"><div>Đăng ký</div></a></div>
+                }
+                <div class="mobile-menu-inner"><a href="/HDSD_NT/Hướng dẫn sử dụng hệ thống Ebidding.html" target="_blank" onclick="ChangeLanguage('en')"><div>Hướng dẫn sử dụng</div></a></div>
+                <div class="mobile-menu-inner"><a href="/faq"><div>Câu hỏi thường gặp</div></a></div>
+                <div class="mobile-menu-inner"><a href="#" class="active" onclick="ChangeLanguage('vi')"><div>Tiếng Việt</div></a></div>
+                <div class="mobile-menu-inner"><a href="#" onclick="ChangeLanguage('en')"><div>Tiếng Anh</div></a></div>
+            </div>
+        }
+        else
+        {
+            <div class="mobile-menu-wrapper" style="">
+                <div class="mobile-menu-close">✖</div>
+                <div class="mobile-menu-inner" style="margin-top: 20px;"><a href="http://fecon.com.vn"><div>Home</div></a></div>
+                <div class="mobile-menu-inner" id="mobile-menu-goithau"><a href="/"><div>Procurement packages</div></a></div>
+
+                @if (Request.IsAuthenticated)
+                {
+                    <div class="mobile-menu-inner"><a href="/Admin/Index"><div>My page</div></a></div>
+                    <div class="mobile-menu-inner"><a href="/DangNhap/Logout"><div>Sign out</div></a></div>
+                }
+                else
+                {
+                    <div class="mobile-menu-inner" id="mobile-menu-dangnhap"><a href="/DangNhap"><div>Sign in</div></a></div>
+                    <div class="mobile-menu-inner" id="mobile-menu-dangky"><a href="/DangKy"><div>Sign up</div></a></div>
+                }
+                <div class="mobile-menu-inner"><a href="/HDSD_NT/Hướng dẫn sử dụng hệ thống Ebidding.html" target="_blank" onclick="ChangeLanguage('en')"><div>Help</div></a></div>
+                <div class="mobile-menu-inner"><a href="/faq"><div>FAQS</div></a></div>
+                <div class="mobile-menu-inner"><a href="#" onclick="ChangeLanguage('vi')"><div>Vietnamese</div></a></div>
+                <div class="mobile-menu-inner"><a href="#" class="active" onclick="ChangeLanguage('en')"><div>English</div></a></div>
+            </div>
+        }
+        
+        <div class="content-pusher" style="transform: none;">
+            <header id="masthead" class="site-header bg-custom-sticky sticky-header header_overlay header_v1 affix-top">
+                <div class="thim-nav-wrapper container">
+                    <div class="row">
+                        <div class="navigation col-sm-12">
+                            <div class="tm-table">
+                                <div class="width-logo table-cell sm-logo">
+                                    <a href="/" class="no-sticky-logo">
+                                        <img style="width: 100px;" src="~/Education/ebiddingLogo.png">
+                                    </a>
+                                    <a href="/" rel="home" class="sticky-logo">
+                                        <img style="width: 100px;" src="~/Education/ebiddingLogoSticky.png">
+                                    </a>
+                                </div>
+                                <nav class="width-navigation table-cell table-right">
+                                    @if (lang == "vi")
+                                    {
+                                        <ul class="nav navbar-nav menu-main-menu">
+                                            <li id="menu-item-7679" class="menu-item menu-item-type-post_type_archive menu-item-object-tp_event menu-item-7679 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="https://fecon.com.vn" class="tc-menu-inner">TRANG CHỦ</a></li>
+                                            <li id="menu-item-goithau" class="menu-item menu-item-type-post_type_archive menu-item-object-tp_event menu-item-7679 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="/" class="tc-menu-inner">GÓI THẦU</a></li>
+                                            @if (Request.IsAuthenticated)
+                                            {
+                                                <li id="menu-item-127" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-99 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="/Admin/Index" class="tc-menu-inner">TRANG CỦA TÔI</a></li>
+                                                <li id="menu-item-99" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-99 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="/DangNhap/Logout" class="tc-menu-inner">ĐĂNG XUẤT</a></li>
+                                            }
+                                            else
+                                            {
+                                                <li id="menu-item-dangnhap" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-99 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="/DangNhap" class="tc-menu-inner">ĐĂNG NHẬP</a></li>
+                                                <li id="menu-item-dangky" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-99 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="/DangKy" class="tc-menu-inner">ĐĂNG KÍ TÀI KHOẢN</a></li>
+                                            }
+
+                                            <li id="menu-item-95" style="cursor: pointer;" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-95 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default">
+                                                <span class="tc-menu-inner">NGÔN NGỮ</span>
+                                                <span class="icon-toggle"><i class="fa fa-angle-down"></i></span>
+                                                <ul class="sub-menu" style="display: none; opacity: 1;">
+                                                    <li id="menu-item-6550" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6550 tc-menu-item tc-menu-depth-1 tc-menu-align-left">
+                                                        <a href="#" style="color: black !important;" class="tc-menu-inner tc-megamenu-title" onclick="ChangeLanguage('vi')">Tiếng Việt</a>
+                                                    </li>
+                                                    <li id="menu-item-4451" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4451 tc-menu-item tc-menu-depth-1 tc-menu-align-left">
+                                                        <a href="#" class="tc-menu-inner tc-megamenu-title" onclick="ChangeLanguage('en')">Tiếng Anh</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+
+                                            <li id="menu-item-trogiup" style="cursor: pointer;" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-95 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default">
+                                                <span class="tc-menu-inner">TRỢ GIÚP</span>
+                                                <span class="icon-toggle"><i class="fa fa-angle-down"></i></span>
+                                                <ul class="sub-menu" style="display: none; opacity: 1;">
+                                                    <li id="menu-item-faq" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6550 tc-menu-item tc-menu-depth-1 tc-menu-align-left">
+                                                        <a href="/faq" class="tc-menu-inner tc-megamenu-title">Câu hỏi thường gặp</a>
+                                                    </li>
+                                                    <li id="menu-item-4451" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4451 tc-menu-item tc-menu-depth-1 tc-menu-align-left">
+                                                        <a target="_blank" href="/HDSD_NT/Hướng dẫn sử dụng hệ thống Ebidding.html" class="tc-menu-inner tc-megamenu-title">Hướng dẫn sử dụng</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <ul class="nav navbar-nav menu-main-menu">
+                                            <li id="menu-item-7679" class="menu-item menu-item-type-post_type_archive menu-item-object-tp_event menu-item-7679 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="https://fecon.com.vn" class="tc-menu-inner">HOME</a></li>
+                                            <li id="menu-item-goithau" class="menu-item menu-item-type-post_type_archive menu-item-object-tp_event menu-item-7679 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="/" class="tc-menu-inner">PROCUREMENT PACKAGES</a></li>
+                                            @if (Request.IsAuthenticated)
+                                            {
+                                                <li id="menu-item-127" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-99 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="/Admin/Index" class="tc-menu-inner">MY PAGE</a></li>
+                                                <li id="menu-item-99" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-99 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="/DangNhap/Logout" class="tc-menu-inner">SIGN OUT</a></li>
+                                            }
+                                            else
+                                            {
+                                                <li id="menu-item-dangnhap" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-99 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="/DangNhap" class="tc-menu-inner">SIGN IN</a></li>
+                                                <li id="menu-item-dangky" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-99 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default"><a href="/DangKy" class="tc-menu-inner">SIGN UP</a></li>
+                                            }
+
+                                            <li id="menu-item-95" style="cursor: pointer;" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-95 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default">
+                                                <span class="tc-menu-inner">LANGUAGE</span>
+                                                <span class="icon-toggle"><i class="fa fa-angle-down"></i></span>
+                                                <ul class="sub-menu" style="display: none; opacity: 1;">
+                                                    <li id="menu-item-6550" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6550 tc-menu-item tc-menu-depth-1 tc-menu-align-left">
+                                                        <a href="#" class="tc-menu-inner tc-megamenu-title" onclick="ChangeLanguage('vi')">Vietnamese</a>
+                                                    </li>
+                                                    <li id="menu-item-4451" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4451 tc-menu-item tc-menu-depth-1 tc-menu-align-left">
+                                                        <a href="#" style="color: black !important;" class="tc-menu-inner tc-megamenu-title" onclick="ChangeLanguage('en')">English</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+
+                                            <li id="menu-item-trogiup" style="cursor: pointer;" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-95 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default">
+                                                <span class="tc-menu-inner">HELP</span>
+                                                <span class="icon-toggle"><i class="fa fa-angle-down"></i></span>
+                                                <ul class="sub-menu" style="display: none; opacity: 1;">
+                                                    <li id="menu-item-faq" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6550 tc-menu-item tc-menu-depth-1 tc-menu-align-left">
+                                                        <a href="/faq" class="tc-menu-inner tc-megamenu-title">FAQS</a>
+                                                    </li>
+                                                    <li id="menu-item-4451" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4451 tc-menu-item tc-menu-depth-1 tc-menu-align-left">
+                                                        <a target="_blank" href="/HDSD_NT/Hướng dẫn sử dụng hệ thống Ebidding.html" class="tc-menu-inner tc-megamenu-title">User manual</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    }
+                                    
+                                </nav>
+                                <div class="menu-mobile-effect navbar-toggle" data-effect="mobile-effect"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div id="main-content" style="transform: none;">
+                <section class="content-area" style="transform: none; min-height: 155px;">
+                    @RenderBody()
+                </section>
+                <footer id="colophon" class="site-footer">
+                    <div class="footer" style="padding: 0 0 0 20px; position: fixed;bottom: 0;width: 100%;background: #111;">
+                        <div>© 2019 <a href="http://fecon.com.vn" style="color: #f6753c">fecon.com.vn</a></div>
+                        <div style="position: absolute; bottom: 0; right: 20px;">Design by <a href="http://d2s.com.vn" style="color: #f6753c">d2s.com.vn</a></div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <a href="https://educationwp.thimpress.com/blog/#" id="back-to-top" class="active"> <i class="fa fa-chevron-up" aria-hidden="true"></i> </a>
+    </div>
+    <div id="tp_chameleon_list_google_fonts"></div>
+    <div class="gallery-slider-content"></div>
+    <script data-cfasync="false" type="text/javascript">
+        window.onload = function() {
+         var thim_preload = document.getElementById('preload');
+         if (thim_preload) {
+             setTimeout(function() {
+                 var body = document.getElementById('thim-body'),
+                     len = body.childNodes.length,
+                     class_name = body.className.replace(/(?:^|\s)thim-body-preload(?!\S)/, '').
+                         replace(/(?:^|\s)thim-body-load-overlay(?!\S)/, '');
+
+                 body.className = class_name;
+                 if (typeof thim_preload !== 'undefined' && thim_preload !== null) {
+                     for (var i = 0; i < len; i++) {
+                         if (body.childNodes[i].id !== 'undefined' && body.childNodes[i].id == 'preload') {
+                             $(body.childNodes[i]).hide();
+                             break;
+                         }
+                     }
+                 }
+             }, 500);
+         }
+        };
+
+        function ChangeLanguage(lang) {
+            document.cookie = "lang=" + lang;
+            location.reload();
+        }
+    </script>
+    <script>
+        window.addEventListener('load', function() {
+         /**
+          * Fix issue there is an empty spacing between image and title of owl-carousel
+          */
+         setTimeout(function() {
+             var $ = jQuery;
+             var $carousel = $('.thim-owl-carousel-post').each(function() {
+                 $(this).find('.image').css('min-height', 0);
+                 $(window).trigger('resize');
+             });
+         }, 500);
+         });
+    </script>
+    <script type="text/javascript">
+        var c = document.body.className;
+         c = c.replace(/woocommerce-no-js/, 'woocommerce-js');
+         document.body.className = c;
+    </script>
+    <style type="text/css" media="all" id="siteorigin-panels-layouts-footer">
+        /* Layout tc-megamenu-7682 */ #pgc-tc-megamenu-7682-0-0, #pgc-tc-megamenu-7682-0-1 {
+            width: 31%;
+            width: calc(31% - ( 0.69 * 30px ) );
+        }
+
+        #pl-tc-megamenu-7682 #panel-tc-megamenu-7682-0-0-0, #pl-tc-megamenu-7682 #panel-tc-megamenu-7682-0-1-0, #pl-tc-megamenu-7682 #panel-tc-megamenu-7682-0-2-0 {
+        }
+
+        #pgc-tc-megamenu-7682-0-2 {
+            width: 38%;
+            width: calc(38% - ( 0.62 * 30px ) );
+        }
+
+        #pl-tc-megamenu-7682 .so-panel {
+            margin-bottom: 30px;
+        }
+
+            #pl-tc-megamenu-7682 .so-panel:last-child {
+                margin-bottom: 0px;
+            }
+
+        @@media (max-width:767px) {
+            #pg-tc-megamenu-7682-0.panel-no-style, #pg-tc-megamenu-7682-0.panel-has-style > .panel-row-style {
+                -webkit-flex-direction: column;
+                -ms-flex-direction: column;
+                flex-direction: column;
+            }
+
+            #pg-tc-megamenu-7682-0 .panel-grid-cell {
+                margin-right: 0;
+            }
+
+            #pg-tc-megamenu-7682-0 .panel-grid-cell {
+                width: 100%;
+            }
+
+            #pgc-tc-megamenu-7682-0-0, #pgc-tc-megamenu-7682-0-1 {
+                margin-bottom: 30px;
+            }
+
+            #pl-tc-megamenu-7682 .panel-grid-cell {
+                padding: 0;
+            }
+
+            #pl-tc-megamenu-7682 .panel-grid .panel-grid-cell-empty {
+                display: none;
+            }
+
+            #pl-tc-megamenu-7682 .panel-grid .panel-grid-cell-mobile-last {
+                margin-bottom: 0px;
+            }
+        }
+        /* Layout w5c88b86427f62 */
+        #pgc-w5c88b86427f62-0-0 {
+            width: 33.3%;
+            width: calc(33.3% - ( 0.667 * 30px ) );
+        }
+
+        #pl-w5c88b86427f62 #panel-w5c88b86427f62-0-0-0, #pl-w5c88b86427f62 #panel-w5c88b86427f62-0-0-1, #pl-w5c88b86427f62 #panel-w5c88b86427f62-0-1-0, #pl-w5c88b86427f62 #panel-w5c88b86427f62-0-2-0, #pl-w5c88b86427f62 #panel-w5c88b86427f62-0-3-0, #pl-w5c88b86427f62 #panel-w5c88b86427f62-0-4-0 {
+        }
+
+        #pgc-w5c88b86427f62-0-1, #pgc-w5c88b86427f62-0-2, #pgc-w5c88b86427f62-0-3, #pgc-w5c88b86427f62-0-4 {
+            width: 16.675%;
+            width: calc(16.675% - ( 0.83325 * 30px ) );
+        }
+
+        #pl-w5c88b86427f62 .so-panel {
+            margin-bottom: 30px;
+        }
+
+            #pl-w5c88b86427f62 .so-panel:last-child {
+                margin-bottom: 0px;
+            }
+
+        @@media (max-width:767px) {
+            #pg-w5c88b86427f62-0.panel-no-style, #pg-w5c88b86427f62-0.panel-has-style > .panel-row-style {
+                -webkit-flex-direction: column;
+                -ms-flex-direction: column;
+                flex-direction: column;
+            }
+
+            #pg-w5c88b86427f62-0 .panel-grid-cell {
+                margin-right: 0;
+            }
+
+            #pg-w5c88b86427f62-0 .panel-grid-cell {
+                width: 100%;
+            }
+
+            #pgc-w5c88b86427f62-0-0, #pgc-w5c88b86427f62-0-1, #pgc-w5c88b86427f62-0-2, #pgc-w5c88b86427f62-0-3 {
+                margin-bottom: 30px;
+            }
+
+            #pl-w5c88b86427f62 .panel-grid-cell {
+                padding: 0;
+            }
+
+            #pl-w5c88b86427f62 .panel-grid .panel-grid-cell-empty {
+                display: none;
+            }
+
+            #pl-w5c88b86427f62 .panel-grid .panel-grid-cell-mobile-last {
+                margin-bottom: 0px;
+            }
+        }
+    </style>
+    
+    <script type="text/javascript" defer="" src="~/Education/autoptimize_772b82c234476806a08fa848237f1d08.js"></script>
+    <script src="~/Scripts/D2SCoreJS/D2SCoreJS.js?v=1"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+</body>
+</html>

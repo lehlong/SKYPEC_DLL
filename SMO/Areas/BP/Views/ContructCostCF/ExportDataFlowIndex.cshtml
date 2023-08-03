@@ -1,0 +1,25 @@
+﻿@model SMO.Service.BP.ContructCostCFService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+}
+<div id='@Model.ViewId'>
+    @using (Ajax.BeginForm("DataFlowTree", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+    {
+        @Html.HiddenFor(x => x.ObjDetail.ORG_CODE)
+        @Html.HiddenFor(x => x.ObjDetail.TIME_YEAR)
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.FormId)
+            <div id="divResult">
+        </div>
+    }
+
+    <script type="text/javascript">
+
+        $(function () {
+            Forms.SubmitForm('@Model.FormId');
+        });
+    </script>
+
+</div>
+

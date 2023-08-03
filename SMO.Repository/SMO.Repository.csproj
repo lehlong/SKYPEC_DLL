@@ -1,0 +1,655 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6FBBAA1A-8ADF-4E7D-9BFB-CED5268CC985}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SMO.Repository</RootNamespace>
+    <AssemblyName>SMO.Repository</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\SolutionDll\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr3.Runtime.3.5.1\lib\net40-client\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentNHibernate, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentNHibernate.2.1.2\lib\net461\FluentNHibernate.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Iesi.Collections, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Iesi.Collections.4.0.4\lib\net461\Iesi.Collections.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NHibernate, Version=5.1.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\NHibernate.5.1.3\lib\net461\NHibernate.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.2.1.2\lib\net45\Remotion.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Remotion.Linq.EagerFetching, Version=2.1.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.EagerFetching.2.1.0\lib\net45\Remotion.Linq.EagerFetching.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\GenericBPRepository.cs" />
+    <Compile Include="Common\GenericCenterRepository.cs" />
+    <Compile Include="Common\GenericElementRepository.cs" />
+    <Compile Include="Common\GenericRepository.cs" />
+    <Compile Include="Common\GenericTemplateDetailRepository.cs" />
+    <Compile Include="Common\IGenericBPRepository.cs" />
+    <Compile Include="Common\IGenericCenterRepository.cs" />
+    <Compile Include="Common\IGenericElementRepository.cs" />
+    <Compile Include="Common\IGenericRepository.cs" />
+    <Compile Include="Common\IGenericTemplateDetailRepository.cs" />
+    <Compile Include="Common\IUnitOfWork.cs" />
+    <Compile Include="Common\NHConfigurationSingleton.cs" />
+    <Compile Include="Common\NHListener.cs" />
+    <Compile Include="Common\NHSessionFactorySingleton.cs" />
+    <Compile Include="Common\NHUnitOfWork.cs" />
+    <Compile Include="Common\Utils.cs" />
+    <Compile Include="Implement\AD\ConnectionRepo.cs" />
+    <Compile Include="Implement\AD\FormObjectRepo.cs" />
+    <Compile Include="Implement\AD\FormRepo.cs" />
+    <Compile Include="Implement\AD\HoSoRepo.cs" />
+    <Compile Include="Implement\AD\LanguageRepo.cs" />
+    <Compile Include="Implement\AD\MenuRepo.cs" />
+    <Compile Include="Implement\AD\MessageRepo.cs" />
+    <Compile Include="Implement\AD\OrganizeRepo.cs" />
+    <Compile Include="Implement\AD\RightRepo.cs" />
+    <Compile Include="Implement\AD\RoleDetailRepo.cs" />
+    <Compile Include="Implement\AD\RoleRepo.cs" />
+    <Compile Include="Implement\AD\SystemConfigRepo.cs" />
+    <Compile Include="Implement\AD\UserApproveRepo.cs" />
+    <Compile Include="Implement\AD\UserGroupRepo.cs" />
+    <Compile Include="Implement\AD\UserGroupRoleRepo.cs" />
+    <Compile Include="Implement\AD\UserHistoryRepo.cs" />
+    <Compile Include="Implement\AD\UserOrgRepo.cs" />
+    <Compile Include="Implement\AD\UserRepo.cs" />
+    <Compile Include="Implement\AD\UserRightRepo.cs" />
+    <Compile Include="Implement\AD\UserRoleRepo.cs" />
+    <Compile Include="Implement\AD\UserUserGroupRepo.cs" />
+    <Compile Include="Implement\BP\BudgetPeriodHistoryRepo.cs" />
+    <Compile Include="Implement\BP\BudgetPeriodRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\ContructCostCFDataHistoryRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\ContructCostCFDataRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\ContructCostCFHistoryRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\ContructCostCFRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\ContructCostCFReviewCommentRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\ContructCostCFReviewHistoryRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\ContructCostCFReviewRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\ContructCostCFReviewResultRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\ContructCostCFSumUpDetailRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\ContructCostCFVersionRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\CONTRUCT_COST_CF_DATA_BASE\ContructCostCFDataBaseHistoryRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_CF\CONTRUCT_COST_CF_DATA_BASE\ContructCostCFDataBaseRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\ContructCostPLDataHistoryRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\ContructCostPLDataRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\ContructCostPLHistoryRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\ContructCostPLRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\ContructCostPLReviewCommentRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\ContructCostPLReviewHistoryRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\ContructCostPLReviewRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\ContructCostPLReviewResultRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\ContructCostPLSumUpDetailRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\ContructCostPLVersionRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\CONTRUCT_COST_PL_DATA_BASE\ContructCostPLDataBaseHistoryRepo.cs" />
+    <Compile Include="Implement\BP\CONTRUCT_COST_PL\CONTRUCT_COST_PL_DATA_BASE\ContructCostPLDataBaseRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\CostCFDataHistoryRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\CostCFDataRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\CostCFHistoryRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\CostCFRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\CostCFReviewCommentRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\CostCFReviewHistoryRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\CostCFReviewRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\CostCFReviewResultRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\CostCFSumUpDetailRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\CostCFVersionRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\COST_CF_DATA_BASE\CostCFDataBaseHistoryRepo.cs" />
+    <Compile Include="Implement\BP\COST_CF\COST_CF_DATA_BASE\CostCFDataBaseRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\CostPLDataHistoryRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\CostPLDataRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\CostPLHistoryRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\CostPLRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\CostPLReviewCommentRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\CostPLReviewHistoryRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\CostPLReviewRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\CostPLReviewResultRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\CostPLSumUpDetailRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\CostPLVersionRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\COST_PL_DATA_BASE\CostPLDataBaseHistoryRepo.cs" />
+    <Compile Include="Implement\BP\COST_PL\COST_PL_DATA_BASE\CostPLDataBaseRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OtherCostCFDataHistoryRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OtherCostCFDataRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OtherCostCFHistoryRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OtherCostCFRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OtherCostCFReviewCommentRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OtherCostCFReviewHistoryRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OtherCostCFReviewRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OtherCostCFReviewResultRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OtherCostCFSumUpDetailRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OtherCostCFVersionRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OTHER_COST_CF_DATA_BASE\OtherCostCFDataBaseHistoryRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_CF\OTHER_COST_CF_DATA_BASE\OtherCostCFDataBaseRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OtherCostPLDataHistoryRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OtherCostPLDataRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OtherCostPLHistoryRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OtherCostPLRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OtherCostPLReviewCommentRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OtherCostPLReviewHistoryRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OtherCostPLReviewRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OtherCostPLReviewResultRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OtherCostPLSumUpDetailRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OtherCostPLVersionRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OTHER_COST_PL_DATA_BASE\OtherCostPLDataBaseHistoryRepo.cs" />
+    <Compile Include="Implement\BP\OTHER_COST_PL\OTHER_COST_PL_DATA_BASE\OtherCostPLDataBaseRepo.cs" />
+    <Compile Include="Implement\BP\PeriodRepo.cs" />
+    <Compile Include="Implement\BP\RegisterRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\RevenueCFDataHistoryRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\RevenueCFDataRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\RevenueCFHistoryRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\RevenueCFRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\RevenueCFReviewCommentRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\RevenueCFReviewHistoryRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\RevenueCFReviewRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\RevenueCFReviewResultRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\RevenueCFSumUpDetailRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\RevenueCFVersionRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\REVENUE_CF_DATA_BASE\RevenueCFDataBaseHistoryRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_CF\REVENUE_CF_DATA_BASE\RevenueCFDataBaseRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\RevenuePLDataHistoryRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\RevenuePLDataRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\RevenuePLHistoryRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\RevenuePLRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\RevenuePLReviewCommentRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\RevenuePLReviewHistoryRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\RevenuePLReviewRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\RevenuePLReviewResultRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\RevenuePLSumUpDetailRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\RevenuePLVersionRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\REVENUE_PL_DATA_BASE\RevenuePLDataBaseHistoryRepo.cs" />
+    <Compile Include="Implement\BP\REVENUE_PL\REVENUE_PL_DATA_BASE\RevenuePLDataBaseRepo.cs" />
+    <Compile Include="Implement\BP\StepperBudgetRepo.cs" />
+    <Compile Include="Implement\BP\TypeRepo.cs" />
+    <Compile Include="Implement\CF\ConfigTableauRepo.cs" />
+    <Compile Include="Implement\CF\ConfigTemplateNotifyRepo.cs" />
+    <Compile Include="Implement\CM\CommentRepo.cs" />
+    <Compile Include="Implement\CM\EmailRepo.cs" />
+    <Compile Include="Implement\CM\FileUploadRepo.cs" />
+    <Compile Include="Implement\CM\HeaderBPCommentRepo.cs" />
+    <Compile Include="Implement\CM\HistorySmoApiRepo.cs" />
+    <Compile Include="Implement\CM\NotifyRepo.cs" />
+    <Compile Include="Implement\CM\SmsHistoryRepo.cs" />
+    <Compile Include="Implement\CM\SmsOTPRepo.cs" />
+    <Compile Include="Implement\CM\SmsRepo.cs" />
+    <Compile Include="Implement\MD\BidTypeRepo.cs" />
+    <Compile Include="Implement\MD\CompanyRepo.cs" />
+    <Compile Include="Implement\MD\CostCenterRepo.cs" />
+    <Compile Include="Implement\MD\CostCFElementRepo.cs" />
+    <Compile Include="Implement\MD\CostPLElementRepo.cs" />
+    <Compile Include="Implement\MD\CountryRepo.cs" />
+    <Compile Include="Implement\MD\CurrencyRepo.cs" />
+    <Compile Include="Implement\MD\DictionaryRepo.cs" />
+    <Compile Include="Implement\MD\DomainRepo.cs" />
+    <Compile Include="Implement\MD\FAQQuestionRepo.cs" />
+    <Compile Include="Implement\MD\FrequentlyAskedRepo.cs" />
+    <Compile Include="Implement\MD\InternalOrderRepo.cs" />
+    <Compile Include="Implement\MD\MaterialRepo.cs" />
+    <Compile Include="Implement\MD\MaterialTypeRepo.cs" />
+    <Compile Include="Implement\MD\MdBidSpecDetailRepo.cs" />
+    <Compile Include="Implement\MD\MdBidSpecRepo.cs" />
+    <Compile Include="Implement\MD\OtherProfitCenterRepo.cs" />
+    <Compile Include="Implement\MD\PeriodTimeRepo.cs" />
+    <Compile Include="Implement\MD\PreventiveRepo.cs" />
+    <Compile Include="Implement\MD\ProfitCenterRepo.cs" />
+    <Compile Include="Implement\MD\ProjectRepo.cs" />
+    <Compile Include="Implement\MD\RevenueCFElementRepo.cs" />
+    <Compile Include="Implement\MD\RevenuePLElementRepo.cs" />
+    <Compile Include="Implement\MD\SAPActualDataRepo.cs" />
+    <Compile Include="Implement\MD\SAPCostCFElementRepo.cs" />
+    <Compile Include="Implement\MD\SAPCostPLElementRepo.cs" />
+    <Compile Include="Implement\MD\SAPMdExpenseRepo.cs" />
+    <Compile Include="Implement\MD\SAPMdGLAccountRepo.cs" />
+    <Compile Include="Implement\MD\SAPMdPaymentRepo.cs" />
+    <Compile Include="Implement\MD\SAPRevenueCFElementRepo.cs" />
+    <Compile Include="Implement\MD\SAPRevenuePLElementRepo.cs" />
+    <Compile Include="Implement\MD\TemplateBaseRepo.cs" />
+    <Compile Include="Implement\MD\TemplateDetailContructCostCFRepo.cs" />
+    <Compile Include="Implement\MD\TemplateDetailContructCostPLRepo.cs" />
+    <Compile Include="Implement\MD\TemplateDetailCostCFRepo.cs" />
+    <Compile Include="Implement\MD\TemplateDetailCostPLRepo.cs" />
+    <Compile Include="Implement\MD\TemplateDetailOtherCostCFRepo.cs" />
+    <Compile Include="Implement\MD\TemplateDetailOtherCostPLRepo.cs" />
+    <Compile Include="Implement\MD\TemplateDetailRevenueCFRepo.cs" />
+    <Compile Include="Implement\MD\TemplateDetailRevenuePLRepo.cs" />
+    <Compile Include="Implement\MD\TemplateRepo.cs" />
+    <Compile Include="Implement\MD\UnitRepo.cs" />
+    <Compile Include="Implement\MD\UserReviewRepo.cs" />
+    <Compile Include="Implement\MD\VendorRepo.cs" />
+    <Compile Include="Implement\WF\ActivityComRepo.cs" />
+    <Compile Include="Implement\WF\ActivityRepo.cs" />
+    <Compile Include="Implement\WF\ActivityUserRepo.cs" />
+    <Compile Include="Implement\WF\ProcessRepo.cs" />
+    <Compile Include="Interface\AD\IConnectionRepo.cs" />
+    <Compile Include="Interface\AD\IFormObjectRepo.cs" />
+    <Compile Include="Interface\AD\IFormRepo.cs" />
+    <Compile Include="Interface\AD\IHoSoRepo.cs" />
+    <Compile Include="Interface\AD\ILanguageRepo.cs" />
+    <Compile Include="Interface\AD\IMenuRepo.cs" />
+    <Compile Include="Interface\AD\IMessageRepo.cs" />
+    <Compile Include="Interface\AD\IOrganizeRepo.cs" />
+    <Compile Include="Interface\AD\IRightRepo.cs" />
+    <Compile Include="Interface\AD\IRoleDetailRepo.cs" />
+    <Compile Include="Interface\AD\IRoleRepo.cs" />
+    <Compile Include="Interface\AD\ISystemConfigRepo.cs" />
+    <Compile Include="Interface\AD\IUserApproveRepo.cs" />
+    <Compile Include="Interface\AD\IUserGroupRepo.cs" />
+    <Compile Include="Interface\AD\IUserGroupRoleRepo.cs" />
+    <Compile Include="Interface\AD\IUserHistoryRepo.cs" />
+    <Compile Include="Interface\AD\IUserOrgRepo.cs" />
+    <Compile Include="Interface\AD\IUserRepo.cs" />
+    <Compile Include="Interface\AD\IUserRightRepo.cs" />
+    <Compile Include="Interface\AD\IUserRoleRepo.cs" />
+    <Compile Include="Interface\AD\IUserUserGroupRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\CONTRUCT_COST_CF_DATA_BASE\IContructCostCFDataBaseHistoryRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\CONTRUCT_COST_CF_DATA_BASE\IContructCostCFDataBaseRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\IContructCostCFDataHistoryRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\IContructCostCFDataRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\IContructCostCFHistoryRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\IContructCostCFRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\IContructCostCFReviewCommentRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\IContructCostCFReviewHistoryRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\IContructCostCFReviewRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\IContructCostCFReviewResultRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\IContructCostCFSumUpDetailRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_CF\IContructCostCFVersionRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\CONTRUCT_COST_PL_DATA_BASE\IContructCostPLDataBaseHistoryRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\CONTRUCT_COST_PL_DATA_BASE\IContructCostPLDataBaseRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\IContructCostPLDataHistoryRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\IContructCostPLDataRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\IContructCostPLHistoryRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\IContructCostPLRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\IContructCostPLReviewCommentRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\IContructCostPLReviewHistoryRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\IContructCostPLReviewRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\IContructCostPLReviewResultRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\IContructCostPLSumUpDetailRepo.cs" />
+    <Compile Include="Interface\BP\CONTRUCT_COST_PL\IContructCostPLVersionRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\COST_CF_DATA_BASE\ICostCFDataBaseHistoryRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\COST_CF_DATA_BASE\ICostCFDataBaseRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\ICostCFDataHistoryRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\ICostCFDataRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\ICostCFHistoryRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\ICostCFRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\ICostCFReviewCommentRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\ICostCFReviewHistoryRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\ICostCFReviewRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\ICostCFReviewResultRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\ICostCFSumUpDetailRepo.cs" />
+    <Compile Include="Interface\BP\COST_CF\ICostCFVersionRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\COST_PL_DATA_BASE\ICostPLDataBaseHistoryRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\COST_PL_DATA_BASE\ICostPLDataBaseRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\ICostPLDataHistoryRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\ICostPLDataRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\ICostPLHistoryRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\ICostPLRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\ICostPLReviewCommentRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\ICostPLReviewHistoryRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\ICostPLReviewRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\ICostPLReviewResultRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\ICostPLSumUpDetailRepo.cs" />
+    <Compile Include="Interface\BP\COST_PL\ICostPLVersionRepo.cs" />
+    <Compile Include="Interface\BP\IBudgetPeriodHistoryRepo.cs" />
+    <Compile Include="Interface\BP\IBudgetPeriodRepo.cs" />
+    <Compile Include="Interface\BP\IPeriodRepo.cs" />
+    <Compile Include="Interface\BP\IRegisterRepo.cs" />
+    <Compile Include="Interface\BP\IStepperBudgetRepo.cs" />
+    <Compile Include="Interface\BP\ITypeRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\IOtherCostPLDataHistoryRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\IOtherCostPLDataRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\IOtherCostPLHistoryRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\IOtherCostPLRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\IOtherCostPLReviewCommentRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\IOtherCostPLReviewHistoryRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\IOtherCostPLReviewRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\IOtherCostPLReviewResultRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\IOtherCostPLSumUpDetailRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\IOtherCostPLVersionRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\OTHER_COST_CF_DATA_BASE\IOtherCostCFDataBaseHistoryRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_CF\OTHER_COST_CF_DATA_BASE\IOtherCostCFDataBaseRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\IOtherCostPLDataHistoryRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\IOtherCostPLDataRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\IOtherCostPLHistoryRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\IOtherCostPLRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\IOtherCostPLReviewCommentRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\IOtherCostPLReviewHistoryRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\IOtherCostPLReviewRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\IOtherCostPLReviewResultRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\IOtherCostPLSumUpDetailRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\IOtherCostPLVersionRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\OTHER_COST_PL_DATA_BASE\IOtherCostPLDataBaseHistoryRepo.cs" />
+    <Compile Include="Interface\BP\OTHER_COST_PL\OTHER_COST_PL_DATA_BASE\IOtherCostPLDataBaseRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\IRevenueCFDataHistoryRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\IRevenueCFDataRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\IRevenueCFHistoryRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\IRevenueCFRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\IRevenueCFReviewCommentRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\IRevenueCFReviewHistoryRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\IRevenueCFReviewRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\IRevenueCFReviewResultRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\IRevenueCFSumUpDetailRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\IRevenueCFVersionRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\REVENUE_CF_DATA_BASE\IRevenueCFDataBaseHistoryRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_CF\REVENUE_CF_DATA_BASE\IRevenueCFDataBaseRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\IRevenuePLDataHistoryRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\IRevenuePLDataRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\IRevenuePLHistoryRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\IRevenuePLRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\IRevenuePLReviewCommentRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\IRevenuePLReviewHistoryRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\IRevenuePLReviewRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\IRevenuePLReviewResultRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\IRevenuePLSumUpDetailRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\IRevenuePLVersionRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\REVENUE_PL_DATA_BASE\IRevenuePLDataBaseHistoryRepo.cs" />
+    <Compile Include="Interface\BP\REVENUE_PL\REVENUE_PL_DATA_BASE\IRevenuePLDataBaseRepo.cs" />
+    <Compile Include="Interface\CF\IConfigTableauRepo.cs" />
+    <Compile Include="Interface\CF\IConfigTemplateNotify.cs" />
+    <Compile Include="Interface\CM\ICommentRepo.cs" />
+    <Compile Include="Interface\CM\IEmailRepo.cs" />
+    <Compile Include="Interface\CM\IFileUploadRepo.cs" />
+    <Compile Include="Interface\CM\IHeaderBPComment.cs" />
+    <Compile Include="Interface\CM\IHistorySmoApiRepo.cs" />
+    <Compile Include="Interface\CM\INotifyRepo.cs" />
+    <Compile Include="Interface\CM\ISmsHistoryRepo.cs" />
+    <Compile Include="Interface\CM\ISmsOTPRepo.cs" />
+    <Compile Include="Interface\CM\ISmsRepo.cs" />
+    <Compile Include="Interface\MD\IBidTypeRepo.cs" />
+    <Compile Include="Interface\MD\ICompanyRepo.cs" />
+    <Compile Include="Interface\MD\ICostCenterRepo.cs" />
+    <Compile Include="Interface\MD\ICostCFElementRepo.cs" />
+    <Compile Include="Interface\MD\ICostPLElementRepo.cs" />
+    <Compile Include="Interface\MD\ICountryRepo.cs" />
+    <Compile Include="Interface\MD\ICurrencyRepo.cs" />
+    <Compile Include="Interface\MD\IDictionaryRepo.cs" />
+    <Compile Include="Interface\MD\IDomainRepo.cs" />
+    <Compile Include="Interface\MD\IFAQQuestionRepo.cs" />
+    <Compile Include="Interface\MD\IFrequentlyAskedRepo.cs" />
+    <Compile Include="Interface\MD\IInternalOrderRepo.cs" />
+    <Compile Include="Interface\MD\IMaterialRepo.cs" />
+    <Compile Include="Interface\MD\IMaterialTypeRepo.cs" />
+    <Compile Include="Interface\MD\IMdBidSpecDetailRepo.cs" />
+    <Compile Include="Interface\MD\IMdBidSpecRepo.cs" />
+    <Compile Include="Interface\MD\IOtherProfitCenterRepo.cs" />
+    <Compile Include="Interface\MD\IPeriodTimeRepo.cs" />
+    <Compile Include="Interface\MD\IPreventiveRepo.cs" />
+    <Compile Include="Interface\MD\IProfitCenterRepo.cs" />
+    <Compile Include="Interface\MD\IProjectRepo.cs" />
+    <Compile Include="Interface\MD\IRevenueCFElementRepo.cs" />
+    <Compile Include="Interface\MD\IRevenuePLElementRepo.cs" />
+    <Compile Include="Interface\MD\ISAPActualDataRepo.cs" />
+    <Compile Include="Interface\MD\ISAPCostCFElementRepo.cs" />
+    <Compile Include="Interface\MD\ISAPCostPLElementRepo.cs" />
+    <Compile Include="Interface\MD\ISAPMdExpenseRepo.cs" />
+    <Compile Include="Interface\MD\ISAPMdGLAccountRepo.cs" />
+    <Compile Include="Interface\MD\ISAPMdPaymentRepo.cs" />
+    <Compile Include="Interface\MD\ISAPRevenueCFElementRepo.cs" />
+    <Compile Include="Interface\MD\ISAPRevenuePLElementRepo.cs" />
+    <Compile Include="Interface\MD\ITemplateBaseRepo.cs" />
+    <Compile Include="Interface\MD\ITemplateDetailContructCostCFRepo.cs" />
+    <Compile Include="Interface\MD\ITemplateDetailContructCostPLRepo.cs" />
+    <Compile Include="Interface\MD\ITemplateDetailCostCFRepo.cs" />
+    <Compile Include="Interface\MD\ITemplateDetailCostPLRepo.cs" />
+    <Compile Include="Interface\MD\ITemplateDetailOtherCostCFRepo.cs" />
+    <Compile Include="Interface\MD\ITemplateDetailOtherCostPLRepo.cs" />
+    <Compile Include="Interface\MD\ITemplateDetailRevenueCF.cs" />
+    <Compile Include="Interface\MD\ITemplateDetailRevenuePL.cs" />
+    <Compile Include="Interface\MD\ITemplateRepo.cs" />
+    <Compile Include="Interface\MD\IUnitRepo.cs" />
+    <Compile Include="Interface\MD\IUserReviewRepo.cs" />
+    <Compile Include="Interface\MD\IVendorRepo.cs" />
+    <Compile Include="Interface\WF\IActivityComRepo.cs" />
+    <Compile Include="Interface\WF\IActivityRepo.cs" />
+    <Compile Include="Interface\WF\IActivityUserRepo.cs" />
+    <Compile Include="Interface\WF\IProcessRepo.cs" />
+    <Compile Include="Mapping\AD\T_AD_CONNECTION_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_FORM_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_FORM_OBJECT_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_HOSO_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_LANGUAGE_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_MENU_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_MESSAGE_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_ORGANIZE_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_RIGHT_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_ROLE_DETAIL_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_ROLE_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_SYSTEM_CONFIG_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_USER_APPROVE_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_USER_GROUP_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_USER_GROUP_ROLE_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_USER_HISTORY_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_USER_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_USER_ORG_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_USER_RIGHT_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_USER_ROLE_Map.cs" />
+    <Compile Include="Mapping\AD\T_AD_USER_USER_GROUP_Map.cs" />
+    <Compile Include="Mapping\BaseMapping.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\CONTRUCT_COST_CF_DATA_BASE\T_BP_COST_CF_DATA_BASE_HISTORY_Mapping.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\CONTRUCT_COST_CF_DATA_BASE\T_BP_COST_CF_DATA_BASE_Mapping.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\T_BP_CONTRUCT_COST_CF_DATA_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\T_BP_CONTRUCT_COST_CF_DATA_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\T_BP_CONTRUCT_COST_CF_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\T_BP_CONTRUCT_COST_CF_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\T_BP_CONTRUCT_COST_CF_REVIEW_COMMENT_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\T_BP_CONTRUCT_COST_CF_REVIEW_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\T_BP_CONTRUCT_COST_CF_REVIEW_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\T_BP_CONTRUCT_COST_CF_REVIEW_RESULT_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\T_BP_CONTRUCT_COST_CF_SUM_UP_DETAIL_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_CF\T_BP_CONTRUCT_COST_CF_VERSION_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\CONTRUCT_COST_PL_DATA_BASE\T_BP_COST_PL_DATA_BASE_HISTORY_Mapping.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\CONTRUCT_COST_PL_DATA_BASE\T_BP_COST_PL_DATA_BASE_Mapping.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\T_BP_CONTRUCT_COST_PL_DATA_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\T_BP_CONTRUCT_COST_PL_DATA_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\T_BP_CONTRUCT_COST_PL_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\T_BP_CONTRUCT_COST_PL_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\T_BP_CONTRUCT_COST_PL_REVIEW_COMMENT_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\T_BP_CONTRUCT_COST_PL_REVIEW_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\T_BP_CONTRUCT_COST_PL_REVIEW_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\T_BP_CONTRUCT_COST_PL_REVIEW_RESULT_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\T_BP_CONTRUCT_COST_PL_SUM_UP_DETAIL_Map.cs" />
+    <Compile Include="Mapping\BP\CONTRUCT_COST_PL\T_BP_CONTRUCT_COST_PL_VERSION_Map.cs" />
+    <Compile Include="Mapping\BP\COST_CF\COST_CF_DATA_BASE\T_BP_COST_CF_DATA_BASE_HISTORY_Mapping.cs" />
+    <Compile Include="Mapping\BP\COST_CF\COST_CF_DATA_BASE\T_BP_COST_CF_DATA_BASE_Mapping.cs" />
+    <Compile Include="Mapping\BP\COST_CF\T_BP_COST_CF_DATA_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\COST_CF\T_BP_COST_CF_DATA_Map.cs" />
+    <Compile Include="Mapping\BP\COST_CF\T_BP_COST_CF_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\COST_CF\T_BP_COST_CF_Map.cs" />
+    <Compile Include="Mapping\BP\COST_CF\T_BP_COST_CF_REVIEW_COMMENT_Map.cs" />
+    <Compile Include="Mapping\BP\COST_CF\T_BP_COST_CF_REVIEW_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\COST_CF\T_BP_COST_CF_REVIEW_Map.cs" />
+    <Compile Include="Mapping\BP\COST_CF\T_BP_COST_CF_REVIEW_RESULT_Map.cs" />
+    <Compile Include="Mapping\BP\COST_CF\T_BP_COST_CF_SUM_UP_DETAIL_Map.cs" />
+    <Compile Include="Mapping\BP\COST_CF\T_BP_COST_CF_VERSION_Map.cs" />
+    <Compile Include="Mapping\BP\COST_PL\COST_PL_DATA_BASE\T_BP_COST_PL_DATA_BASE_HISTORY_Mapping.cs" />
+    <Compile Include="Mapping\BP\COST_PL\COST_PL_DATA_BASE\T_BP_COST_PL_DATA_BASE_Mapping.cs" />
+    <Compile Include="Mapping\BP\COST_PL\T_BP_COST_PL_DATA_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\COST_PL\T_BP_COST_PL_DATA_Map.cs" />
+    <Compile Include="Mapping\BP\COST_PL\T_BP_COST_PL_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\COST_PL\T_BP_COST_PL_Map.cs" />
+    <Compile Include="Mapping\BP\COST_PL\T_BP_COST_PL_REVIEW_COMMENT_Map.cs" />
+    <Compile Include="Mapping\BP\COST_PL\T_BP_COST_PL_REVIEW_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\COST_PL\T_BP_COST_PL_REVIEW_Map.cs" />
+    <Compile Include="Mapping\BP\COST_PL\T_BP_COST_PL_REVIEW_RESULT_Map.cs" />
+    <Compile Include="Mapping\BP\COST_PL\T_BP_COST_PL_SUM_UP_DETAIL_Map.cs" />
+    <Compile Include="Mapping\BP\COST_PL\T_BP_COST_PL_VERSION_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\OTHER_COST_CF_DATA_BASE\T_BP_OTHER_COST_CF_DATA_BASE_HISTORY_Mapping.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\OTHER_COST_CF_DATA_BASE\T_BP_OTHER_COST_CF_DATA_BASE_Mapping.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\T_BP_OTHER_CONTRUCT_COST_CF_DATA_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\T_BP_OTHER_CONTRUCT_COST_CF_DATA_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\T_BP_OTHER_CONTRUCT_COST_CF_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\T_BP_OTHER_CONTRUCT_COST_CF_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\T_BP_OTHER_CONTRUCT_COST_CF_REVIEW_COMMENT_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\T_BP_OTHER_CONTRUCT_COST_CF_REVIEW_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\T_BP_OTHER_CONTRUCT_COST_CF_REVIEW_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\T_BP_OTHER_CONTRUCT_COST_CF_REVIEW_RESULT_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\T_BP_OTHER_CONTRUCT_COST_CF_SUM_UP_DETAIL_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_CF\T_BP_OTHER_CONTRUCT_COST_CF_VERSION_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\OTHER_COST_PL_DATA_BASE\T_BP_OTHER_COST_PL_DATA_BASE_HISTORY_Mapping.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\OTHER_COST_PL_DATA_BASE\T_BP_OTHER_COST_PL_DATA_BASE_Mapping.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\T_BP_OTHER_CONTRUCT_COST_PL_DATA_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\T_BP_OTHER_CONTRUCT_COST_PL_DATA_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\T_BP_OTHER_CONTRUCT_COST_PL_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\T_BP_OTHER_CONTRUCT_COST_PL_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\T_BP_OTHER_CONTRUCT_COST_PL_REVIEW_COMMENT_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\T_BP_OTHER_CONTRUCT_COST_PL_REVIEW_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\T_BP_OTHER_CONTRUCT_COST_PL_REVIEW_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\T_BP_OTHER_CONTRUCT_COST_PL_REVIEW_RESULT_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\T_BP_OTHER_CONTRUCT_COST_PL_SUM_UP_DETAIL_Map.cs" />
+    <Compile Include="Mapping\BP\OTHER_CONTRUCT_COST_PL\T_BP_OTHER_CONTRUCT_COST_PL_VERSION_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\REVENUE_CF_DATA_BASE\T_BP_REVENUE_CF_DATA_BASE_HISTORY_Mapping.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\REVENUE_CF_DATA_BASE\T_BP_REVENUE_CF_DATA_BASE_Mapping.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\T_BP_REVENUE_CF_DATA_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\T_BP_REVENUE_CF_DATA_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\T_BP_REVENUE_CF_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\T_BP_REVENUE_CF_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\T_BP_REVENUE_CF_REVIEW_COMMENT_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\T_BP_REVENUE_CF_REVIEW_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\T_BP_REVENUE_CF_REVIEW_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\T_BP_REVENUE_CF_REVIEW_RESULT_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\T_BP_REVENUE_CF_SUM_UP_DETAIL_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_CF\T_BP_REVENUE_CF_VERSION_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\REVENUE_PL_DATA_BASE\T_BP_REVENUE_PL_DATA_BASE_HISTORY_Mapping.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\REVENUE_PL_DATA_BASE\T_BP_REVENUE_PL_DATA_BASE_Mapping.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\T_BP_REVENUE_PL_DATA_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\T_BP_REVENUE_PL_DATA_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\T_BP_REVENUE_PL_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\T_BP_REVENUE_PL_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\T_BP_REVENUE_PL_REVIEW_COMMENT_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\T_BP_REVENUE_PL_REVIEW_HISTORY_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\T_BP_REVENUE_PL_REVIEW_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\T_BP_REVENUE_PL_REVIEW_RESULT_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\T_BP_REVENUE_PL_SUM_UP_DETAIL_Map.cs" />
+    <Compile Include="Mapping\BP\REVENUE_PL\T_BP_REVENUE_PL_VERSION_Map.cs" />
+    <Compile Include="Mapping\BP\T_BP_BUDGET_PERIOD_HISTORY_Mapping.cs" />
+    <Compile Include="Mapping\BP\T_BP_BUDGET_PERIOD_Mapping.cs" />
+    <Compile Include="Mapping\BP\T_BP_PERIOD_Mapping.cs" />
+    <Compile Include="Mapping\BP\T_BP_REGISTER_Mapping.cs" />
+    <Compile Include="Mapping\BP\T_BP_STEPPER_BUDGET_Mapping.cs" />
+    <Compile Include="Mapping\BP\T_BP_TYPE_Mapping.cs" />
+    <Compile Include="Mapping\CF\T_CF_TABLEAU_Map.cs" />
+    <Compile Include="Mapping\CF\T_CF_TEMPLATE_NOTIFY_Map.cs" />
+    <Compile Include="Mapping\CM\T_CM_COMMENT_Map.cs" />
+    <Compile Include="Mapping\CM\T_CM_EMAIL_Map.cs" />
+    <Compile Include="Mapping\CM\T_CM_FILE_UPLOAD_Map.cs" />
+    <Compile Include="Mapping\CM\T_CM_HEADER_BP_COMMENT_Map.cs" />
+    <Compile Include="Mapping\CM\T_CM_HISTORY_SMO_API_Map.cs" />
+    <Compile Include="Mapping\CM\T_CM_NOTIFY_Map.cs" />
+    <Compile Include="Mapping\CM\T_CM_SMS_HISTORY_Map.cs" />
+    <Compile Include="Mapping\CM\T_CM_SMS_Map.cs" />
+    <Compile Include="Mapping\CM\T_CM_SMS_OTP_Map.cs" />
+    <Compile Include="Mapping\Common\BaseCoreCenterMapping.cs" />
+    <Compile Include="Mapping\Common\BaseCoreElementMapping.cs" />
+    <Compile Include="Mapping\Common\BaseTreeMapping.cs" />
+    <Compile Include="Mapping\Common\BP\BaseBPHistoryMapping.cs" />
+    <Compile Include="Mapping\Common\BP\BaseBPMapping.cs" />
+    <Compile Include="Mapping\Common\BP\BaseBPReviewMapping.cs" />
+    <Compile Include="Mapping\Common\BP\BaseBPVersionMapping.cs" />
+    <Compile Include="Mapping\MD\T_BP_TEMPATE_BASE_Map.cs" />
+    <Compile Include="Mapping\MD\T_FAQ_FREQUENTLY_ASKED_Map.cs" />
+    <Compile Include="Mapping\MD\T_FAQ_QUESTION_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_BID_SPEC_DETAIL_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_BID_SPEC_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_BID_TYPE_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_COMPANY_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_COST_CENTER_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_COST_CF_ELEMENT_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_COST_PL_ELEMENT_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_COUNTRY_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_CURRENCY_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_DICTIONARY_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_DOMAIN_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_INTERNAL_ORDER_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_MATERIAL_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_MATERIAL_TYPE_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_OTHER_PROFIT_CENTER_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_PERIOD_TIME_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_PROFIT_CENTER_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_PROJECT_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_REVENUE_CF_ELEMENT_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_REVENUE_PL_ELEMENT_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_TEMPLATE_DETAIL_CONTRUCT_COST_CF_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_TEMPLATE_DETAIL_CONTRUCT_COST_PL_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_TEMPLATE_DETAIL_COST_CF_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_TEMPLATE_DETAIL_COST_PL_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_TEMPLATE_DETAIL_OTHER_CONTRUCT_COST_CF_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_TEMPLATE_DETAIL_OTHER_CONTRUCT_COST_PL_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_TEMPLATE_DETAIL_REVENUE_CF_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_TEMPLATE_DETAIL_REVENUE_PL_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_TEMPLATE_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_UNIT_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_USER_REVIEW_Map.cs" />
+    <Compile Include="Mapping\MD\T_MD_VENDOR_Map.cs" />
+    <Compile Include="Mapping\MD\T_SAP_ACTUAL_DATA_Map.cs" />
+    <Compile Include="Mapping\MD\T_SAP_MD_COST_CF_ELEMENT_Map.cs" />
+    <Compile Include="Mapping\MD\T_SAP_MD_COST_PL_ELEMENT_Map.cs" />
+    <Compile Include="Mapping\MD\T_SAP_MD_EXPENSE_Map.cs" />
+    <Compile Include="Mapping\MD\T_SAP_MD_GLACCOUNT_Map.cs" />
+    <Compile Include="Mapping\MD\T_SAP_MD_PAYMENT_Map.cs" />
+    <Compile Include="Mapping\MD\T_SAP_MD_REVENUE_CF_ELEMENT_Map.cs" />
+    <Compile Include="Mapping\MD\T_SAP_MD_REVENUE_PL_ELEMENT_Map.cs" />
+    <Compile Include="Mapping\WF\T_WF_ACTIVITY_COM_Map.cs" />
+    <Compile Include="Mapping\WF\T_WF_ACTIVITY_Map.cs" />
+    <Compile Include="Mapping\WF\T_WF_ACTIVITY_USER_Map.cs" />
+    <Compile Include="Mapping\WF\T_WF_PROCESS_Map.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

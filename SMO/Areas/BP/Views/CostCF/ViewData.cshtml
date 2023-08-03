@@ -1,0 +1,129 @@
+﻿@model SMO.Service.Class.ViewDataCenterModel
+@{
+    var viewId = Guid.NewGuid().ToString();
+    var formId = Guid.NewGuid().ToString();
+    var submitForm = ViewBag.submitForm as bool?;
+    var formIdExportExcel = Guid.NewGuid().ToString();
+    var inputIdExportExcel = Guid.NewGuid().ToString();
+}
+
+<div id='@viewId' class="container-fluid child-content">
+    <div class="card border-grey">
+        <div style="margin: 5px; border-bottom: 1px dotted #e4e4e4; padding-bottom: 5px; display: flex">
+            <div class="fixed-btn">
+                @Html.MyButton("cmdBack", "Quay lại", string.Format("Forms.Close('{0}');", viewId), "Alt+N", "arrow_back")
+                @if (SMOUtilities.CheckRight("R301"))
+                {
+                    @Html.MyButton("cmdBack", "Kết xuất", $"$('#IS_DRILL_DOWN').val($('#chkDrillDown').is(':checked'));Forms.SubmitForm('{formId}');", "Alt+N", "search")
+                    @Html.MyButton("cmdBack", "Download", $"DownloadDataCenter();", "Alt+N", "file_download")
+                }
+            </div>
+            <div class="btn-function m-l-5" id="btn-function">
+            </div>
+            <div style="position: absolute; right: 15px; top: 15px;"><b>KẾ HOẠCH CHI THƯỜNG XUYÊN</b></div>
+        </div>
+        <div class="export-data" id="divExport_@viewId">
+            <div class="export-left" id="divExportLeft_@viewId">
+                <div class="export-left-header" id="divExportHeader_@viewId">
+                    @using (Ajax.BeginForm("SummaryDataCenter", null, FormDataUtils.GetAjaxOptions(viewId, $"#divExportRight_{viewId}"), new { @id = formId }))
+                    {
+
+                        Html.RenderPartial("_PartialViewExportHeader", Model,
+                            new ViewDataDictionary
+                            {
+                                new KeyValuePair<string, object>("viewId", viewId),
+                                new KeyValuePair<string, object>("formId", formId),
+                                new KeyValuePair<string, object>("currencies", ViewBag.currencies),
+                                new KeyValuePair<string, object>("objectType", TemplateObjectType.Department),
+                                new KeyValuePair<string, object>("budgetType", BudgetType.DongTien),
+                                new KeyValuePair<string, object>("elementType", ElementType.ChiPhi),
+            });
+                    }
+                </div>
+                <div class="export-left-tab" id="divExportTab_@viewId">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active" style="cursor: pointer; left: 0;">
+                            <a href="#information" title="Thông tin chung" data-toggle="tab">Thông tin</a>
+                        </li>
+                        <li role="presentation" style="cursor: pointer;">
+                            <a title="Quá trình nhập, phê duyệt dữ liệu" data-toggle="tab" href="#progress">QT.PD</a>
+                        </li>
+                        <li role="presentation" style="cursor: pointer;">
+                            <a href="#comment" data-toggle="tab" title="Comment">Comment</a>
+                        </li>
+                        <li role="presentation" style="cursor: pointer;">
+                            <a title="Danh sách version" href="#version" data-toggle="tab">Version</a>
+                        </li>
+                        <li role="presentation" style="cursor: pointer;">
+                            <a title="Dòng dữ liệu" href="#flow" data-toggle="tab">Flow</a>
+                        </li>
+                        <li role="presentation" style="cursor: pointer;">
+                            <a title="File cơ sở" href="#templateBase" data-toggle="tab">File</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" style="overflow-y: scroll; overflow-x: scroll;" id="divExportTabContent_@viewId">
+                        <div role="tabpanel" class="tab-pane fade in active" id="information">
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="progress">
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="comment">
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="version">
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="flow">
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="templateBase">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="export-right" id="divExportRight_@viewId">
+
+            </div>
+            <div class="hidden">
+                <form id="@formIdExportExcel" target="_blank" method="post" action="@Url.Action("exportExcel")">
+                    @Html.Hidden("exportExcelYear", Model.YEAR)
+                    @Html.Hidden("exportExcelVersion", Model.VERSION)
+                    @Html.Hidden("exportExcelTemplate", Model.TEMPLATE_CODE)
+                    @Html.Hidden("exportExcelIsDrillDown", Model.IS_DRILL_DOWN)
+                    @Html.Hidden("exportExcelCenterCode", Model.ORG_CODE)
+                    @Html.Hidden("exportExcelUnit", Model.EXCHANGE_TYPE)
+                    @Html.Hidden("exportExcelExchangeRate", Model.EXCHANGE_RATE)
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            Forms.CompleteUI();
+            ResizeExportTab();
+
+            // submit form after filter select options
+            OnChangeOrg(null, null, null, true)
+        });
+
+        var lastScrollLeft = 0;
+
+        function DownloadDataCenter() {
+            var html = $('<div>').append($('#divExportRight_@viewId table').clone()).html().trim();
+            if (html === '') {
+                return;
+            }
+            $('#@inputIdExportExcel').remove();
+            $('#@formIdExportExcel').append(`<input id="@inputIdExportExcel" name="html" type="hidden" />`);
+            $('#@formIdExportExcel #exportExcelCenterCode').val($('#@formId #ORG_CODE').val());
+            $('#@formIdExportExcel #exportExcelTemplate').val($('#@formId #TEMPLATE_CODE').val());
+            $('#@formIdExportExcel #exportExcelVersion').val($('#@formId #VERSION').val());
+            $('#@formIdExportExcel #exportExcelYear').val($('#@formId #YEAR').val());
+            $('#@formIdExportExcel #exportExcelUnit').val($('#@formId #EXCHANGE_TYPE').val());
+            $('#@formIdExportExcel #exportExcelIsDrillDown').val($('#@formId #IS_DRILL_DOWN').val() == undefined ? false : $('#@formId #IS_DRILL_DOWN').val());
+            $('#@formIdExportExcel #exportExcelExchangeRate').val($('#@formId #EXCHANGE_RATE').val());
+            $('#@inputIdExportExcel').val(html);
+            $('#@formIdExportExcel').submit();
+        }
+
+    </script>
+
+</div>

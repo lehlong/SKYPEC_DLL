@@ -1,0 +1,232 @@
+﻿@model SMO.Service.WF.WorkFlowService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+
+}
+<div class="modal-close">
+    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">✖</button>
+</div>
+<div id='@Model.ViewId' class="modal-body">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation">
+            <a href="#generalInformation" class="text-uppercase m-t-10" data-toggle="tab">Thông tin Activity</a>
+        </li>
+        <li role="presentation" class="active">
+            <a href="#detailCommunications" class="text-uppercase m-t-10" data-toggle="tab">Thông tin các giao thức</a>
+        </li>
+    </ul>
+    <div class="container-fluid m-t-10">
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade" id="generalInformation">
+                @using (Ajax.BeginForm("UpdateActivity", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.ObjActivity.CODE)
+                    @Html.HiddenFor(m => m.ObjActivity.PROCESS_CODE)
+
+                    <div class="page-function">
+                        <div class="page-function-button m-r-20">
+                            @Html.MyButton("cmdSave", "Lưu lại", string.Format("Forms.SubmitForm('{0}');", @Model.FormId), "Alt+N", "done_all")
+                        </div>
+                    </div>
+
+                    <div class="row m-t-20">
+                        <div class="col-xs-12">
+                            <label>Mã activity</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.MyTextBoxFor(m => m.ObjActivity.CODE, new { @disabled = "" })
+                                </div>
+                                @Html.ValidationMessageFor(m => m.ObjActivity.CODE)
+                            </div>
+
+                            <label>Tên activity</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.MyTextBoxFor(m => m.ObjActivity.NAME)
+                                </div>
+                                @Html.ValidationMessageFor(m => m.ObjActivity.NAME)
+                            </div>
+
+                            <label>Thứ tự</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.MyTextBoxFor(m => m.ObjActivity.C_ORDER)
+                                </div>
+                                @Html.ValidationMessageFor(m => m.ObjActivity.C_ORDER)
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+            <div role="tabpanel" class="tab-pane fade in active" id="detailCommunications">
+                <div class="page-function">
+                    <div class="page-function-button m-r-20">
+                        @Html.MyButton("cmdAddItem", "Thêm mới", "AddItem();", "", "add")
+                        @Html.MyButton("cmdDetailItem", "Chi tiết", "DetailItem();", "", "menu")
+                        @Html.MyButton("cmdDeleteItem", "Xóa", $"Forms.DeleteItems('{Url.Action("DeleteCommunications")}','chkItem');", "", "delete")
+                        @Html.MyButton("cmdSaveItem", "Lưu lại", "SaveItem();", "", "done_all", htmlAttributes: new { @class = "hidden"})
+                        @Html.MyButton("cmdCancelItem", "Đóng", "CancelItem();", "", "cancel", htmlAttributes: new { @class = "hidden" })
+                    </div>
+                </div>
+                <div class="border-grey m-b-10 hidden" id="area-new-item">
+                    @using (Ajax.BeginForm("SaveCommunication", null, FormDataUtils.GetAjaxOptions("area-new-item"), new { @id = "add-communication" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("ACTIVITY_CODE", Model.ObjActivity.CODE)
+                        @Html.Hidden("PKID", "")
+
+                        <div class="container-fluid m-t-10">
+                            <div class="row">
+                                <div class="col-md-4 col-xs-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Loại giao thức</label>
+                                        <div class="form-line">
+                                            <select name="TYPE_NOTIFY" id="TYPE_NOTIFY"
+                                                    data-virtual-scroll="false" data-container="body"
+                                                    class="selectpicker show-tick dropdown form-control">
+                                                <option value="NOTIFY" selected>Thông báo</option>
+                                                <option value="EMAIL">Email</option>
+                                                <option value="SMS">Sms</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-xs-12">
+                                    <label class="control-label">Các tham số có thể sử dụng trong nội dung thông báo bao gồm: </label>
+                                    <div class="form-group">
+                                        <span class="badge bg-blue" title="Họ tên người thực hiện">{NGUOI_THUC_HIEN}</span>
+                                        <span class="badge bg-blue" title="Họ tên người nhận thông báo">{NGUOI_NHAN_THONG_BAO}</span>
+                                        <span class="badge bg-blue" title="Mẫu khai báo kế hoạch">{MAU_KHAI_BAO}</span>
+                                        <span class="badge bg-blue" title="Năm kế hoạch">{NAM_NGAN_SACH}</span>
+                                        <span class="badge bg-blue" title="Loại kế hoạch">{LOAI_NGAN_SACH}</span>
+                                        <span class="badge bg-blue" title="Đơn vị của người thực hiện">{DON_VI}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Tiêu đề</label>
+                                        <div class="form-line">
+                                            @Html.TextBox("SUBJECT", "", new { @class = "form-control", @required = "" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Nội dung</label>
+                                        <div class="form-line">
+                                            @Html.TextArea("CONTENTS", "", new { @class = "form-control", @required = "", @rows = "3" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div id="div-coms">
+                    @{
+                        Html.RenderPartial("_PartialViewCommunications", Model.ObjActivity.ActivityComs);
+                    }
+                </div>
+                @using (Ajax.BeginForm("GetCommunications", null, FormDataUtils.GetAjaxOptions(Model.ViewId, "#div-coms"), new { @id = "refresh-communication" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("activityCode", Model.ObjActivity.CODE)
+                }
+                </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            Forms.CompleteUI();
+
+            CKEDITOR.replace('CONTENTS', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+        });
+
+        function RefreshTableCommunications() {
+            $('#add-communication')[0].reset();
+            $("#add-communication #PKID").val("");
+            $('#refresh-communication').submit();
+            CKEDITOR.instances.CONTENTS.setData("");
+        }
+
+        function AddItem(keepRemovePKID) {
+            if (keepRemovePKID === undefined || !keepRemovePKID) {
+                $("#add-communication #PKID").val("");
+            }
+
+            $('#area-new-item').removeClass('hidden');
+
+            $('#cmdSaveItem').removeClass('hidden');
+            $('#cmdCancelItem').removeClass('hidden');
+
+            $('#cmdAddItem').addClass('hidden');
+            $('#cmdDeleteItem').addClass('hidden');
+            $('#cmdDetailItem').addClass('hidden');
+        }
+        function CancelItem(e) {
+            $("#add-communication #PKID").val("");
+
+            $('#area-new-item').addClass('hidden');
+
+            $('#cmdSaveItem').addClass('hidden');
+            $('#cmdCancelItem').addClass('hidden');
+
+            $('#cmdAddItem').removeClass('hidden');
+            $('#cmdDeleteItem').removeClass('hidden');
+            $('#cmdDetailItem').removeClass('hidden');
+            RefreshTableCommunications();
+        }
+        function SaveItem(e) {
+            $("#CONTENTS").val(CKEDITOR.instances.CONTENTS.getData());
+            $('#add-communication').submit();
+        }
+
+
+        function DetailItem(selected, tr) {
+            if (selected === undefined) {
+                var selected = '';
+                var numItem = 0;
+                $('.chkItem').each(function () {
+                    if (this.checked) {
+                        selected = $(this).attr('modelId');
+                        numItem++;
+
+                        tr = $(this).closest('tr');
+                    }
+                });
+
+                if (numItem === 0) {
+                    alert("Bạn phải chọn bản ghi cần xem!");
+                    return;
+                } else if (numItem > 1) {
+                    alert("Bạn chỉ được chọn một bản ghi!");
+                    return;
+                }
+            }
+
+            $("#add-communication #PKID").val(selected);
+            AddItem(true);
+
+            // init value
+            var type = $($(tr).find('td span')[0]).html().trim();
+            $("#add-communication #TYPE_NOTIFY").selectpicker('val', type);
+
+            var subject = $($(tr).find('td')[2]).html().trim();
+            $("#add-communication #SUBJECT").val(subject);
+
+            var content = $($(tr).find('td')[3]).html().trim();
+            //$("#add-communication #CONTENTS").val(content);
+            CKEDITOR.instances.CONTENTS.setData(content);
+            Forms.CompleteUI();
+        }
+    </script>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Đóng</button>
+</div>

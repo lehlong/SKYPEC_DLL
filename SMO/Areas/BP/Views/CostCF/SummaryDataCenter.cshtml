@@ -1,0 +1,53 @@
+﻿@model IList<T_MD_COST_CF_ELEMENT>
+@using SMO.Core.Entities;
+@using SMO.Core.Entities.MD;
+@using SMO.Service.Class;
+
+@{
+    var viewId = Guid.NewGuid().ToString();
+    var CostCFHeader = ViewBag.CostCFHeader as T_BP_COST_CF_VERSION;
+    var dataCenterModel = ViewBag.dataCenterModel as ViewDataCenterModel;
+}
+@if (Model == null || Model.Count == 1)
+{
+    Html.RenderPartial("_NothingData");
+    return;
+}
+@if (!string.IsNullOrEmpty(dataCenterModel.TEMPLATE_CODE))
+{
+    // view template data
+    ViewBag.CostCFHeader = CostCFHeader;
+    ViewBag.dataCenterModel = dataCenterModel;
+
+    Html.RenderPartial("_PartialViewTemplateDataCostCF", Model);
+}
+else if (dataCenterModel.VERSION == null || dataCenterModel.VERSION.Value < 0)
+{
+
+    // xem dữ liệu trước khi tổng hợp
+    Html.RenderPartial("_PartialViewSearchAndDetail", dataCenterModel);
+    ViewBag.dataCenterModel = dataCenterModel;
+    Html.RenderPartial("_PartialViewSumUpPreview", Model.Select(x => (SMO.Core.Common.CoreElement)x).ToList());
+
+    <script>
+        $(document).on("keyup", "#text-search-table", () => SearchTable(2, 1, 1, 2));
+    </script>
+}
+else
+{
+    ViewBag.dataCenterModel = dataCenterModel;
+    // xem dữ liệu được tổng hợp cho đơn vị
+    Html.RenderPartial("_PartialViewSummaryCenterCostCF", Model);
+}
+
+@{
+    if (!string.IsNullOrEmpty(dataCenterModel.TEMPLATE_CODE))
+    {
+        ViewBag.EmptyColumns = 4;
+        Html.RenderPartial("_ScriptViewTemplateData", dataCenterModel.YEAR);
+    }
+    else
+    {
+        Html.RenderPartial("_ScriptSummaryDataCenter", dataCenterModel.YEAR);
+    }
+}

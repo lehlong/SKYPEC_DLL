@@ -1,0 +1,153 @@
+﻿@model IList<T_MD_REVENUE_PL_ELEMENT>
+
+@using SMO.Core.Entities.MD;
+@using SMO.Core.Entities;
+@using System.Text;
+
+@{
+    Layout = null;
+    var detailRevenueElements = ViewBag.detailRevenueElements as IList<T_BP_REVENUE_PL_DATA>;
+    var lookupTemplateCodes = detailRevenueElements.ToLookup(x => x.TEMPLATE_CODE);
+    var costPl = ViewBag.costPl as T_BP_REVENUE_PL;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ViewSummaryCenterRevenue</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-condensed table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Mã khoản mục</th>
+                        <th>Tên khoản mục</th>
+                        <th>Tháng 1</th>
+                        <th>Tháng 2</th>
+                        <th>Tháng 3</th>
+                        <th>Tháng 4</th>
+                        <th>Tháng 5</th>
+                        <th>Tháng 6</th>
+                        <th>Tháng 7</th>
+                        <th>Tháng 8</th>
+                        <th>Tháng 9</th>
+                        <th>Tháng 10</th>
+                        <th>Tháng 11</th>
+                        <th>Tháng 12</th>
+                        <th>Tổng năm</th>
+                        <th>Trung bình tháng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model?
+                                            .OrderBy(x => x.C_ORDER)
+                                            .GroupBy(x => x.CODE)
+                                            .Select(x => x.First()))
+                        {
+                            var space = new StringBuilder();
+                            var childClass = item.IsChildren ? "child" : string.Empty;
+                            for (int i = 0; i < item.LEVEL; i++)
+                            {
+                                space.Append("\t");
+                            }
+                            <tr>
+                                <td id="@item.CODE" class="@childClass">@item.CODE</td>
+                                <td class="pre-whitespace">@($"{space.ToString()}{item.NAME}")</td>
+                                <td>@item.Values[0]</td>
+                                <td>@item.Values[1]</td>
+                                <td>@item.Values[2]</td>
+                                <td>@item.Values[3]</td>
+                                <td>@item.Values[4]</td>
+                                <td>@item.Values[5]</td>
+                                <td>@item.Values[6]</td>
+                                <td>@item.Values[7]</td>
+                                <td>@item.Values[8]</td>
+                                <td>@item.Values[9]</td>
+                                <td>@item.Values[10]</td>
+                                <td>@item.Values[11]</td>
+                                <td>@item.Values.Sum()</td>
+                                <td>@(item.Values.Sum() / 12)</td>
+                            </tr>
+                        }
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+<script src="~/Scripts/jquery-1.10.2.js?v=1.1"></script>
+<script src="~/Scripts/D2SCoreJS/D2SCoreJS.js"></script>
+<script>
+    $('.child').on('dblclick', function () {
+        var $this = $(this).parent();
+        var centerCode = '@costPl.ORG_CODE';
+        var version = @costPl.VERSION;
+        var elementCode = $(this).attr('id');
+        var year = @costPl.TIME_YEAR;
+
+        if ($this.hasClass("expanded")) {
+            // collapsed
+            $.each($this.siblings(`.${elementCode}`), function (e, v) {
+                $(v).addClass("hidden");
+            });
+            $this.addClass("collapsed").removeClass("expanded");
+        } else if ($this.hasClass("collapsed")) {
+            // expanded
+            $.each($this.siblings(`.${elementCode}`), function (e, v) {
+                $(v).removeClass("hidden");
+            });
+            $this.addClass("expanded").removeClass("collapsed");
+        } else {
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("GetDetailSumUp")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { centerCode, version, elementCode, year },
+                success: function (response) {
+                    // add row
+                    response.sort(byProperty("TEMPLATE_CODE"));
+                    $.each(response, function (index, value) {
+                        var tr = $('<tr>', { class: `child ${elementCode}` });
+                        var td = $('<td>', { text: '' });
+                        tr.append($('<td>', { text: '' }));
+
+                        tr.append($('<td>', { text: `${value.TEMPLATE_CODE} - ${value.ORG_CODE}` }));
+                        $.each(value.Values, function (i, val) {
+                            td = $('<td>', { text: val });
+                            tr.append(td);
+                        });
+                        let total = value.Values.reduce(((a, b) => a + b));
+                        tr.append($('<td>', { text: total }));
+                        tr.append($('<td>', { text: total / value.Values.length }));
+
+                        $this.after(tr);
+                    });
+                    $this.addClass("expanded");
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+    });
+
+    var byProperty = function (prop) {
+        return function (a, b) {
+            if (typeof a[prop] == "number") {
+                return (a[prop] - b[prop]);
+            } else {
+                return ((a[prop] < b[prop]) ? 1 : ((a[prop] > b[prop]) ? -1 : 0));
+            }
+        };
+    };
+
+</script>

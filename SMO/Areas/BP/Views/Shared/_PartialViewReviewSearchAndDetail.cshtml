@@ -1,0 +1,52 @@
+﻿@model SMO.Service.Class.ReviewDataCenterModel
+
+<div style="display: flex; position: absolute; top: 0; width: 500px;">
+    <div class="input-group" style="width: 250px; margin-bottom: 0; margin-left: 10px; float: left">
+        <div class="form-line">
+            <input class="form-control" id="text-search-table" placeholder="Tìm kiếm" />
+        </div>
+        <span class="input-group-addon" style="cursor: pointer" title="Làm mới ô tìm kiếm" onclick="$('#text-search-table').val(''); $('#text-search-table').focus(); $('#text-search-table').trigger('keyup');">
+            <i class="material-icons">refresh</i>
+        </span>
+    </div>
+    <div class="p-t-10">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Đơn vị: </b>@Model.EXCHANGE_TYPE | <b>Tỷ giá: </b>@Model.EXCHANGE_RATE.Value.ToStringVN()
+    </div>
+</div>
+
+<div style="position: absolute; right: 10px; top: 0;">
+    <span class="waves-effect btn-default btn" onclick="ZoomIn();" title="Phóng to">
+        <i class="col-fecon material-icons">zoom_out</i>
+    </span>
+    <span class="waves-effect btn-default btn" onclick="ZoomOut();" title="Thu nhỏ">
+        <i class="col-fecon material-icons">zoom_in</i>
+    </span>
+    <span class="waves-effect btn-default btn" onclick="$('.export-right').toggleClass('full-screen');" title="Xem toàn màn hình">
+        <i class="col-fecon material-icons">fullscreen</i>
+    </span>
+</div>
+
+<script>
+    var fontSize = 13;
+    function ZoomIn() {
+        fontSize--;
+        if (fontSize < 6) {
+            fontSize = 6;
+        }
+        Zoom(fontSize);
+    }
+
+    function ZoomOut() {
+        fontSize++;
+        if (fontSize > 20) {
+            fontSize = 20;
+        }
+        Zoom(fontSize);
+    }
+
+    function Zoom(fontSize) {
+        var $table = $('#table');
+        $('#table').attr('class', $table.get(0).className.replace(/\bfont-\S+/g, ''));
+        $("#table").addClass("font-" + fontSize);
+    }
+</script>

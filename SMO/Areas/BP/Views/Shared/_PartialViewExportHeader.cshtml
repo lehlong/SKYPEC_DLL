@@ -1,0 +1,494 @@
+﻿@model SMO.Service.Class.ViewDataCenterModel
+@using SMO.Core.Entities;
+@using SMO.Core.Entities.MD;
+@using SMO.Repository.Implement.MD;
+
+@{
+    var allCurrencies = ViewBag.currencies as IEnumerable<T_MD_CURRENCY>;
+    var viewId = ViewBag.viewId as string;
+    var formId = ViewBag.formId as string;
+    var objectType = ViewBag.objectType as string;
+    var budgetType = ViewBag.budgetType as string;
+    var elementType = ViewBag.elementType as string;
+}
+@Html.AntiForgeryToken()
+@Html.HiddenFor(x => x.IS_HAS_VALUE)
+@Html.HiddenFor(x => x.IS_HAS_NOT_VALUE)
+<b class="font-13">Hiển thị các khoản mục theo:</b>
+
+@if (!Model.IS_LEAF)
+{
+    @Html.HiddenFor(x => x.IS_DRILL_DOWN)
+    <div class="m-b-5" id="drill-down">
+        <input type="checkbox" id="chkDrillDown" onclick="" style="margin:0;" class="filled-in" />
+        <label for="chkDrillDown"></label>
+        &nbsp;<span class="font-13">Drilldown tới đơn vị con</span>
+    </div>
+
+    <div class="m-b-10">
+        @Html.MyDropDownListFor(x => x.ORG_CODE,
+    SelectListUtilities.GetChildOrg<T_MD_COST_CENTER, CostCenterRepo>(root: ProfileUtilities.User.ORGANIZE_CODE),
+     new
+     {
+         @class = "selectpicker show-tick dropdown",
+         @onchange = "OnChangeOrg();",
+         @data_container = "body",
+         @data_live_search = "true"
+     })
+    </div>
+}
+else
+{
+    @Html.HiddenFor(x => x.ORG_CODE)
+}
+
+<div class="m-b-10 m-t-10" id="chkData">
+    <input type="checkbox" id="chkCoDuLieu" onclick="" @(Model.IS_HAS_VALUE ? "checked" : "") style="margin:0;" class="filled-in "
+           onchange="$('#IS_HAS_VALUE').val($(this).is(':checked'))" />
+    <label for="chkCoDuLieu"></label>
+    &nbsp;<span>Có dữ liệu</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="checkbox" id="chkChuaCoDuLieu" @(Model.IS_HAS_NOT_VALUE ? "checked" : "") onclick="" style="margin:0;" class="filled-in"
+           onchange="$('#IS_HAS_NOT_VALUE').val($(this).is(':checked'))" />
+    <label for="chkChuaCoDuLieu"></label>
+    &nbsp;<span>Không có dữ liệu</span>
+</div>
+
+<div class="m-b-10" id="select-template">
+    @Html.MyDropDownListFor(x => x.TEMPLATE_CODE, new SelectList(new List<string>()),
+        new
+        {
+            @class = "selectpicker show-tick dropdown",
+            @onchange = "OnChangeTemplate();",
+            @data_container = "body",
+            @data_live_search = "true"
+        })
+
+</div>
+
+<div class="row">
+    <div class="col-xs-6">
+        @Html.MyDropDownListFor(x => x.YEAR, new SelectList(new List<string>()),
+    new
+    {
+        @class = "selectpicker show-tick dropdown",
+        @onchange = "OnChangeYear();",
+        @data_container = "body",
+        @data_live_search = "true"
+    })
+    </div>
+
+    <div class="col-xs-6">
+        @Html.MyDropDownListFor(x => x.VERSION, new SelectList(new List<string>()),
+    new
+    {
+        @class = "selectpicker show-tick dropdown",
+        @data_container = "body",
+        @data_live_search = "true",
+        @onchange = "OnChangeVersion()"
+    })
+    </div>
+</div>
+<div class="row clearfix m-t-10">
+    @if (allCurrencies != null && allCurrencies.Count() > 0)
+    {
+        <div class="col-xs-6">
+            @Html.MyDropDownListFor(x => x.EXCHANGE_TYPE, new SelectList(allCurrencies, "CODE", "TEXT"),
+        new
+        {
+            @class = "selectpicker show-tick dropdown",
+            @data_container = "body",
+            @data_live_search = "true",
+            @onchange = "ChangeCurrency(this)"
+        })
+        </div>
+    }
+
+    <div class="col-xs-6">
+        <div class="form-group">
+            <div class="form-line">
+                @Html.MyTextBoxFor(x => x.EXCHANGE_RATE, new { @placeholder = "Tỉ giá tiền" })
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#EXCHANGE_TYPE').change();
+
+        Inputmask("integer", {
+            autoUnmask: true,
+            groupSeparator: ',',
+            min: 1,
+            autoGroup: true,
+            rightAlign: false
+        }).mask('#EXCHANGE_RATE');
+    });
+
+        function ChangeCurrency(e) {
+            var value = $(e).val();
+            var lstCurrencies = JSON.parse('@Html.Raw(Json.Encode(allCurrencies))');
+            $.each(lstCurrencies, function (i, v) {
+                if (v.CODE === value) {
+                    $('#EXCHANGE_RATE').val(v.EXCHANGE_RATE);
+                    return;
+                }
+            });
+    }
+
+    function formatNumber(number) {
+        var exchange = $('#EXCHANGE_RATE').val();
+            number = parseFloat(number / exchange).toFixed(2);
+        var tempStr = number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".").replace(/.([^.]+)$/, ',$1');
+        // xóa bỏ các số 0 cuối cùng sau dấu ,
+        var tempStr = tempStr.replace(/([0]+)(?!.*\1)$/, '');
+        if (tempStr.slice(-1) === ',') {
+            return tempStr.slice(0, -1);
+        } else {
+            return tempStr;
+        }
+    }
+
+
+    var byProperty = function (prop) {
+        return function (a, b) {
+            if (typeof a[prop] == "number") {
+                return (a[prop] - b[prop]);
+            } else {
+                return ((a[prop] < b[prop]) ? 1 : ((a[prop] > b[prop]) ? -1 : 0));
+            }
+        };
+    };
+
+    $('i.swap-icon-drill-down').hover(
+        function () {
+            $(this).addClass("col-fecon").css("cursor", "pointer");
+        },
+
+        function () {
+            $(this).removeClass("col-fecon");
+        }
+    );
+
+
+        $(window).on('resize', () => ResizeExportTab());
+
+        function ResizeExportTab() {
+            var windowHeight = $(window).height();
+            var functionHeight = $("#divFunction").height();
+            $("#divExport_@viewId").height(windowHeight - functionHeight - 120);
+            //$("#divFixKetXuat").height(110);
+            $("#divExportTab_@viewId").height($("#divExport_@viewId").height() - $("#divExportHeader_@viewId").height() - 21);
+            $("#divExportTabContent_@viewId").height($("#divExportTab_@viewId").height() - 66);
+            $("#divExportRight_@viewId").height(windowHeight - functionHeight - 160);
+        }
+
+        function OnChangeOrg(templateId, year, orgCode, submitForm) {
+            // clear data in the right div
+            $("#divExportRight_@viewId").html("");
+            $('#@viewId #btn-function').html("");
+            RemoveActiveTabContent();
+
+            var orgCode = $("#@viewId #ORG_CODE").val();
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("GetTemplate")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { orgCode },
+                success: function (response) {
+                    var lst = $('#@viewId #TEMPLATE_CODE');
+                    lst.html('');
+                    if (response.isParent) {
+                        $("#@viewId #drill-down").removeClass("hidden");
+                        lst.append($('<option>', { value: '', text: 'Tổng hợp dữ liệu' }));
+                        if (response.templates && response.templates.length > 0) {
+                            $('#@viewId #select-template').removeClass("hidden");
+                        } else {
+                            $('#@viewId #select-template').addClass("hidden");
+                        }
+                        $("#@viewId #chkData").addClass("hidden");
+                    } else {
+                        $("#@viewId #drill-down").addClass("hidden");
+
+                        if (!response.templates || response.templates.length == 0) {
+                            lst.append($('<option>', { value: '', text: 'Không có mẫu được khai báo' }));
+                        } else {
+                            lst.append($('<option>', { value: '', text: 'Tổng hợp dữ liệu' }));
+                        }
+                        $('#@viewId #select-template').removeClass("hidden");
+                        $("#@viewId #chkData").removeClass("hidden");
+                    }
+
+                    if (response.templates && response.templates.length > 0) {
+                        $.each(response.templates, function (index, value) {
+                            let td = '';
+                            if (value.Value === '@Model.TEMPLATE_CODE' && orgCode === '@Model.ORG_CODE') {
+                                td = $('<option>', { value: value.Value, text: value.Text, selected: "selected" });
+                            }
+                            else
+                            {
+                                td = $('<option>', { value: value.Value, text: value.Text });
+                            }
+                            lst.append(td);
+                        });
+                        if (templateId) {
+                            lst.val(templateId);
+                        }
+                    }
+
+                    lst.selectpicker('refresh');
+
+                    var lstVersion = $('#@viewId #VERSION');
+                    lstVersion.html('');
+                    lstVersion.append($('<option>', { value: '-1', text: 'Nothing version' }));
+                    lstVersion.selectpicker('refresh');
+
+                    OnChangeTemplate(year, version, submitForm);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+    }
+
+    function OnChangeTemplate(year, version, submitForm) {
+            // clear data in the right div
+            $("#divExportRight_@viewId").html("");
+            var template = $("#@viewId #TEMPLATE_CODE").val();
+            var orgCode = $("#@viewId #ORG_CODE").val();
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("GetYear")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { orgCode, template },
+                success: function (response) {
+                    var oldValueYear = $('#@viewId #YEAR').val();
+                    var lst = $('#@viewId #YEAR');
+                    lst.html('');
+                    if (response && response.length > 0) {
+                        $.each(response, function (index, value) {
+                            let td = '';
+                            if ((value === @Model.YEAR && orgCode === '@Model.ORG_CODE' && template === '@Model.TEMPLATE_CODE') || value == oldValueYear) {
+                                td = $('<option>', { value: value, text: value, selected: "selected" });
+                            }
+                            else {
+                                td = $('<option>', { value: value, text: value });
+                            }
+                            lst.append(td);
+                        });
+                        if (year) {
+                            lst.val(year);
+                        }
+                        //if (orgCode === '@Model.ORG_CODE') {
+                        OnChangeYear(version, submitForm)
+                        //}
+
+                    } else {
+                        lst.append($('<option>', { value: '-1', text: 'Nothing year' }))
+                    }
+                    lst.selectpicker('refresh');
+
+                    var lstVersion = $('#@viewId #VERSION');
+                    lstVersion.html('');
+                    lstVersion.append($('<option>', { value: '-1', text: 'Nothing version' }))
+                    lstVersion.selectpicker('refresh');
+
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function OnChangeYear(version, submitForm) {
+            // clear data in the right div
+            $("#divExportRight_@viewId").html("");
+            var year = $("#@viewId #YEAR").val();
+            var orgCode = $("#@viewId #ORG_CODE").val();
+            var templateId = $("#@viewId #TEMPLATE_CODE").val();
+            if (year === undefined) {
+                return;
+            }
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("GetVersions")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { orgCode, year, templateId },
+                success: function (response) {
+                    var lstVersion = $('#@viewId #VERSION');
+                    lstVersion.html('');
+                    if (response && response.length > 0) {
+                        lstVersion.append($('<option>', { value: '', text: 'Version' }));
+                        $.each(response, function (index, value) {
+                            let td = '';
+
+                            if (value === @Model.VERSION && orgCode === '@Model.ORG_CODE') {
+                                td = $('<option>', { value: value, text: value, selected: "selected" });
+                            }
+                            else {
+                                td = $('<option>', { value: value, text: value });
+                            }
+                            lstVersion.append(td);
+                        });
+                        if (version) {
+                            lstVersion.val(version);
+                        }
+                        $('#@viewId #VERSION').val(response[0]);
+                    } else {
+                        lstVersion.append($('<option>', { value: '-1', text: 'Nothing version' }))
+                    }
+                    lstVersion.selectpicker('refresh');
+                    OnChangeVersion(submitForm);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function OnChangeVersion(submitForm) {
+            GetInformationActiveTab();
+            RefreshHeaderBtns();
+            ResizeExportTab();
+            // clear data in the right div
+            $("#divExportRight_@viewId").html("");
+
+            if (submitForm === true) {
+                Forms.SubmitForm('@formId');
+            }
+        }
+
+        $('#divExportTab_@viewId a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            GetInformationTab(e.target);
+        });
+
+        function RefreshHeaderBtns() {
+            var orgCode = $("#@viewId #ORG_CODE").val();
+            var templateId = $("#@viewId #TEMPLATE_CODE").val();
+            var year = $("#@viewId #YEAR").val();
+            var version = $("#@viewId #VERSION").val();
+            if (year === undefined) {
+                return;
+            }
+            var paramsHeader = {
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                data: { orgCode, templateId, year, version, viewId: '@viewId' },
+                url: "@Url.Action("ExportDataButtonsFunction")",
+                success: function (result) {
+                    $('#@viewId #btn-function').html(result);
+                }
+            }
+            Forms.Ajax(paramsHeader);
+        }
+
+        function GetInformationTab(a) {
+            var href = $(a).attr("href");
+            var orgCode = $("#@viewId #ORG_CODE").val();
+            var templateId = $("#@viewId #TEMPLATE_CODE").val();
+            var year = $("#@viewId #YEAR").val();
+            var version = $("#@viewId #VERSION").val();
+            if (year === undefined) {
+                return;
+            }
+            var params = {
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                data: { orgCode, templateId, year, version },
+            };
+            params.data.viewId = "@viewId";
+            params.data.formId = "@formId";
+            Forms.ShowLoading();
+            switch (href) {
+                case "#information": {
+                    // check if tab has value, not call server
+                    // else call to server to get information
+                    let url = "@Url.Action("ExportDataInformation")";
+                    params.url = url;
+                    params.success = function (response) {
+                        $("#@viewId #information").html(response);
+                    };
+                    Forms.Ajax(params);
+                    break;
+                }
+                case "#progress": {
+                    // check if tab has value, not call server
+                    // else call to server to get information
+                    // view history
+                    if (!$("#@viewId #progress").html()) {
+                        break;
+                    }
+                    let url = "@Url.Action("ExportDataViewHistory")";
+                    //let url = "@Url.Action("ExportDataHistorySumUp")";
+                    params.url = url;
+                    params.success = function (response) {
+                        $("#@viewId #progress").html(response);
+                    };
+                    Forms.Ajax(params);
+                    break;
+                }
+                case "#comment": {
+                    // call to server to get information
+                    let url = "@Url.Action("ExportData", "Comment")";
+                    params.url = url;
+                    params.data.referenceCode = templateId;
+                    params.data.objectType = '@objectType';
+                    params.data.budgetType = '@budgetType';
+                    params.data.elementType = '@elementType';
+                    params.success = function (response) {
+                        $("#@viewId #comment").html(response);
+                    };
+                    Forms.Ajax(params);
+                    break;
+                }
+                case "#version": {
+                    // call to server to get information
+                    let url = "@Url.Action("ExportDataHistorySumUp")";
+                    params.url = url;
+                    params.success = function (response) {
+                        $("#@viewId #version").html(response);
+                    };
+                    Forms.Ajax(params);
+                    break;
+                }
+                case "#flow": {
+                    let url = "@Url.Action("ExportDataFlowIndex")";
+                    params.url = url;
+                    params.data.centerCode = orgCode;
+                    params.success = function (response) {
+                        $("#@viewId #flow").html(response);
+                    };
+                    Forms.Ajax(params);
+                    break;
+                }
+                case "#templateBase": {
+                    let url = "@Url.Action("Index", "TemplateBase", new { @Area = "MD"})";
+                    params.url = url;
+                    params.data.templateCode = templateId;
+                    params.data.year = year;
+                    params.success = function (response) {
+                        $("#@viewId #templateBase").html(response);
+                    };
+                    Forms.Ajax(params);
+                    break;
+                }
+                default:
+            }
+            Forms.HideLoading();
+
+        }
+
+        function GetInformationActiveTab() {
+            var anchor = $("#divExportTab_@viewId li.active").children();
+            GetInformationTab(anchor);
+        }
+
+        function RemoveActiveTabContent() {
+            var href = $("#divExportTab_@viewId li.active").children().attr("href");
+            $(`#@viewId ${href}`).html("");
+        }
+
+</script>

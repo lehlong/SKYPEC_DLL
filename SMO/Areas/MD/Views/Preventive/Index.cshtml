@@ -1,0 +1,104 @@
+﻿@model SMO.Service.MD.PreventiveService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+}
+<div id='@Model.ViewId' class="container-fluid child-content">
+    @using (Ajax.BeginForm("List", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.FormId)
+        @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR)
+        <div class="card border-grey">
+            <div class="body" style="padding-top: 0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a style="padding-left:0px"><i class="material-icons col-fecon">clear_all</i> DANH SÁCH % DỰ PHÒNG CỦA CÁC PHÒNG BAN</a>
+                    </li>
+                </ul>
+                @*b24c11f6-8210-4616-9356-d6919d4951d8	21000705	2020	5	NULL	admin	2020-03-30 20:06:13.360	NULL	NULL
+                b24c11f6-8210-4616-9356-d6919d4951d8	21000705	2020	5	NULL	admin	2020-03-30 20:06:13.360	NULL	NULL*@
+                <div class="tab-content">
+                    <div class="page-function">
+                        <div class="page-function-button m-r-20">
+                            @Html.MyButton("cmdAdd", "Thêm mới", string.Format("Forms.LoadAjax('{0}');", @Url.Action("Create")), "Alt+N", "add")
+                        </div>
+                    </div>
+                    <div style="display: flex">
+                        <div class="input-group page-function-search">
+                            <label>Năm kế hoạch:</label>
+                            <select id="dllTimeYear" class="form-control  selectpicker show-tick" data-container="body" data-live-search="true" data-val="False" onchange="$('#@Model.FormId #ObjDetail_TIME_YEAR').val($(this).val())">
+                                @{Html.RenderPartial("~/Areas/BP/Views/Shared/_PartialViewTimeYear.cshtml", Model.ObjDetail.TIME_YEAR); }
+                            </select>
+                        </div>
+                        <div class="input-group page-function-search m-l-30">
+                            <div class="form-line">
+                                <label>Tìm theo tên đơn vị:</label>
+                                @Html.MyTextBoxFor(m => m.ObjDetail.ORG_CODE, new { placeholder = "Tìm theo tên đơn vị ", @class = "align-center", @data_val = false })
+                            </div>
+                            <span class="input-group-addon" title="Tìm kiếm" onclick="Forms.SubmitForm('@Model.FormId')">
+                                <i class="material-icons">search</i>
+                            </span>
+                            <span class="input-group-addon" title="Làm mới ô tìm kiếm" onclick="Forms.ResetForm('@Model.FormId')">
+                                <i class="material-icons">refresh</i>
+                            </span>
+                        </div>
+                    </div>
+                    <div id="divResult">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script type="text/javascript">
+        function SubmitIndex() {
+            Forms.SubmitForm('@Model.FormId');
+        }
+
+        $(function () {
+            Forms.SubmitForm('@Model.FormId');
+            Forms.CompleteUI();
+            Forms.SubmitByEnter("@Model.FormId");
+        });
+
+
+        function OnChangeOrg(e) {
+            // nếu đơn vị được chọn là đơn vị không phải cấp lá thì sẽ disabled
+            var centerCode = $(e).val();
+
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("CheckLeafCenterCode")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { centerCode },
+                success: function (isLeaf) {
+                    Forms.HideLoading();
+
+                    if (isLeaf !== true) {
+                        toggleAllFields(true);
+                    } else {
+                        toggleAllFields(false);
+                    }
+                }
+            }
+            Forms.Ajax(ajaxParams);
+        }
+
+        function toggleAllFields(isDisabled) {
+            if (isDisabled) {
+                $('#ObjDetail_DESCRIPTION').attr('disabled', '');
+                $('#ObjDetail_PERCENTAGE').attr('disabled', '');
+                $('#ObjDetail_TIME_YEAR').attr('disabled', '');
+            } else {
+                $('#ObjDetail_DESCRIPTION').removeAttr('disabled');
+                $('#ObjDetail_PERCENTAGE').removeAttr('disabled');
+                $('#ObjDetail_TIME_YEAR').removeAttr('disabled');
+            }
+        }
+    </script>
+</div>
+
+

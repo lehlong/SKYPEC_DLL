@@ -1,0 +1,189 @@
+﻿@model SMO.Service.MD.FrequentlyAskedService
+
+@{ 
+    Layout = "~/Views/Shared/_Layout_Portal.cshtml";
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+}
+
+@{
+    var lang = "vi";
+    if (Request.Cookies["lang"] != null)
+    {
+        lang = Request.Cookies["lang"].Value;
+    }
+
+    if (lang != "vi" && lang != "en")
+    {
+        lang = "vi";
+    }
+}
+
+<script src="https://www.google.com/recaptcha/api.js?hl=vi" async defer></script>
+
+<div class="top_heading  _out">
+    <div class="top_site_main " style="color: rgb(255, 255, 255); background-image: url('/Content/Images/gioi-thieu-fecon.jpg'); padding-top: 140px;">
+        <span class="overlay-top-header" style="background:rgba(0,0,0,0.5);"></span>
+    </div>
+    <div class="breadcrumbs-wrapper">
+        <div class="container">
+            @if (lang == "vi")
+            {
+                <ul itemprop="breadcrumb" itemscope="" id="breadcrumbs" class="breadcrumbs">
+                    <li itemprop="itemListElement"><a href="https://fecon.com.vn"><span>TRANG CHỦ</span></a></li>
+                    <li itemprop="itemListElement"><span>Câu hỏi thường gặp</span></li>
+                </ul>
+            }
+            else
+            {
+                <ul itemprop="breadcrumb" itemscope="" id="breadcrumbs" class="breadcrumbs">
+                    <li itemprop="itemListElement"><a href="https://fecon.com.vn"><span>HOME</span></a></li>
+                    <li itemprop="itemListElement"><span>FAQS</span></li>
+                </ul>
+            }
+
+        </div>
+    </div>
+</div>
+<div class="container site-content" style="transform: none;" id="@Model.ViewId">
+    <div class="row">
+        <main id="main" class="site-main col-sm-12 full-width">
+            <article id="post-91" class="post-91 page type-page status-publish hentry pmpro-has-access">
+                <div class="entry-content">
+                    <div id="pl-91" class="panel-layout">
+                        <div id="pg-91-0" class="panel-grid panel-no-style">
+                            <div id="pgc-91-0-0" class="panel-grid-cell">
+                                <div id="panel-91-0-0-0" class="so-panel widget widget_heading panel-first-child panel-last-child" data-index="0">
+                                    <div class="panel-widget-style panel-widget-style-for-91-0-0-0" style="padding: 0px;">
+                                        <div class="thim-widget-heading thim-widget-heading-base">
+                                            <div class="sc_heading   text-center">
+                                                <h3 style="text-transform: none;" class="title">
+                                                    @if(lang == "vi")
+                                                    {
+                                                        <span>Các câu hỏi thường gặp</span>
+                                                    }else
+                                                    {
+                                                        <span>Frequently Asked Questions</span>
+                                                    }
+                                                </h3>
+                                                <p class="sub-heading" style=""></p><span class="line"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="pg-91-1" class="panel-grid">
+                            <div class="thim-widget-accordion thim-widget-accordion-base">
+                                <div class="thim-widget-accordion">
+                                    <div class="panel-group" role="tablist" aria-multiselectable="true">
+                                        @foreach (var item in Model.ObjList.OrderBy(x => x.CREATE_DATE))
+                                        {
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading" role="tab" >
+                                                    <h4 class="panel-title"> <a role="button" class="collapsed" data-toggle="collapse" href="#@item.PKID" aria-expanded="false"> 
+                                                            @if(lang == "vi")
+                                                            {
+                                                                <text>@item.TIEU_DE</text>
+                                                            }else
+                                                            {
+                                                                <text>@item.TIEU_DE_EN</text>
+                                                            }
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="@item.PKID" class="panel-collapse collapse" role="tabpanel">
+                                                    <div class="panel-body">
+                                                        @if (lang == "vi")
+                                                        {
+                                                            @Html.Raw(item.NOI_DUNG)
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.Raw(item.NOI_DUNG_EN)
+                                                        } 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="pg-91-2" class="panel-grid panel-no-style">
+                            <div id="pgc-91-2-0" class="panel-grid-cell">
+                                <div id="panel-91-2-0-0" class="so-panel widget widget_text panel-first-child panel-last-child" data-index="3">
+                                    <div class="thim-border-top panel-widget-style panel-widget-style-for-91-2-0-0">
+                                        <div class="textwidget">
+                                            <div class="thim-contact-faqs text-center">
+                                                <h4>
+                                                    @if(lang == "vi")
+                                                    {
+                                                        <text>Bạn muốn hỏi câu hỏi khác?</text>
+                                                    }else
+                                                    {
+                                                        <text>Didn't find the answer?</text>
+}
+                                                </h4>
+                                                <div role="form" class="wpcf7" id="wpcf7-f4-p91-o3" lang="en-US" dir="ltr">
+                                                    @if (lang == "vi")
+                                                    {
+                                                        using (Ajax.BeginForm("CreateQuestion", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = "frmCauHoi", @class = "wpcf7-form" }))
+                                                        {
+                                                            <p><span class="wpcf7-form-control-wrap your-name"><input type="text" name="@Html.NameFor(m => m.ObjQuestion.NAME)" value="" size="40" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required" aria-required="true" aria-invalid="false" placeholder="Tên của bạn *" required></span></p>
+                                                            <p><span class="wpcf7-form-control-wrap your-email"><input type="email" name="@Html.NameFor(m => m.ObjQuestion.EMAIL)" value="" size="40" class="wpcf7-form-control wpcf7-text wpcf7-email wpcf7-validates-as-required wpcf7-validates-as-email" aria-required="true" aria-invalid="false" placeholder="Email *" required></span></p>
+                                                            <p><span class="wpcf7-form-control-wrap your-subject"><input type="text" name="@Html.NameFor(m => m.ObjQuestion.SUBJECT)" value="" size="40" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required" aria-required="true" aria-invalid="false" placeholder="Tiêu đề *" required></span></p>
+                                                            <p><span class="wpcf7-form-control-wrap your-message"><textarea name="@Html.NameFor(m => m.ObjQuestion.CONTENTS)" cols="40" rows="10" class="wpcf7-form-control wpcf7-textarea wpcf7-validates-as-required" aria-required="true" aria-invalid="false" placeholder="Nội dung câu hỏi *" required style="border: 1px solid #f6753c !important;"></textarea></span></p>
+
+                                                            <div style="text-align:center; margin-bottom: 20px">
+                                                                <div style="display: inline-block;" class="g-recaptcha" data-sitekey="@System.Configuration.ConfigurationManager.AppSettings["RecaptchaPublicKey"]"></div>
+                                                            </div>
+
+                                                            <p>
+                                                                <input type="submit" value="GỬI CÂU HỎI" style="color: white !important;" class="wpcf7-form-control wpcf7-submit">
+                                                            </p>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        using (Ajax.BeginForm("CreateQuestion", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = "frmCauHoi", @class = "wpcf7-form" }))
+                                                        {
+                                                            <p><span class="wpcf7-form-control-wrap your-name"><input type="text" name="@Html.NameFor(m => m.ObjQuestion.NAME)" value="" size="40" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required" aria-required="true" aria-invalid="false" placeholder="Full name *" required></span></p>
+                                                            <p><span class="wpcf7-form-control-wrap your-email"><input type="email" name="@Html.NameFor(m => m.ObjQuestion.EMAIL)" value="" size="40" class="wpcf7-form-control wpcf7-text wpcf7-email wpcf7-validates-as-required wpcf7-validates-as-email" aria-required="true" aria-invalid="false" placeholder="Email *" required></span></p>
+                                                            <p><span class="wpcf7-form-control-wrap your-subject"><input type="text" name="@Html.NameFor(m => m.ObjQuestion.SUBJECT)" value="" size="40" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required" aria-required="true" aria-invalid="false" placeholder="Subject *" required></span></p>
+                                                            <p><span class="wpcf7-form-control-wrap your-message"><textarea name="@Html.NameFor(m => m.ObjQuestion.CONTENTS)" cols="40" rows="10" class="wpcf7-form-control wpcf7-textarea wpcf7-validates-as-required" aria-required="true" aria-invalid="false" placeholder="Content *" required style="border: 1px solid #f6753c !important;"></textarea></span></p>
+
+                                                            <div style="text-align:center; margin-bottom: 20px">
+                                                                <div style="display: inline-block;" class="g-recaptcha" data-sitekey="@System.Configuration.ConfigurationManager.AppSettings["RecaptchaPublicKey"]"></div>
+                                                            </div>
+
+                                                            <p>
+                                                                <input type="submit" value="SEND" style="color: white !important;" class="wpcf7-form-control wpcf7-submit">
+                                                            </p>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </article>
+        </main>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        Forms.defaultLoading = "#preload";
+        Forms.SubmitForm('@Model.FormId');
+        $("#menu-item-trogiup").attr("class", "menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-125 current_page_item current_page_parent menu-item-127 tc-menu-item tc-menu-depth-0 tc-menu-align-left tc-menu-layout-default");
+        $("#menu-item-trogiup #menu-item-faq a").attr("style", "color: black !important");
+    });
+</script>

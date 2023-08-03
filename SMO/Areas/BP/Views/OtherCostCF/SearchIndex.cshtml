@@ -1,0 +1,196 @@
+﻿@model SMO.Service.BP.OtherCostCFService
+@{
+    var number = 0;
+    var periodTime = Model.UnitOfWork.Repository<SMO.Repository.Implement.MD.PeriodTimeRepo>().Get(Model.ObjDetail.TIME_YEAR);
+    var canDeleteDictionary = ViewBag.canDeleteDictionary as Dictionary<string, bool>;
+}
+
+@if (!ProfileUtilities.User.Organize.IS_GROUP)
+{
+    <div style="min-height: 500px;">
+        <div class="page-function">
+            @Html.MyButton("cmdBack", "Quay lại", string.Format("Forms.Close('{0}');", @Model.ViewId), "Alt+N", "arrow_back")
+            @Html.MyButton("cmdBack", "Xem dữ liệu tổng hợp", $"Forms.LoadAjax('{Url.Action("ExportData", new { templateCode = "", year = Model.ObjDetail.TIME_YEAR, version = -1 })}');", "Alt+N", "open_in_browser")
+            @if (!periodTime.IS_CLOSE)
+            {
+                @Html.MyButton("cmdAdd", "Nhập kế hoạch", "ImportExcel();", "Alt+N", "add")
+            }
+        </div>
+
+        @if (Model.ObjList.Count() == 0)
+        {
+            <div class="align-center border-grey col-indigo font-15" style="padding: 15px;">
+                <b>KẾ HOẠCH NĂM @Model.ObjDetail.TIME_YEAR CHƯA ĐƯỢC KHAI BÁO!</b>
+            </div>
+            return;
+        }
+        <div class="table-responsive">
+            <table class="table font-13">
+                <thead>
+                    <tr>
+                        <th style="max-width: 120px;">Đơn vị nhập</th>
+                        <th>Mẫu khai báo</th>
+                        <th class="align-center">Version</th>
+                        <th class="align-center">Trạng thái</th>
+                        <th style="width: 200px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ObjList.Where(x => string.IsNullOrEmpty(x.TEMPLATE_CODE) || x.Template.ACTIVE).OrderByDescending(x => x.UPDATE_DATE).ThenBy(x => x.CREATE_DATE))
+                    {
+                        number++;
+                        <tr>
+                            <td>
+                                <div><b>@item.ORG_CODE</b></div>
+                                <div>@item.Organize.NAME</div>
+                            </td>
+                            <td>
+                                <div><b>@item.TEMPLATE_CODE</b></div>
+                                @if (string.IsNullOrEmpty(item.TEMPLATE_CODE))
+                                {
+                                    <div>Tổng hợp dữ liệu</div>
+                                }
+                                else
+                                {
+                                    <div>@(item.Template?.NAME)</div>
+                                    if (!item.Template.ACTIVE)
+                                    {
+                                        <div class="col-red">@Global.DeactiveTemplate</div>
+                                    }
+                                }
+                            </td>
+                            <td class="align-center">
+                                <b class="col-red font-14">@item.VERSION</b>
+                                <div>@(item.UPDATE_DATE.HasValue ? item.UPDATE_DATE?.ToString(Global.DateTimeToStringFormat) : item.CREATE_DATE.Value.ToString(Global.DateTimeToStringFormat))</div>
+                            </td>
+                            <td class="align-center">
+                                <span class="badge @(item.IS_DELETED ? "bg-black" : Approve_Status.GetStatusColor(item.STATUS))">@(item.IS_DELETED ? "Hủy nộp" : Approve_Status.GetStatusText(item.STATUS))</span>
+                            </td>
+                            <td>
+                                @{
+                                    Html.RenderPartial("_PartialViewDropdownActionSearchIndex", item,
+                                           new ViewDataDictionary
+                                            {
+                                               new KeyValuePair<string, object>("number", number),
+                                               new KeyValuePair<string, object>("periodTime", periodTime),
+                                               new KeyValuePair<string, object>("canDelete", canDeleteDictionary[item.PKID])
+});
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var item in Model.ObjList.Where(x => !string.IsNullOrEmpty(x.TEMPLATE_CODE) && !x.Template.ACTIVE).OrderByDescending(x => x.UPDATE_DATE).ThenBy(x => x.CREATE_DATE))
+                    {
+                        number++;
+                        <tr>
+                            <td>
+                                <div><b>@item.ORG_CODE</b></div>
+                                <div>@item.Organize.NAME</div>
+                            </td>
+                            <td>
+                                <div><b>@item.TEMPLATE_CODE</b></div>
+                                @if (string.IsNullOrEmpty(item.TEMPLATE_CODE))
+                                {
+                                    <div>Tổng hợp dữ liệu</div>
+                                }
+                                else
+                                {
+                                    <div>@(item.Template?.NAME)</div>
+                                    if (!item.Template.ACTIVE)
+                                    {
+                                        <div class="col-red">@Global.DeactiveTemplate</div>
+                                    }
+                                }
+                            </td>
+                            <td class="align-center">
+                                <b class="col-red font-14">@item.VERSION</b>
+                                <div>@(item.UPDATE_DATE.HasValue ? item.UPDATE_DATE?.ToString(Global.DateTimeToStringFormat) : item.CREATE_DATE.Value.ToString(Global.DateTimeToStringFormat))</div>
+                            </td>
+                            <td class="align-center">
+                                <span class="badge @(item.IS_DELETED ? "bg-black" : Approve_Status.GetStatusColor(item.STATUS))">@(item.IS_DELETED ? "Hủy nộp" : Approve_Status.GetStatusText(item.STATUS))</span>
+                            </td>
+                            <td>
+                                @{
+                                    Html.RenderPartial("_PartialViewDropdownActionSearchIndex", item,
+                                           new ViewDataDictionary
+                                            {
+                                               new KeyValuePair<string, object>("number", number),
+                                               new KeyValuePair<string, object>("periodTime", periodTime)
+});
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    var headerData = Model.ObjList.FirstOrDefault();
+    <div class="page-function" style="display: flex">
+        <div>
+            @Html.MyButton("cmdBack", "Quay lại", string.Format("Forms.Close('{0}');", @Model.ViewId), "Alt+N", "arrow_back")
+            @if (headerData != null && SMOUtilities.CheckRight("R301"))
+            {
+                @Html.MyButton("cmdXemDuLieu", "Xem dữ liệu", $"Forms.LoadAjax('{Url.Action("ExportData", new { year = headerData.TIME_YEAR, version = headerData.VERSION })}');", "", "search")
+            }
+        </div>
+        <div id="btn-function">
+            @if (Model.ObjList.Count() > 0)
+            {
+                ViewBag.periodTime = periodTime;
+                ViewBag.header = headerData;
+                ViewBag.ViewId = Model.ViewId;
+
+                Html.RenderPartial("ExportDataButtonsFunction");
+            }
+        </div>
+
+    </div>
+    if (Model.ObjList.Count() == 0)
+    {
+        <div class="align-center border-grey col-indigo font-15" style="padding: 15px;">
+            <b>KẾ HOẠCH NĂM @Model.ObjDetail.TIME_YEAR CHƯA ĐƯỢC TỔNG HỢP!</b>
+        </div>
+        return;
+    }
+    <div class="table-responsive">
+        <table class="table font-13">
+            <thead>
+                <tr>
+                    <th>Mẫu khai báo</th>
+                    <th class="align-center">Version</th>
+                    <th class="align-center">Thời gian tổng hợp</th>
+                    <th class="align-center">Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ObjList)
+                {
+                    number++;
+                    <tr>
+                        <td>
+                            <span>Dữ liệu tổng hợp</span>
+                        </td>
+                        <td class="align-center">
+                            <b class="col-red font-14">@item.VERSION</b>
+                        </td>
+                        <td class="align-center">
+                            <div>@(item.UPDATE_DATE.HasValue ? item.UPDATE_DATE?.ToString(Global.DateTimeToStringFormat) : item.CREATE_DATE.Value.ToString(Global.DateTimeToStringFormat))</div>
+                        </td>
+                        <td class="align-center">
+                            <span class="badge @(item.IS_DELETED ? "bg-black" : Approve_Status.GetStatusColor(item.STATUS))">@(item.IS_DELETED ? "Hủy nộp" : Approve_Status.GetStatusText(item.STATUS))</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+<script type="text/javascript">
+
+</script>

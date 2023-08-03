@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "twitter-bootstrap@4.3.1",
+      "destination": "Properties/twitter-bootstrap/",
+      "files": [
+        "js/bootstrap.min.js",
+        "css/bootstrap.min.css"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "sweetalert2@9.10.12",
+      "destination": "Properties/sweetalert2/"
+    },
+    {
+      "library": "font-awesome@5.15.1",
+      "destination": "Properties/font-awesome/"
+    }
+  ]
+}

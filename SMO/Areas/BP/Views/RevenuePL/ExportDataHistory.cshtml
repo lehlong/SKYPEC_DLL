@@ -1,0 +1,60 @@
+﻿@model SMO.Service.BP.RevenuePLService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    var viewParentId = ViewBag.ViewId as string;
+    var formParentId = ViewBag.FormId as string;
+
+}
+
+<div id='@Model.ViewId'>
+    <table class="table font-13 table-nowrap">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="align-center">Version</th>
+                <th class="align-center">Người nhập</th>
+                <th class="align-center">Ngày nhập</th>
+                <th style="min-width: 350px">File</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjListVersion
+    .GroupBy(x => x.VERSION).Select(x => x.First())
+    .OrderByDescending(x => x.VERSION))
+            {
+                <tr>
+                    <td class="align-center">
+                        @Html.MyButton("cmdBack", "", $"ViewDataVersion({item.VERSION});", "Alt+N", "search")
+                    </td>
+                    <td class="align-center">
+                        @item.VERSION
+                    </td>
+                    <td class="align-center">
+                        @item.CREATE_BY
+                        <div>@item.USER_CREATE.FULL_NAME</div>
+                    </td>
+                    <td class="align-center">
+                        <span>@((item.UPDATE_DATE ?? item.CREATE_DATE).Value.ToString(Global.DateTimeToStringFormat))</span>
+                    </td>
+                    <td>
+                        @{
+                            Html.RenderPartial("ListFile", new List<SMO.Core.Entities.T_CM_FILE_UPLOAD> { item.FileUpload });
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <script>
+        function ViewDataVersion(version) {
+            $("#@viewParentId #VERSION").val(version);
+            $('#@viewParentId #VERSION').selectpicker('refresh');
+
+            Forms.SubmitForm('@formParentId');
+            RefreshHeaderBtns();
+        }
+    </script>
+</div>
+
+

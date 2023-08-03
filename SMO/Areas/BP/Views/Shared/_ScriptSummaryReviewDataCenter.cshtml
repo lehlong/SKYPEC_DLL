@@ -1,0 +1,374 @@
+﻿@using SMO.Service.Class;
+@{
+    var viewModel = ViewData["viewModel"] as ReviewDataCenterModel;
+    var url = ViewData["url"];
+    var controllerName = @HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    controllerName = controllerName.ToUpper().Replace("REVIEW", string.Empty);
+    var canRequireChange = AuthorizeUtilities.CheckUserRight("R320");
+}
+<script>
+    function DrillDown(e) {
+            var $parent = $(e).parent();
+            var $this = $(e);
+            var centerCode = $this.attr("centerCode");
+            var version = $this.attr("version");
+            var elementCode = $this.attr('id');
+            var sumUpVersion = $this.attr("sum_up_version");
+            var year = @viewModel.YEAR;
+            var root = $this.attr('root');
+            var parentLevel = parseInt($this.attr("level"));
+            if ($parent.hasClass("expanded")) {
+                // collapsed
+                if (root == 'true') {
+                    $.each($parent.siblings(`.${elementCode}`), function (e, v) {
+                        $(v).addClass("hidden");
+                    });
+                } else {
+                    $.each($parent.siblings(`.${elementCode}`), function (e, v) {
+                        if (parseInt($(v).attr('level')) > parentLevel) {
+                            $(v).addClass("hidden");
+                        }
+                    });
+                }
+
+                $parent.addClass("collapsed").removeClass("expanded");
+            } else if ($parent.hasClass("collapsed")) {
+                // expanded
+                if (root == 'true') {
+                    $.each($parent.siblings(`.${elementCode}`), function (e, v) {
+                        $(v).removeClass("hidden");
+                    });
+                } else {
+                    $.each($parent.siblings(`.${elementCode}`), function (e, v) {
+                        if (parseInt($(v).attr('level')) > parentLevel) {
+                            $(v).removeClass("hidden");
+                        }
+                    });
+                }
+                $parent.addClass("expanded").removeClass("collapsed");
+            } else {
+                if (version === undefined || year === undefined) {
+                    return;
+                }
+                Forms.ShowLoading();
+                var url = '@url';
+                var ajaxParams = {
+                    url,
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: { centerCode, version, elementCode, year, isShowFile: true, sumUpVersion },
+                    success: function (response) {
+                        $parent.addClass("expanded").removeClass("collapsed");
+
+                        var lst = JSON.parse(response);
+                        // add row
+                        lst.sort(byProperty("TEMPLATE_CODE"));
+                        $.each(lst, function (index, value) {
+                            if (value.IsSkip !== undefined && value.IsSkip) {
+                                return true;
+                            }
+                            var tr = $('<tr>', { class: `child ${elementCode}`, level: parentLevel + 1 });
+                            var td = '';
+                            td = $('<td>', { class: 'sticky-cell', text: '', version: value.VERSION, sum_up_version: version, centerCode: value.CENTER_CODE, level: parentLevel + 1, id: elementCode, templateCode: value.TEMPLATE_CODE_PURE ? value.TEMPLATE_CODE_PURE : value.TEMPLATE_CODE  });
+                            if (value.IS_GROUP) {
+                                td.append($('<i>', { class: 'material-icons swap-icon-drill-down', text: 'unfold_more', }));
+                                td.bind('click', (e) => {
+                                    DrillDown($(e.target).parent());
+                                });
+                                td.hover(function () {
+                                    $(this).addClass("col-fecon").css("cursor", "pointer");
+                                },
+                                    function () {
+                                        $(this).removeClass("col-fecon");
+                                    });
+                                tr.append(td);
+
+                                // add column comment
+                                td = $('<td>', { class: 'sticky-cell nowrap-white-space align-center ' });
+                                td.append($('<a>', {
+                                    text: value.NUMBER_COMMENTS, href: '#', id: `comment-${elementCode}-${value.ORG_CODE}`,
+                                    onclick: `LoadComments('${elementCode}', ${year}, ${version}, '@ProfileUtilities.User.ORGANIZE_CODE', '${value.ORG_CODE}')`
+                                }));
+                                tr.append(td);
+                            } else {
+                                if ('@canRequireChange.ToString()' === 'True') {
+                                    td.append($('<i>', {
+                                        class: 'material-icons swap-icon-drill-down', text: 'report_problem',
+                                        title: `Yêu cầu cấp dưới điều chỉnh dữ liệu`,
+                                        onclick: `YeuCauCapDuoiDieuChinh('${value.ORG_CODE}', '${value.TEMPLATE_CODE_PURE ? value.TEMPLATE_CODE_PURE : value.TEMPLATE_CODE}', ${value.VERSION})`
+                                    }));
+                                }
+                                tr.append(td);
+                                tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+                            }
+
+                        @if (viewModel.IS_COUNCIL_BUDGET)
+                            {
+                            <text>
+                            tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+                            </text>
+                            }
+                            @if (viewModel.IS_CONTROL)
+                            {
+                            <text>
+                            tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+                            </text>
+                            }
+                            tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+
+                            var names, div;
+                            if (value.IsBase) {
+                                var viewBaseFile = $('<i>', { class: 'material-icons font-17 p-r-5 col-fecon', style: 'position: relative; top: 5px; cursor: pointer', text: 'attach_file', onclick: 'toogleShowFileBase(this)' })
+                                if ($parent.next().hasClass('file-base')) {
+                                    $parent = $parent.next();
+                                }
+
+                                tr.addClass('expaned');
+                                var lstBaseData = lst.filter((val) => {
+                                    return val.ValuesBaseString !== null && val.ValuesBaseString.length != 0 && val.TEMPLATE_CODE == value.TEMPLATE_CODE && val.IsBase;
+                                });
+                                if (value.ValuesBaseString === null) {
+                                    // is template
+                                    // show template
+                                    names = value.ORG_NAME.split("\n");
+                                    div = $('<div>');
+                                    $.each(names, function (index, name) {
+                                        div.append($('<p>', { html: `${viewBaseFile[0].outerHTML}${name.trim()}` }));
+                                        viewBaseFile = $('<i>');
+                                    });
+                                    tr.append($('<td>', { class: "sticky-cell" }).append(div));
+
+                                    // skip template obj in lst
+                                    value.IsSkip = true;
+
+                                } else {
+                                    // is base data
+                                    // find template
+                                    var templateObj = lst.find((val) => {
+                                        return val.ValuesBaseString === null && val.TEMPLATE_CODE == value.TEMPLATE_CODE && val.IsBase;
+                                    });
+                                    // remove template obj in lst
+                                    lst.splice(lst.indexOf(templateObj), 1);
+                                    // show template
+                                    names = value.ORG_NAME.split("\n");
+                                    div = $('<div>');
+                                    $.each(names, function (index, name) {
+                                        div.append($('<span>', { html: `${viewBaseFile[0].outerHTML}${name.trim()}` }));
+                                        viewBaseFile = $('<i>');
+                                    });
+                                    tr.append($('<td>', { class: "sticky-cell" }).append(div));
+
+                                    value = templateObj;
+                                }
+                                // add cell value of template obj
+                                $.each(value.Values, function (i, val) {
+                                    td = $('<td>', { text: formatNumber(val), class: "align-right" });
+                                    tr.append(td);
+                                });
+                                tr.append($('<td>', { text: formatNumber(value.Values[12] / 12), class: "align-right" }));
+
+
+                                tr.append($('<td>', { text: value.DESCRIPTION === undefined || value.DESCRIPTION === null ? '' : value.DESCRIPTION }));
+
+                                $parent.after(tr);
+                                $parent = $(tr);
+                                // show base data
+                                $.each(lstBaseData, function (i, baseData) {
+                                    var tr = $('<tr>', { class: `child ${elementCode}`, level: parentLevel + 2 });
+                                    tr.append($('<td>', { text: '', class: "sticky-cell", level: parentLevel + 2 }));
+                                    tr.append($('<td>', { text: '', class: "sticky-cell" }));
+                                    tr.append($('<td>', { text: '', class: "sticky-cell" }));
+                                @if (viewModel.IS_COUNCIL_BUDGET)
+                            {
+                            <text>
+                                    tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+                            </text>
+                            }
+                                    @if (viewModel.IS_CONTROL)
+                            {
+                            <text>
+                                    tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+                            </text>
+                            }
+                                    names = baseData.ORG_NAME.split("\n");
+                                    div = $('<div>');
+                                    $.each(names, function (index, name) {
+                                        div.append($('<span>', { text: `${name.trim()}` }));
+                                    });
+                                    tr.append($('<td>', { class: "sticky-cell" }).append(div));
+                                    $.each(baseData.ValuesBaseString, function (i, val) {
+                                        names = val.split("\n");
+                                        div = $('<div>');
+                                        $.each(names, function (index, name) {
+                                            div.append($('<p>', { text: `\t${name.trim()}` }));
+                                        });
+                                        tr.append($('<td>').append(div));
+                                    });
+                                    tr.append($('<td>', { text: baseData.DESCRIPTION === undefined || baseData.DESCRIPTION === null ? '' : baseData.DESCRIPTION }));
+
+                                    $parent.after(tr);
+                                    $parent = $(tr);
+                                    tr.hide().show(1);
+                                    // skip base data obj in lst
+                                    lst[lst.indexOf(baseData)].IsSkip = true
+                                });
+                            } else {
+                                names = value.ORG_NAME.split("\n");
+                                div = $('<div>');
+
+                                $.each(names, function (index, name) {
+                                    div.append($('<span>', { text: `${name.trim()}` }));
+                                });
+
+                                tr.append($('<td>', { class: "sticky-cell" }).append(div));
+                                $.each(value.Values, function (i, val) {
+                                    td = $('<td>', { text: formatNumber(val), class: "align-right" });
+                                    tr.append(td);
+                                });
+                                tr.append($('<td>', { text: formatNumber(value.Values[12] / 12), class: "align-right" }));
+
+                                tr.append($('<td>', { text: value.DESCRIPTION === undefined || value.DESCRIPTION === null ? '' : value.DESCRIPTION }));
+                                $parent.after(tr);
+                                tr.hide().show(1);
+                            }
+
+                        });
+
+                        //$parent.addClass("expanded");
+                        $(".sticky-table").animate({ scrollLeft: $(".sticky-table").scrollLeft() + 1 }, 1);
+                        setCellPadding();
+                    }
+                };
+                
+                Forms.Ajax(ajaxParams);
+            }
+    }
+
+    function toogleShowFileBase(e) {
+        e = $(e).closest('tr').find('td')[0];
+        var $parent = $(e).parent();
+            var $this = $(e);
+            var templateCode = $this.attr("templateCode");
+            var root = $this.attr('root');
+            var elementCode = $this.attr("id");
+            var version = $this.attr("sum_up_version");
+            var centerCode = $this.attr("centerCode");
+            var year = @viewModel.YEAR;
+            var parentLevel = parseInt($this.attr("level"));
+        if ($parent.hasClass("expanded-fileBase")) {
+            // collapsed
+            if (root == 'true') {
+                $.each($parent.siblings(`.${elementCode}.file-base`), function (e, v) {
+                    $(v).addClass("hidden");
+                });
+            } else {
+                $.each($parent.siblings(`.${elementCode}.file-base`), function (e, v) {
+                    $(v).addClass("hidden");
+                });
+            }
+
+            $parent.addClass("collapsed-fileBase").removeClass("expanded-fileBase");
+        } else if ($parent.hasClass("collapsed-fileBase")) {
+            // expanded
+            if (root == 'true') {
+                $.each($parent.siblings(`.${elementCode}.file-base`), function (e, v) {
+                    $(v).removeClass("hidden");
+                });
+            } else {
+                $.each($parent.siblings(`.${elementCode}.file-base`), function (e, v) {
+                    $(v).removeClass("hidden");
+                });
+            }
+            $parent.addClass("expanded-fileBase").removeClass("collapsed-fileBase");
+        } else {
+            if (version === undefined || year === undefined) {
+                return;
+            }
+            Forms.ShowLoading();
+            var url = '@url';
+            var ajaxParams = {
+                url,
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                data: { version, year, templateCode, fileBase: true, centerCode },
+                success: function (response) {
+                    var tr = $('<tr>', { class: `child ${elementCode} file-base`, level: parentLevel + 1 });
+                     @if (viewModel.IS_COUNCIL_BUDGET)
+                            {
+                            <text>
+                                    tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+                            </text>
+                            }
+                                    @if (viewModel.IS_CONTROL)
+                            {
+                            <text>
+                                    tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+                            </text>
+                            }
+                    tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+                    tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+                    tr.append($('<td>', { text: '', class: 'sticky-cell' }));
+                    tr.append($('<td>', { class: '', text: '', colspan: 15 }).append($('<div>').html(response)));
+                    $parent.after(tr);
+                    tr.hide().show(1);
+                    $parent.addClass("expanded-fileBase").removeClass("collapsed-fileBase");
+
+                    //$parent.addClass("expanded");
+                    $(".sticky-table").animate({ scrollLeft: $(".sticky-table").scrollLeft() + 1 }, 1);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+    }
+
+    function YeuCauCapDuoiDieuChinh(childOrgCode, templateCode, templateVersion) {
+        var comment = prompt("LÝ DO YÊU CẦU ĐIỀU CHỈNH:");
+            if (comment == undefined || comment == null || comment.trim() == "") {
+                alert("Hãy nhập lý do yêu cầu điều chỉnh!");
+                return;
+            }
+            var ajaxParams = {
+                url: "@Url.Action("YeuCauCapDuoiDieuChinh", controllerName)",
+                type: "POST",
+                data: {
+                    childOrgCode,
+                    templateCode,
+                    timeYear: @viewModel.YEAR,
+                    comment,
+                    templateVersion,
+                    parentVersion: @viewModel.VERSION,
+                    isSummaryReview: true
+                },
+                dataType: "json",
+                success: function (response) {
+                    Message.execute(response);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+    }
+
+    function setCellPadding() {
+        const table = $('#table');
+        const allBodyTrs = table.find('tbody tr');
+        var nameColumn = 3;
+        @if (viewModel.IS_CONTROL)
+        {
+            <text>nameColumn++;</text>
+        }@if (viewModel.IS_COUNCIL_BUDGET)
+        {
+            <text>nameColumn++;</text>
+        }
+        $.each(allBodyTrs, function (index, row) {
+            // check box inside td 6th
+            const td = row.getElementsByTagName('td')[nameColumn];
+            const tdLevel = row.getElementsByTagName('td')[0];
+
+            $(td).css('padding-left', $(tdLevel).attr('level') * 20 + 'px');
+            $(td).css('width', '350px');
+            $(td).css('max-width', '350px');
+            $(td).css('min-width', '350px');
+        });
+    }
+</script>

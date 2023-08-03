@@ -1,0 +1,3 @@
+﻿@model SMO.Service.MD.TemplateBaseService
+
+@{Html.RenderPartial("ListFile", Model.ObjList.Select(x => x.FileUpload).ToList());}

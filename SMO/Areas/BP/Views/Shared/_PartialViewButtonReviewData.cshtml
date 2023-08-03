@@ -1,0 +1,127 @@
+﻿@model SMO.Service.Class.BaseReviewViewModel
+@using SMO.Service.Class;
+
+@{
+    var controllerName = @HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    controllerName = controllerName.ToUpper().Replace("REVIEW", string.Empty);
+    var formId = ViewBag.formId as string;
+    var viewId = ViewBag.viewId as string;
+    var elementsInvalid = ViewBag.elementsInvalid as bool?;
+    var viewIdTotal = ViewBag.viewIdTotal as string;
+}
+
+@if (!elementsInvalid.HasValue || elementsInvalid.HasValue && elementsInvalid.Value)
+{
+    @Html.MyButton("cmdBack", "Quay lại", $"Forms.Close('{viewIdTotal}');", "Alt+N", "arrow_back");
+}
+else
+{
+    @Html.MyButton("cmdBack", "Quay lại", "ConfirmFormDirty();", "Alt+N", "arrow_back");
+
+    if (!Model.IsEnd)
+    {
+        if (Model.IsSummary)
+        {
+            if (SMOUtilities.CheckRight("R310"))
+            {
+                @Html.MyButton("cmdReview", "Lưu dữ liệu", $"Forms.SubmitForm('{formId}')", "Alt+N", "done_all")
+            }
+            if (SMOUtilities.CheckRight("R324"))
+            {
+                @Html.MyButton("cmdEndReview", "Lưu và Trình duyệt",
+                                       $"EndReview('summary')",
+                                       "Alt+N", "stop")
+            }
+        }
+        else
+        {
+            if (SMOUtilities.CheckRight("R314"))
+            {
+                @Html.MyButton("cmdReview", "Lưu dữ liệu", $"Forms.SubmitForm('{formId}')", "Alt+N", "done_all")
+            }
+            if (SMOUtilities.CheckRight("R315"))
+            {
+                @Html.MyButton("cmdEndReview", "Lưu và Kết thúc",
+                                          $"EndReview('review')", "Alt+N", "stop")
+            }
+        }
+    }
+    else
+    {
+        if (Model.IsSummary)
+        {
+            if (SMOUtilities.CheckRight("R311"))
+            {
+                @Html.MyButton("cmdReview", "Yêu cầu chỉnh sửa", $"TuChoiTKS()", "Alt+N", "clear")
+                @Html.MyButton("cmdReview", "Phê duyệt", $"PheDuyetTKS()", "Alt+N", "done_all")
+            }
+        }
+    }
+
+}
+
+<script>
+    function ConfirmFormDirty() {
+        if (checkFormChanged()) {
+            if (confirm('Dữ liệu chưa được lưu, bạn có muốn thoát ra?')) {
+                Forms.Close('@viewIdTotal');
+            }
+        } else {
+            Forms.Close('@viewIdTotal');
+        }
+    }
+
+    function EndReview(type) {
+        //if (hasId === true) {
+        if (type === 'summary') {
+            if (!confirm('Bạn chắc chắn trình duyệt dữ liệu Tổng kiểm soát không?')) {
+                return;
+            }
+        } else {
+            if (!confirm('Bạn chắc chắn kết thúc thẩm định không?')) {
+                return;
+            }
+        }
+        $('#@viewId #IsEnd').val(true);
+        Forms.SubmitForm('@formId');
+    }
+
+    @if (SMOUtilities.CheckRight("R311"))
+    {
+        <text>
+    function TuChoiTKS() {
+        if (!confirm("Bạn chắc chắn Yêu cầu chỉnh sửa dữ liệu Tổng kiếm soát không?")) {
+            return;
+        }
+        var comment = prompt("LÝ DO YÊU CẦU ĐIỀU CHỈNH:");
+        if (comment == undefined || comment == null || comment.trim() == "") {
+            alert("Hãy nhập lý do yêu cầu điều chỉnh!");
+            return;
+        }
+        var ajaxParams = {
+            url: '@Url.Action("TuChoiTongKiemSoat", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { orgCode: '@Model.OrgCode', year: @Model.Year, version: @Model.Version, comment },
+            success: Forms.AjaxMessageHandler
+        };
+        Forms.Ajax(ajaxParams);
+    }
+
+    function PheDuyetTKS() {
+        if (!confirm("Bạn chắc chắn Phê duyệt dữ liệu Tổng kiếm soát không?")) {
+            return;
+        }
+
+        var ajaxParams = {
+            url: '@Url.Action("PheDuyetTongKiemSoat", controllerName)',
+            type: 'POST',
+            dataType: 'JSON',
+            data: { orgCode: '@Model.OrgCode', year: @Model.Year, version: @Model.Version },
+            success: Forms.AjaxMessageHandler
+        };
+        Forms.Ajax(ajaxParams);
+    }
+        </text>
+    }
+</script>

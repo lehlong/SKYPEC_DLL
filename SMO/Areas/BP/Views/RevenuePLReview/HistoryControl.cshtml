@@ -1,0 +1,47 @@
+﻿@model IEnumerable<SMO.Core.Entities.T_BP_REVENUE_PL_HISTORY>
+@{
+    var viewId = Guid.NewGuid().ToString();
+}
+
+<div id='@viewId'>
+    <table class="table table-nowrap font-13">
+        <thead>
+            <tr>
+                <th class="align-center">Version</th>
+                <th class="align-center">Người dùng</th>
+                <th class="align-center">Hành động</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderByDescending(x => x.ACTION_DATE))
+            {
+                <tr>
+                    <td class="align-center">
+                        @item.VERSION
+                    </td>
+                    <td class="align-center">
+                        @item.ACTION_USER
+                    </td>
+                    <td class="align-center">
+                        @Approve_Action.GetStatusText(item.ACTION)
+                        <div>@item.ACTION_DATE.ToString(Global.DateTimeToStringFormat)</div>
+                        @if (!string.IsNullOrWhiteSpace(item.NOTES))
+                        {
+                            <div title="@item.NOTES" style="cursor: pointer" onclick="$('#divNoteReviewCenter_@item.PKID').toggle(); $(this).hide();">@(item.NOTES.Length < 30 ? item.NOTES : item.NOTES.Substring(0, 30) + "...")</div>
+                            if (item.NOTES.Length >= 30)
+                            {
+                                <div id="divNoteReviewCenter_@item.PKID" style="display: none;">@item.NOTES</div>
+                            }
+                        }
+                    </td>
+                    <td class="align-center">
+                        @Html.MyButton("cmdBack", "", $"ViewDataVersion({item.VERSION}, '{item.ACTION_USER}');", "Alt+N", "search")
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+

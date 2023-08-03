@@ -1,0 +1,177 @@
+﻿@model SMO.Service.BP.COST_PL.ContructCostPLReviewService
+@using SMO.Core.Entities;
+@{
+    var periodTime = Model.UnitOfWork.Repository<SMO.Repository.Implement.MD.PeriodTimeRepo>().Get(Model.ObjDetail.TIME_YEAR);
+    var plHeader = ViewBag.header as T_BP_CONTRUCT_COST_PL;
+}
+<div class="card border-grey" style="margin-bottom: 2px;">
+    <div class="body" style="padding-top: 0px;">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a style="padding-left:0px" class="text-uppercase">
+                    <i class="material-icons col-fecon">indeterminate_check_box</i> KẾ HOẠCH CHI PHÍ DỰ ÁN
+                </a>
+            </li>
+        </ul>
+        <div class="p-t-10">
+
+            <div class="page-function" style="display: flex">
+                <div>
+                    @Html.MyButton("cmdBack", "Quay lại", string.Format("Forms.Close('{0}');", @Model.ViewId), "Alt+N", "arrow_back")
+                    @if (SMOUtilities.CheckRight("R301"))
+                    {
+                        if (plHeader != null)
+                        {
+                            @Html.MyButton("cmdAdd", "Xem dữ liệu kế hoạch", $"Forms.LoadAjax('{Url.Action("ExportData", "ContructCostPL", new { year = plHeader.TIME_YEAR, version = plHeader.VERSION })}');", "Alt+N", "search")
+                        }
+                        else
+                        {
+                            @Html.MyButton("cmdAdd", "Xem dữ liệu kế hoạch", $"Forms.LoadAjax('{Url.Action("ExportData", "ContructCostPL", new { year = Model.ObjDetail.TIME_YEAR, version = -1 })}');", "Alt+N", "search")
+                        }
+                    }
+                    </div>
+                <div id="btn-function">
+                    @if (Model.ObjList.Count() >= 0)
+                    {
+                        ViewBag.periodTime = periodTime;
+                        ViewBag.header = plHeader;
+                        ViewBag.ViewId = Model.ViewId;
+
+                        Html.RenderPartial("ExportDataButtonsFunction");
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card border-grey" style="margin-bottom: 2px;">
+    <div class="body" style="padding-top: 0px;">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a style="padding-left:0px" class="text-uppercase">
+                    <i class="material-icons col-fecon">clear_all</i> Kết quả tổng kiểm soát
+                </a>
+            </li>
+        </ul>
+        @if (Model.ListControl.Count == 0)
+        {
+            <div class="align-center border-grey col-indigo font-15 m-t-10" style="padding: 15px;">
+                <b class="text-uppercase">Dữ liệu chưa được tổng kiểm soát</b>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive m-t-10">
+                <table class="table font-13">
+                    <thead>
+                        <tr>
+                            <th>Người tổng kiểm soát</th>
+                            <th class="align-center">Thời gian tổng kiểm soát</th>
+                            <th>Kết quả</th>
+                            <th class="align-center">Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ListControl)
+                        {
+                            <tr>
+                                <td>
+                                    @(item?.UserReview?.FULL_NAME)
+                                </td>
+                                <td class="align-center">
+                                    <div>@(item.UPDATE_DATE.HasValue ? item.UPDATE_DATE?.ToString(Global.DateTimeToStringFormat) : item.CREATE_DATE.Value.ToString(Global.DateTimeToStringFormat))</div>
+                                </td>
+                                <td>
+                                    <div>Đạt: @item.Results.Where(x => x.RESULT.HasValue && x.RESULT.Value).Count()</div>
+                                    <div>Không Đạt: @item.Results.Where(x => x.RESULT.HasValue && !x.RESULT.Value).Count()</div>
+                                    <div>Chưa TKS: @item.Results.Where(x => !x.RESULT.HasValue).Count()</div>
+                                </td>
+                                <td class="align-center">
+                                    <b>@(item.IS_END ? "Đã kết thúc" : "Chưa kết thúc")</b>
+                                </td>
+                                <td>
+                                    @if (SMOUtilities.CheckRight("R321"))
+                                    {
+                                        @Html.MyButton("cmdAdd", "Xem kết quả", $"Forms.LoadAjax('{Url.Action("ReviewDataCenter", new { year = Model.ObjDetail.TIME_YEAR, version = Model.ObjDetail.DATA_VERSION, reviewUser = item.REVIEW_USER })}');", "Alt+N", "", htmlAttributes: new { @class = "col-deep-orange" })
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+<div class="card border-grey" style="margin-bottom: 2px;">
+    <div class="body" style="padding-top: 0px;">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a style="padding-left:0px" class="text-uppercase">
+                    <i class="material-icons col-fecon">clear_all</i> Kết quả thẩm định
+                </a>
+            </li>
+
+        </ul>
+
+        @if (Model.ObjList.Count == 0)
+        {
+            <div class="align-center border-grey col-indigo font-15 m-t-10" style="padding: 15px;">
+                <b class="text-uppercase">Dữ liệu chưa được thẩm định</b>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive m-t-10">
+                <table class="table font-13">
+                    <thead>
+                        <tr>
+
+                            <th>Người thẩm định</th>
+                            <th class="align-center">Thời gian thẩm định</th>
+                            <th>Kết quả</th>
+                            <th class="align-center">Trạng thái</th>
+                            <th>
+                                @if (Model.ObjList.Count > 0 && SMOUtilities.CheckRight("R321"))
+                                {
+                                    @Html.MyButton("cmdAdd", "Xem kết quả chung", $"Forms.LoadAjax('{Url.Action("ReviewDataCenter", new { year = Model.ObjDetail.TIME_YEAR, version = Model.ObjDetail.DATA_VERSION })}');", "Alt+N", "",
+                                                            htmlAttributes: new { @class = "col-deep-orange" })
+                                }
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ObjList)
+                        {
+                            <tr>
+                                <td>
+                                    @item.UserReview.FULL_NAME
+                                </td>
+                                <td class="align-center">
+                                    <div>@(item.UPDATE_DATE.HasValue ? item.UPDATE_DATE?.ToString(Global.DateTimeToStringFormat) : item.CREATE_DATE.Value.ToString(Global.DateTimeToStringFormat))</div>
+                                </td>
+                                <td>
+                                    <div>Đạt: @item.Results.Where(x => x.RESULT.HasValue && x.RESULT.Value).Count()</div>
+                                    <div>Không Đạt: @item.Results.Where(x => x.RESULT.HasValue && !x.RESULT.Value).Count()</div>
+                                    <div>Chưa Thẩm định: @item.Results.Where(x => !x.RESULT.HasValue).Count()</div>
+                                </td>
+                                <td class="align-center">
+                                    <b>@(item.IS_END ? "Đã kết thúc" : "Chưa kết thúc")</b>
+                                </td>
+
+                                <td>
+                                    @if (SMOUtilities.CheckRight("R321"))
+                                    {
+                                        @Html.MyButton("cmdAdd", "Xem kết quả", $"Forms.LoadAjax('{Url.Action("ReviewDataCenter", new { year = Model.ObjDetail.TIME_YEAR, version = Model.ObjDetail.DATA_VERSION, reviewUser = item.REVIEW_USER })}');", "Alt+N", "", htmlAttributes: new { @class = "col-deep-orange" })
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

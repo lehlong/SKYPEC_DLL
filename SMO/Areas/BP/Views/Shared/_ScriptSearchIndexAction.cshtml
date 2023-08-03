@@ -1,0 +1,224 @@
+﻿<script>
+    function YeuCauCapDuoiDieuChinh(childOrgCode, templateCode, timeYear) {
+            var comment = prompt("LÝ DO YÊU CẦU ĐIỀU CHỈNH:");
+            if (comment == undefined || comment == null || comment.trim() == "") {
+                alert("Hãy nhập lý do yêu cầu điều chỉnh!");
+                return;
+            }
+            var ajaxParams = {
+                url: "@Url.Action("YeuCauCapDuoiDieuChinh")",
+                type: "POST",
+                data: { childOrgCode: childOrgCode, templateCode: templateCode , timeYear: timeYear, comment: comment},
+                dataType: "json",
+                success: function (response) {
+                    Message.execute(response);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function TrinhDuyet(code) {
+            if (!confirm("Bạn chắc chắn trình duyệt không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("TrinhDuyet")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+    }
+
+        function HuyNop(code) {
+            if (!confirm("Hành động này không thể phục hồi. Bạn chắc chắn muốn hủy nộp mẫu không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("HuyNop")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function HuyTrinhDuyet(code) {
+            if (!confirm("Bạn chắc chắn hủy trình duyệt không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("HuyTrinhDuyet")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function PheDuyet(code) {
+            if (!confirm("Bạn chắc chắn phê duyệt không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("PheDuyet")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function HuyPheDuyet(code) {
+            if (!confirm("Bạn chắc chắn hủy phê duyệt không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("HuyPheDuyet")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function TuChoi(code) {
+            if (!confirm("Bạn chắc chắn từ chối không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("TuChoi")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function ChuyenTKS(code) {
+            if (!confirm("Bạn chắc chắn chuyển Tổng kiếm soát không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("ChuyenTKS")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function KetThucKiemSoat(code) {
+            if (!confirm("Bạn chắc chắn kết thúc Tổng kiểm soát không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("KetThucKiemSoat")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function DieuChinh(code) {
+            if (!confirm("Bạn chắc chắn Điều chỉnh dữ liệu không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("DieuChinh")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function ChuyenHDNS(code) {
+            if (!confirm("Bạn chắc chắn Chuyển cho Hội đồng kế hoạch không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("ChuyenHDNS")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function TrinhTGD(code) {
+            if (!confirm("Bạn chắc chắn Trình kế hoạch cho Tổng Giám Đốc phê duyệt không?")) {
+                return;
+            }
+
+            var ajaxParams = {
+                url: '@Url.Action("TrinhTGD")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { code}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function ImportExcel() {
+            var year = $(".hddTimeYear").val();
+            var ajaxParams = {
+                url: '@Url.Action("ImportExcel")',
+                type: 'GET',
+                data: { year: year}
+            };
+            Forms.LoadAjax(ajaxParams);
+        }
+
+        function TongHopDuLieu() {
+            if (!confirm("Bạn chắc chắn tổng hợp dữ liệu không?")) {
+                return;
+            }
+
+            var year = $(".hddTimeYear").val();
+
+            var ajaxParams = {
+                url: '@Url.Action("SumUpData")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { year: year}
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function RefreshData() {
+            $("#divResult").html("");
+            $("#divResultChild").html("");
+
+            var year = $(".hddTimeYear").val();
+            $(".spTitleYear").html(year);
+
+            SubmitBudgetIndex();
+            SubmitBudgetIndexHistory();
+            if ("@ProfileUtilities.User.Organize.IS_GROUP" == "True") {
+                SubmitBudgetIndexOfChild();
+            }
+        }
+
+        function OnChangeTimeYear(obj) {
+            $(".lblAlert").hide();
+            if ($(obj).find(':selected').attr("isClosed") == "True") {
+                $(".lblAlert").show();
+            }
+            var year = $(obj).val();
+            $(".hddTimeYear").val(year);
+
+            RefreshData();
+        }
+</script>

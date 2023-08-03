@@ -1,0 +1,38 @@
+﻿@{
+    var tableauService = new SMO.Service.MD.ConfigTableauService();
+    var ticket = tableauService.GetTableauTicket();
+
+    var serviceCostCenter = new SMO.Service.MD.CostCenterService();
+    var find = serviceCostCenter.GetManyByExpression(x => x.PARENT_CODE == ProfileUtilities.User.ORGANIZE_CODE);
+    var lstOrg = new List<string>
+    ();
+    if (!string.IsNullOrWhiteSpace(ProfileUtilities.User.Organize.CODE))
+    {
+    lstOrg.Add(ProfileUtilities.User.Organize.CODE);
+    }
+    lstOrg.AddRange(find.Select(x => x.CODE));
+
+    var config = new SMO.Service.AD.SystemConfigService();
+    config.GetConfig();
+    }
+
+    @if (string.IsNullOrWhiteSpace(ticket) || ticket == "-1")
+    {
+    return;
+    }
+
+
+    <script type='text/javascript' src='http://sso.d2s.com.vn:8000/javascripts/api/viz_v1.js'></script>
+    <div class='tableauPlaceholder' style='width: 1536px; height: 700px;'>
+        <object class='tableauViz' width='1536'
+                height='700' style='display:none;'>
+            <param name='host_url' value='http%3A%2F%2Fsso.d2s.com.vn%3A8000%2F' />
+            <param name='embed_code_version' value='3' />
+            <param name='site_root' value='' />
+            <param name='name' value='Dashboard_Tapdoan_PRD_16548347643620&#47;NSdn' />
+            <param name='tabs' value='yes' />
+            <param name='toolbar' value='yes' />
+            <param name="ticket" value="@ticket" />
+            <param name='showAppBanner' value='false' />
+        </object>
+    </div>

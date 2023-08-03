@@ -1,0 +1,171 @@
+﻿@model SMO.Service.BP.OtherCostCFService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+    var frmIndex = Guid.NewGuid().ToString();
+    var frmIndexOfChild = Guid.NewGuid().ToString();
+    var frmIndexHistory = Guid.NewGuid().ToString();
+}
+<div id='@Model.ViewId' class="container-fluid child-content">
+    <style>
+        @@media (min-width: 992px){
+            #divLeft{
+                padding-right: 2px !important;
+            }
+
+            #divRight{
+                padding-left: 2px !important;
+            }
+        }
+    </style>
+    <div class="row">
+        <div class="col-md-8 col-xs-12" id="divLeft">
+            <div class="card border-grey hidden-md hidden-lg" style="margin-bottom: 2px;">
+                <div class="body">
+                    <label class="col-deep-orange">CHỌN NĂM KẾ HOẠCH</label>
+
+                    <div class="input-group">
+                        <select id="dllTimeYear" class="form-control  selectpicker show-tick" data-container="body" data-live-search="true" data-val="False" onchange="OnChangeTimeYear(this);">
+                            @{Html.RenderPartial("_PartialViewTimeYear", Model.ObjDetail.TIME_YEAR); }
+                        </select>
+                        <span class="input-group-addon" onclick="RefreshData();" style="padding-left: 10px; cursor: pointer;">
+                            <i class="material-icons">refresh</i>
+                        </span>
+                    </div>
+                    
+                    <label class="lblAlert m-t-10 col-deep-orange" style="display: none;">CHÚ Ý: Năm kế hoạch đã đóng. Các đơn vị cấp dưới của tập đoàn không thể nhập, tổng hợp hay trình, phê duyệt dữ liệu!</label>
+                </div>
+            </div>
+
+            @using (Ajax.BeginForm("SearchIndex", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = frmIndex }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.ViewId)
+                @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR, new { @class = "hddTimeYear" })
+                <div class="card border-grey" style="margin-bottom: 2px;">
+                    <div class="body" style="padding-top: 0px;">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active">
+                                <a style="padding-left:0px">
+                                    <i class="material-icons col-fecon">clear_all</i> KẾ HOẠCH CHI KHÁC - @ProfileUtilities.User.Organize.NAME.ToUpper() NĂM <span class="spTitleYear">@Model.ObjDetail.TIME_YEAR</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="divResult">
+                            
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (ProfileUtilities.User.Organize.IS_GROUP)
+            {
+                using (Ajax.BeginForm("SearchIndexOfChild", null, FormDataUtils.GetAjaxOptions(Model.ViewId, "#divResultChild"), new { @id = frmIndexOfChild }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.ViewId)
+                    @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR, new { @class = "hddTimeYear" })
+                    <div class="card border-grey" style="margin-bottom: 2px;">
+                        <div class="body" style="padding-top: 0px;">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active">
+                                    <a style="padding-left:0px">
+                                        <i class="material-icons col-fecon">clear_all</i> KẾ HOẠCH CHI KHÁC - CẤP DƯỚI NĂM <span class="spTitleYear">@Model.ObjDetail.TIME_YEAR</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="divResultChild">
+                                
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+        </div>
+        <div class="col-md-4 col-xs-12" id="divRight">
+            <div class="card border-grey hidden-sm hidden-xs" style="margin-bottom: 2px;">
+                <div class="body">
+                    <label class="col-deep-orange">CHỌN NĂM KẾ HOẠCH</label>
+                    <div class="input-group">
+                        <select id="dllTimeYear" class="form-control  selectpicker show-tick" data-container="body" data-live-search="true" data-val="False" onchange="OnChangeTimeYear(this);">
+                            @{Html.RenderPartial("_PartialViewTimeYear", Model.ObjDetail.TIME_YEAR); }
+                        </select>
+                        <span class="input-group-addon" onclick="RefreshData();" style="padding-left: 10px; cursor: pointer;">
+                            <i class="material-icons">refresh</i>
+                        </span>
+                    </div>
+
+                    <label class="lblAlert m-t-10 col-deep-orange" style="display: none;">CHÚ Ý: Năm kế hoạch đã đóng. Các đơn vị cấp dưới của tập đoàn không thể nhập, tổng hợp hay trình, phê duyệt dữ liệu!</label>
+                </div>
+            </div>
+
+            @*<div class="card border-grey " style="margin-bottom: 2px; max-height: 300px;">
+                <div class="body" style="padding-top: 0px;">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a style="padding-left:0px">
+                                <i class="material-icons col-fecon">comment</i>COMMENTS
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                    </div>
+                </div>
+            </div>*@
+
+            <div class="card border-grey " style="margin-bottom: 2px;">
+                <div class="body" style="padding-top: 0px;">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a style="padding-left:0px">
+                                <i class="material-icons col-fecon">history</i>LỊCH SỬ
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        @using (Ajax.BeginForm("SearchIndexHistory", null, FormDataUtils.GetAjaxOptions(Model.ViewId, "#divResultHistory"), new { @id = frmIndexHistory }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(m => m.ViewId)
+                            @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR, new { @class = "hddTimeYear" })
+                            <div id="divResultHistory">
+
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+        
+
+    @{Html.RenderPartial("_ScriptSearchIndexAction"); }
+    <script type="text/javascript">
+
+        function SubmitBudgetIndex() {
+            Forms.SubmitForm('@frmIndex');
+        }
+
+        function SubmitBudgetIndexOfChild() {
+            Forms.SubmitForm('@frmIndexOfChild');
+        }
+
+        function SubmitBudgetIndexHistory() {
+            Forms.SubmitForm('@frmIndexHistory');
+        }
+
+        $(function () {
+            $("#dllTimeYear").change();
+            Forms.CompleteUI();
+            Forms.SubmitByEnter("@Model.FormId");
+        });
+    </script>
+</div>
+
+

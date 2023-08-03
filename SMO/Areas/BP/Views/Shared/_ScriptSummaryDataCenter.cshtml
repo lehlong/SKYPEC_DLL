@@ -1,0 +1,291 @@
+﻿@model  int?
+
+<script>
+    function DrillDown(e) {
+        var $parent = $(e).parent();
+        var $this = $(e);
+        var centerCode = $this.attr("centerCode");
+        var version = $this.attr("version");
+        var sumUpVersion = $this.attr("sum_up_version");
+        var elementCode = $this.attr('id');
+        var root = $this.attr('root');
+        var type = $this.attr('type');
+        var year = @Model;
+        if (!version) {
+            return;
+        }
+        var parentLevel = parseInt($this.attr("level"));
+            if ($parent.hasClass("expanded")) {
+                // collapsed
+                if (root == 'true') {
+                    $.each($parent.siblings(`.${elementCode}`), function (e, v) {
+                        $(v).addClass("hidden");
+                    });
+                } else {
+                    $.each($parent.siblings(`.${elementCode}`), function (e, v) {
+                        if (parseInt($(v).attr('level')) > parentLevel) {
+                            $(v).addClass("hidden");
+                        }
+                    });
+                }
+
+                $parent.addClass("collapsed").removeClass("expanded");
+            } else if ($parent.hasClass("collapsed")) {
+                // expanded
+                if (root == 'true') {
+                    $.each($parent.siblings(`.${elementCode}`), function (e, v) {
+                        $(v).removeClass("hidden");
+                    });
+                } else {
+                    $.each($parent.siblings(`.${elementCode}`), function (e, v) {
+                        if (parseInt($(v).attr('level')) > parentLevel) {
+                            $(v).removeClass("hidden");
+                        }
+                    });
+                }
+                $parent.addClass("expanded").removeClass("collapsed");
+            } else {
+            if (version === undefined || year === undefined) {
+                return;
+            }
+            Forms.ShowLoading();
+            var url = '';
+            if (type === 'preview') {
+                url = '@Url.Action("GetDetailPreviewSumUp")';
+            } else {
+                url = '@Url.Action("GetDetailSumUp")';
+            }
+            var ajaxParams = {
+                url,
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { centerCode, version, elementCode, year, sumUpVersion },
+                success: function (response) {
+                    $parent.addClass("expanded").removeClass("collapsed");
+                    var lst = JSON.parse(response);
+                    // add row
+                    lst.sort(byProperty("TEMPLATE_CODE"));
+                    $.each(lst, function (index, value) {
+                        if (value.IsSkip !== undefined && value.IsSkip) {
+                            return true;
+                        }
+                        var tr = $('<tr>', { class: `child ${elementCode}`, level: parentLevel + 1 });
+                        var td = '';
+                        if (value.IS_GROUP) {
+                            td = $('<td>', {class: "sticky-cell", text: '', version: value.VERSION, sum_up_version: version, centerCode: value.CENTER_CODE, level: parentLevel + 1, id: elementCode, type: type });
+                            td.append($('<i>', { class: 'material-icons swap-icon-drill-down', text: 'unfold_more', }));
+                            td.bind('click', (e) => {
+                                DrillDown($(e.target).parent());
+                            });
+                            td.hover(function () {
+                                $(this).addClass("col-fecon").css("cursor", "pointer");
+                            },
+
+                                function () {
+                                    $(this).removeClass("col-fecon");
+                                });
+                            tr.append(td);
+                        } else {
+                            tr.append($('<td>', { text: '', class: "sticky-cell", level: parentLevel + 1}));
+                        }
+                        tr.append($('<td>', { text: '', class: "sticky-cell" }));
+
+                        var names, div;
+                        if (value.IsBase) {
+                            var lstBaseData = lst.filter((val) => {
+                                return val.ValuesBaseString !== null && val.ValuesBaseString.length != 0 && val.TEMPLATE_CODE == value.TEMPLATE_CODE && val.IsBase;
+                            });
+                            if (value.ValuesBaseString === null) {
+                                // is template
+                                // show template
+                                names = value.ORG_NAME.split("\n");
+                                div = $('<div>');
+                                $.each(names, function (index, name) {
+                                    div.append($('<p>', { text: `${name.trim()}` }));
+                                });
+                                tr.append($('<td>', { class: "sticky-cell" }).append(div));
+
+                                // skip template obj in lst
+                                value.IsSkip = true;
+                            } else {
+                                // is base data
+                                // find template
+                                var templateObj = lst.find((val) => {
+                                    return val.ValuesBaseString === null && val.TEMPLATE_CODE == value.TEMPLATE_CODE && val.IsBase;
+                                });
+                                // remove template obj in lst
+                                lst.splice(lst.indexOf(templateObj), 1);
+                                // show template
+                                names = value.ORG_NAME.split("\n");
+                                div = $('<div>');
+                                $.each(names, function (index, name) {
+                                    div.append($('<span>', { text: `${name.trim()}` }));
+                                });
+                                tr.append($('<td>', { class: "sticky-cell" }).append(div));
+
+                                value = templateObj;
+                            }
+
+                            // add cell value of template obj
+                            $.each(value.Values, function (i, val) {
+                                td = $('<td>', { text: formatNumber(val), class: "align-right" });
+                                tr.append(td);
+                            });
+
+                            tr.append($('<td>', { text: formatNumber(value.Values[12] / 12), class: "align-right" }));
+
+                            tr.append($('<td>', { text: value.DESCRIPTION === undefined || value.DESCRIPTION === null ? '' : value.DESCRIPTION }));
+
+                            $parent.after(tr);
+                            $parent = $(tr);
+
+                            // show base data
+                            $.each(lstBaseData, function (i, baseData) {
+                                var tr = $('<tr>', { class: `child ${elementCode}`, level: parentLevel + 2 });
+                                tr.append($('<td>', { text: '', class: "sticky-cell", level: parentLevel + 2 }));
+                                tr.append($('<td>', { text: '', class: "sticky-cell" }));
+                                names = baseData.ORG_NAME.split("\n");
+                                div = $('<div>');
+                                $.each(names, function (index, name) {
+                                    div.append($('<span>', { text: `${name.trim()}` }));
+                                });
+                                tr.append($('<td>', { class: "sticky-cell" }).append(div));
+                                $.each(baseData.ValuesBaseString, function (i, val) {
+                                    names = val.split("\n");
+                                    div = $('<div>');
+                                    $.each(names, function (index, name) {
+                                        div.append($('<p>', { text: `\t${name.trim()}` }));
+                                    });
+                                    tr.append($('<td>').append(div));
+                                });
+                                tr.append($('<td>', { text: baseData.DESCRIPTION === undefined || baseData.DESCRIPTION === null ? '' : baseData.DESCRIPTION }));
+
+                                $parent.after(tr);
+                                $parent = $(tr);
+                                tr.hide().show(1);
+
+                                // skip base data obj in lst
+                                lst[lst.indexOf(baseData)].IsSkip = true
+                            });
+                        }
+                        else {
+                            names = value.ORG_NAME.split("\n");
+                            div = $('<div>');
+
+                            $.each(names, function (index, name) {
+                                div.append($('<span>', { html: `${name.trim()}` }));
+                            });
+
+                            tr.append($('<td>', { class: "sticky-cell" }).append(div));
+                            $.each(value.Values, function (i, val) {
+                                td = $('<td>', { text: formatNumber(val), class: "align-right" });
+                                tr.append(td);
+                            });
+                            tr.append($('<td>', { text: formatNumber(value.Values[12] / 12), class: "align-right" }));
+
+                            tr.append($('<td>', { text: value.DESCRIPTION === undefined || value.DESCRIPTION === null ? '' : value.DESCRIPTION }));
+                            $parent.after(tr);
+                            tr.hide().show(1);
+                        }
+
+                    });
+                    $(".sticky-table").animate({ scrollLeft: $(".sticky-table").scrollLeft() + 1 }, 1);
+
+                    setCellPadding();
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+    }
+
+    // start: tìm kiến từ cột nào (index của cột)
+    // end: tìm kiến đến cột nào (index của cột)
+    // levelColumnIndex: index của cột chứa level
+    // parentColumnIndex: index của cột chứa thuộc tính strong (thuộc tính xác định là khoản mục cha)
+    function SearchTable(start, end, levelColumnIndex, parentColumnIndex) {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = $("#text-search-table");
+        filter = input.val().toUpperCase();
+
+        table = $("#table");
+        tr = table.find("tbody tr");
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            let found = false;
+            for (var j = start; j >= end; j--) {
+                td = tr[i].getElementsByTagName("td")[j];
+                if ($(td).hasClass("strong")) {
+                    $(tr[i]).removeClass("hidden")
+                    found = true;
+                    break;
+                }
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        $(tr[i]).removeClass("hidden")
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                $(tr[i]).addClass("hidden")
+            }
+        }
+        CleanTable(levelColumnIndex, parentColumnIndex);
+    }
+
+    // Xóa những parent không có child
+    function CleanTable(levelColumnIndex, parentColumnIndex) {
+        var table, tr, td, i, value;
+        table = $("#table");
+        tr = table.find("tbody tr").not(".hidden");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[parentColumnIndex];
+            if (tr.length === 1) {
+                $(tr[i]).addClass("hidden");
+                break;
+            }
+            let previousIsChild = i === 0 ? true : !$(tr[i - 1].getElementsByTagName("td")[parentColumnIndex]).hasClass("strong");
+            let previousLevel = i === 0 ? 0 : $(tr[i - 1].getElementsByTagName("td")[levelColumnIndex]).attr("level");
+            if ($(td).hasClass("strong")) {
+                if (i === tr.length - 1) {
+                    $(tr[i]).addClass("hidden");
+                    i -= 2;
+                    tr = table.find("tbody tr").not(".hidden");
+                } else if (!previousIsChild) {
+                    var level = $(td).prev().attr("level");
+                    if (level <= previousLevel && previousLevel !== 0) {
+                        $(tr[i - 1]).addClass("hidden");
+                        i -= 2;
+                        tr = table.find("tbody tr").not(".hidden");
+                    } else {
+                        previousLevel = level;
+                    }
+                }
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        StickyTable();
+        setCellPadding();
+    });
+    function setCellPadding() {
+        const table = $('#table');
+        const allBodyTrs = table.find('tbody tr');
+        const nameColumn = 2;
+        $.each(allBodyTrs, function (index, row) {
+            // check box inside td 6th
+            const td = row.getElementsByTagName('td')[nameColumn];
+            const tdLevel = row.getElementsByTagName('td')[0];
+
+            $(td).css('padding-left', $(tdLevel).attr('level') * 20 + 'px');
+            $(td).css('width', '350px');
+            $(td).css('max-width', '350px');
+            $(td).css('min-width', '350px');
+        });
+    }
+</script>

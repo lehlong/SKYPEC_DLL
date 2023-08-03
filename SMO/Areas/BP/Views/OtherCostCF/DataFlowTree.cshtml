@@ -1,0 +1,78 @@
+﻿<style type="text/css">
+    .ztree li span.infor-user-container {
+        padding: 0 2px 0 10px;
+        float: right;
+    }
+
+    .ztree li .infor-user-container span.infor-user {
+        float: right;
+        background-color: darkgray;
+        padding: 0 7px;
+    }
+
+    section.tree-content {
+        height: 500px;
+        /*overflow-y: auto*/
+    }
+
+    section.organization-table {
+        /*height: 300px;*/
+        /*max-height: 300px;*/
+        overflow-y: auto
+    }
+</style>
+<link href="~/Content/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
+
+@{ 
+    var viewId = Guid.NewGuid().ToString();
+}
+<section class="tree-content" id="@viewId">
+    <div id="divTree">
+        <ul id="treeOrganize" class="ztree"></ul>
+    </div>
+</section>
+
+<script src="~/Scripts/Ztree/jquery.ztree.core-3.5.min.js"></script>
+<script src="~/Scripts/Ztree/jquery.ztree.excheck-3.5.min.js"></script>
+<script src="~/Scripts/Ztree/jquery.ztree.exedit-3.5.min.js"></script>
+<script src="~/Scripts/Ztree/jquery.ztree.exhide-3.5.min.js"></script>
+<script type="text/javascript">
+
+    var IDMark_Switch = "_switch",
+        IDMark_Icon = "_ico",
+        IDMark_Span = "_span",
+        IDMark_Input = "_input",
+        IDMark_Check = "_check",
+        IDMark_Edit = "_edit",
+        IDMark_Remove = "_remove",
+        IDMark_Ul = "_ul",
+        IDMark_A = "_a";
+
+    var setting = {
+        view: {
+            selectedMulti: false,
+            nameIsHTML: true,
+            showTitle: false,
+        },
+        edit: {
+            enable: false,
+            showRemoveBtn: false,
+            showRenameBtn: false
+        },
+        data: {
+            simpleData: {
+                enable: true
+            },
+        },
+        async: {
+            enable: true,
+            url: '@Url.Action("TreeData")',
+            autoParam: ["year", "realId=orgCode", "version", "sumUpVersion"]
+        },
+    };
+    $(function () {
+        var zNodes = jQuery.parseJSON('@Html.Raw(ViewBag.lstDataTree)');
+        $.fn.zTree.init($("#@viewId #treeOrganize"), setting, zNodes);
+    });
+</script>
+

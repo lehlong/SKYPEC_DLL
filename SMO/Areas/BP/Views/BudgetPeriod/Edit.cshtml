@@ -1,0 +1,93 @@
+﻿@model SMO.Service.BP.BudgetPeriodService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+}
+
+<div id='@Model.ViewId' class="card">
+    @using (Ajax.BeginForm("Update", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+    {
+        @Html.AntiForgeryToken();
+        @Html.HiddenFor(m => m.ObjDetail.ID)
+        @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR)
+        @Html.HiddenFor(m => m.ObjDetail.PERIOD_ID)
+        @Html.HiddenFor(m => m.ObjDetail.AUTO_NEXT_PERIOD)
+        @Html.HiddenFor(m => m.ObjDetail.NOTIFY_USER)
+        <div class="body" style="padding-top: 0px;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a style="padding-left:0px"><i class="material-icons col-fecon">clear_all</i>THIẾT LẬP GIAI ĐOẠN: @Model.ObjDetail.Period.NAME.ToUpper()</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="row p-t-20">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="p-l-5">Trạng thái hiện tại</label>
+                            <br />
+                            @Html.RadioButtonFor(x => x.ObjDetail.STATUS, false, htmlAttributes: new { id = "close-period"})
+                            <label for="close-period" style="font-size: inherit">Đóng giai đoạn</label>
+                            <br />
+                            @Html.RadioButtonFor(x => x.ObjDetail.STATUS, true, htmlAttributes: new { id = "open-period" })
+                            <label for="open-period" style="font-size: inherit">Mở giai đoạn</label>
+                        </div>
+
+                        <div class="form-group">
+                            <input class="filled-in"
+                                   id="auto-next-period"
+                                   @(Model.ObjDetail.AUTO_NEXT_PERIOD ? "checked" : string.Empty)
+                                   type="checkbox"
+                                   onchange="$('#@Model.ViewId #ObjDetail_AUTO_NEXT_PERIOD').val($(this).is(':checked') ? 'True' : 'False');
+    $(this).is(':checked') ? $('#auto-next-period-form-group').removeClass('hidden') : $('#auto-next-period-form-group');">
+                            <label class="strong p-l-5" for="auto-next-period"></label>
+                            <label class="p-l-5">Tự động chuyển giai đoạn <i class="text-muted font-weight-normal">(Đóng giai đoạn này và mở giai đoạn kế tiếp)</i></label>
+                        </div>
+
+                        <div class="form-group" id="auto-next-period-form-group">
+                            <label for="ObjDetail_TIME_NEXT_PERIOD">Thời gian chuyển giai đoạn<i class="text-muted font-weight-normal">(Mặc định kế thừa từ năm trước)</i></label>
+                            <div class="form-line">
+                                <div class="input-group date">
+                                    @Html.MyTextBoxFor(model => model.ObjDetail.TIME_NEXT_PERIOD, htmlAttributes: new { @class = "masked-input-date" })
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input class="filled-in"
+                                   id="cbx-notify-user"
+                                   @(Model.ObjDetail.NOTIFY_USER ? "checked" : string.Empty)
+                                   type="checkbox"
+                                   onchange="$('#@Model.ViewId #ObjDetail_NOTIFY_USER').val($(this).is(':checked') ? 'True' : 'False');">
+                            <label class="strong p-l-5" for="cbx-notify-user"></label>
+                            <label class="p-l-5">Tùy chọn thông báo tới toàn bộ user khi chuyển giai đoạn</label>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <script type="text/javascript">
+        $(function () {
+            @if (Model.ObjDetail.AUTO_NEXT_PERIOD)
+            {
+                <text>
+            $('#auto-next-period-form-group').removeClass('hidden');
+            </text>
+            }
+            Forms.CompleteUI();
+
+            $('.masked-input-date').inputmask({ inputFormat: 'dd/mm/yyyy', alias: 'date' });
+            $('.date').datetimepicker({
+                showTodayButton: true,
+                showClose: true,
+                format: 'DD-MM-YYYY',
+                //defaultDate: new Date(),
+                useCurrent: true
+            });
+        });
+    </script>
+</div>
+
+

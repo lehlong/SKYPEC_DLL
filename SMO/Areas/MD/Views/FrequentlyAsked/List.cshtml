@@ -1,0 +1,37 @@
+﻿@model SMO.Service.MD.FrequentlyAskedService
+@{
+    var number = 0;
+}
+ 
+@{ Html.RenderPartial("Paging", Model); }
+
+<div class="table-responsive">
+    <table class="table table-condensed table-bordered table-striped">
+        <thead>
+            <tr>
+                <th class="align-center" style="width: 50px;">STT</th>
+                <th style="width: 50%">Tiêu đề</th>
+                <th style="width: 50%">Tiêu đề tiếng anh</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList.OrderBy(x => x.CREATE_DATE))
+            {
+                number++;
+                var vdbclickAction = string.Format("Forms.LoadAjax('{0}', this);", Url.Action("Edit", new { id = item.PKID }));
+                <tr>
+                    <td class="align-center">
+                        <a href="#" onclick="@vdbclickAction">@number</a>
+                    </td>
+                    <td ondblclick="@vdbclickAction">
+                        <a href="#" onclick="@vdbclickAction">@item.TIEU_DE</a>
+                    </td>
+                    <td ondblclick="@vdbclickAction">
+                        <a href="#" onclick="@vdbclickAction">@item.TIEU_DE_EN</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{ Html.RenderPartial("Paging", Model); }

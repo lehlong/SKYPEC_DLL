@@ -1,0 +1,85 @@
+﻿@model SMO.Service.BP.RevenueCFService
+
+    <div class="table-responsive font-13" style="max-height: 500px">
+        @if (ProfileUtilities.User.Organize.IS_GROUP)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="align-center">Version</th>
+                        <th>Người dùng</th>
+                        <th class="align-center">Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ObjListHistory.OrderByDescending(x => x.ACTION_DATE))
+                    {
+                        <tr>
+                            <td class="align-center">
+                                @item.VERSION
+                            </td>
+                            <td>
+                                @item.ACTION_USER
+                                <div>@(item.USER_CREATE?.FULL_NAME)</div>
+                            </td>
+                            <td class="align-center">
+                                <b>@Approve_Action.GetStatusText(item.ACTION)</b>
+                                <div>@item.ACTION_DATE.ToString(Global.DateTimeToStringFormat)</div>
+                                @if (!string.IsNullOrWhiteSpace(item.NOTES))
+                                {
+                                    <div title="@item.NOTES" style="cursor: pointer" onclick="$('#divNote_@item.PKID').toggle(); $(this).hide();">@(item.NOTES.Length < 30 ? item.NOTES : item.NOTES.Substring(0, 30) + "...")</div>
+                                    if (item.NOTES.Length >= 30)
+                                    {
+                                        <div id="divNote_@item.PKID" style="display: none;">@item.NOTES</div>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Mẫu</th>
+                        <th class="align-center">Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ObjListHistory.OrderByDescending(x => x.ACTION_DATE))
+                    {
+                        <tr>
+                            <td>
+                                <b>@item.TEMPLATE_CODE</b>
+                                @if (string.IsNullOrEmpty(item.TEMPLATE_CODE))
+                                {
+                                    <div>Tổng hợp dữ liệu</div>
+                                }
+                                else
+                                {
+                                    <div>@item.Template.NAME</div>
+                                }
+                                <div>Version: @item.VERSION</div>
+                            </td>
+                            <td class="align-center">
+                                <b>@Approve_Action.GetStatusText(item.ACTION)</b>
+                                <div>@(item.USER_CREATE?.FULL_NAME)(@item.ACTION_USER)</div>
+                                <div>@item.ACTION_DATE.ToString(Global.DateTimeToStringFormat)</div>
+                                @if (!string.IsNullOrWhiteSpace(item.NOTES))
+                                {
+                                    <div title="@item.NOTES" style="cursor: pointer" onclick="$('#divNote_@item.PKID').toggle(); $(this).hide();">@(item.NOTES.Length < 30 ? item.NOTES : item.NOTES.Substring(0, 30) + "...")</div>
+                                    if (item.NOTES.Length >= 30)
+                                    {
+                                        <div id="divNote_@item.PKID" style="display: none;">@item.NOTES</div>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>

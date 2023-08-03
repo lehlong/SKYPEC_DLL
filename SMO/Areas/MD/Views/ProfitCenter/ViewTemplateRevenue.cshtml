@@ -1,0 +1,88 @@
+﻿@model IList<T_MD_REVENUE_PL_ELEMENT>
+@using SMO.Core.Entities.MD;
+@using System.Text;
+@{
+    Layout = null;
+    var detailRevenueElements = ViewBag.detailRevenueElements as IList<T_MD_TEMPLATE_DETAIL_REVENUE_PL>;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ViewSampleTemplate</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+</head>
+<body class="body-content">
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-condensed table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Mã đơn vị</th>
+                        <th>Tên đơn vị</th>
+                        <th>Mã khoản mục</th>
+                        <th>Tên khoản mục</th>
+                        <th>Tháng 1</th>
+                        <th>Tháng 2</th>
+                        <th>Tháng 3</th>
+                        <th>Tháng 4</th>
+                        <th>Tháng 5</th>
+                        <th>Tháng 6</th>
+                        <th>Tháng 7</th>
+                        <th>Tháng 8</th>
+                        <th>Tháng 9</th>
+                        <th>Tháng 10</th>
+                        <th>Tháng 11</th>
+                        <th>Tháng 12</th>
+                        <th>Tổng năm</th>
+                        <th>Trung bình tháng</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var detail in detailRevenueElements.GroupBy(x => x.CENTER_CODE).Select(x => x.First()))
+                    {
+                        foreach (var item in Model
+                            .Where(x => x.CENTER_CODE == detail.CENTER_CODE)
+                            .OrderBy(x => x.C_ORDER)
+                            .GroupBy(x => x.CODE)
+                            .Select(x => x.First()))
+                        {
+                            var space = new StringBuilder();
+                            for (int i = 0; i < item.LEVEL; i++)
+                            {
+                                space.Append("\t");
+                            }
+                            <tr>
+                                <td>@(detail.CENTER_CODE)</td>
+                                <td>@(detail.ProfitCenter.NAME)</td>
+                                <td>@item.CODE</td>
+                                <td class="pre-whitespace">@($"{space.ToString()}{item.NAME}")</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+﻿@model SMO.Service.AD.UserService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+}
+
+<div id='@Model.ViewId' class="container-fluid child-content">
+    <link href="~/Content/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/Ztree/jquery.ztree.core-3.5.min.js"></script>
+    <script src="~/Scripts/Ztree/jquery.ztree.excheck-3.5.min.js"></script>
+    <script src="~/Scripts/Ztree/jquery.ztree.exedit-3.5.min.js"></script>
+    <script src="~/Scripts/Ztree/jquery.ztree.exhide-3.5.min.js"></script>
+
+    <div class="card border-grey">
+        <div class="body" style="padding-top: 0px;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a style="padding-left:0px"><i class="material-icons col-fecon">clear_all</i> DANH SÁCH NGƯỜI DÙNG</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="page-function" style="padding-bottom: 7px;">
+                    <div class="page-function-button m-r-20" style="float:left">
+                        @Html.MyButton("cmdAdd", "Thêm mới", string.Format("Create();"), "Alt+N", "add")
+                        @Html.MyButton("cmdAdd", "Cập nhật", string.Format("UpdatePhongBan();"), "Alt+N", "done_all")
+                    </div>
+
+                    <div class="input-group page-function-search">
+                        <div class="form-line">
+                            @Html.MyTextBoxFor(m => m.ObjDetail.USER_NAME, new { placeholder = "Tìm theo tên đăng nhập hoặc họ tên", @class = "align-center", @data_val = false, @id = "txtUserName", onchange = "Search();" })
+                        </div>
+
+                        <span class="input-group-addon" title="Tìm kiếm" onclick="Search();">
+                            <i class="material-icons">search</i>
+                        </span>
+                    </div>
+                </div>
+
+                <div id="divTreeUser">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function Search() {
+            var value = $("#txtUserName").val();
+            var zTree = $.fn.zTree.getZTreeObj("treeUser");
+            var nodeWithUserName = zTree.getNodesByParamFuzzy("userName", value, null);
+            var nodeWithFullName = zTree.getNodesByParamFuzzy("fullName", value, null);
+            if (nodeWithUserName != null && nodeWithUserName.length > 0) {
+                zTree.selectNode(nodeWithUserName[0]);
+            } else if (nodeWithFullName != null && nodeWithFullName.length > 0) {
+                zTree.selectNode(nodeWithFullName[0]);
+            }
+            $("#txtUserName").focus();
+        }
+
+        var settingUserOrganize = {
+            view: {
+                selectedMulti: false,
+                nameIsHTML: true,
+                showTitle: false
+            },
+            edit: {
+                enable: true,
+                showRemoveBtn: false,
+                showRenameBtn: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: OnClickUserOrganize,
+                beforeDrop: BeforeDropUserOrganize
+            }
+        };
+
+        function BeforeDropUserOrganize(treeId, treeNodes, targetNode, moveType, isCopy) {
+            if (!targetNode) {
+                return false;
+            } else if (targetNode.id == zNodes[0].id) {
+                return false;
+            } else if (treeNodes[0].type == "OG") {
+                return false;
+            } else if (targetNode.type == "US") {
+                return false;
+            }
+        }
+
+        function OnClickUserOrganize(event, treeId, treeNode) {
+            if (treeNode.type == "OG") {
+                $("#hddParent").val(treeNode.id);
+                $("#hddParentInCreate").val(treeNode.id);
+                return;
+            } else {
+                $("#hddParent").val(treeNode.pId);
+                $("#hddParentInCreate").val(treeNode.pId);
+            }
+            var id = treeNode.id;
+            var url = "@Url.Action("Edit")";
+            var ajaxParams = {
+                url: url,
+                data: { id: id }
+            };
+            Forms.LoadAjax(ajaxParams);
+        };
+
+        function Create() {
+            var ajaxParams = {
+                url: "@Url.Action("CreateUserOrganzie")",
+                data: { parent: $("#hddParent").val() }
+            };
+            Forms.LoadAjaxRight(ajaxParams);
+        }
+
+        function UpdatePhongBan() {
+            var zTree = $.fn.zTree.getZTreeObj("treeUser");
+            var nodes = zTree.transformToArray(zTree.getNodes());
+            var data = nodes.map(function (a) { return { id: a.id, pId: a.pId }; });
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("UpdatePhongBan")',
+                type: "POST",
+                data: data,
+                dataType: "json",
+                contentType: 'application/json; charset=UTF-8',
+                success: function (response) {
+                    Message.execute(response);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function CreateUserSuccess(idUserSelected, idParent) {
+            BuildTree(idUserSelected);
+        }
+
+        function BuildTreeUser(idUserSelected) {
+            $('#divTreeUser').html("");
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("BuildTreeUser")',
+                type: "GET",
+                data: { idUserSelected: idUserSelected },
+                success: function (response) {
+                    $('#divTreeUser').html(response);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        $(function () {
+            BuildTreeUser();
+            Forms.CompleteUI();
+        });
+    </script>
+</div>
+
+

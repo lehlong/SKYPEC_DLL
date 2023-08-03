@@ -1,0 +1,30 @@
+﻿@model SMO.Service.MD.CompanyService
+@{
+    var frmFormCode = "frmCompanyIndex";
+    var number = 1;
+}
+ 
+<div class="table-responsive">
+    <table class="table table-condensed table-bordered table-striped">
+        <thead>
+            <tr>
+                <th style="max-width: 120px;">Mã công ty</th>
+                <th>Tên công ty</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList)
+            {
+                number++;
+                //var vdbclickAction = string.Format("Forms.LoadAjax('{0}', this);", Url.Action("Edit", new { id = item.CODE }));
+                var vdbclickAction = "";
+                <tr>
+                    <td ondblclick="@vdbclickAction">
+                        <a href="#" onclick="@vdbclickAction">@item.CODE</a>
+                    </td>
+                    <td ondblclick="@vdbclickAction">@item.NAME</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

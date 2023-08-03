@@ -1,0 +1,75 @@
+﻿@model SMO.Service.MD.TemplateService
+
+@{ 
+    if (Model.ObjList.Count > 50)
+    {
+        Html.RenderPartial("Paging", Model);
+    }
+}
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mẫu khai báo</th>
+                <th>Đơn vị</th>
+                <th class="align-center">Loại khoản mục</th>
+                <th class="align-center">Loại kế hoạch</th>
+                <th class="align-center">Người tạo</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList)
+            {
+                var vdbclickAction = string.Format("Forms.LoadAjax('{0}', this);", Url.Action("Details", new { id = item.CODE }));
+                <tr>
+                    <td ondblclick="@vdbclickAction">
+                        <a href="#" onclick="@vdbclickAction"><b>@item.CODE</b></a>
+                        <div>@item.NAME</div>
+                    </td>
+                    <td ondblclick="@vdbclickAction">
+                        <b>@item.ORG_CODE</b>
+                        <div>@(item?.Organize?.NAME)</div>
+                    <td ondblclick="@vdbclickAction" class="align-center">
+                        @ElementType.GetText(item.ELEMENT_TYPE)
+                    </td>
+                    <td ondblclick="@vdbclickAction" class="align-center">
+                        @BudgetType.GetText(item.BUDGET_TYPE)
+                    </td>
+                    <td class="align-center">
+                        @item.CREATE_BY
+                        <div>@(item.CREATE_DATE?.ToString(Global.DateTimeToStringFormat))</div>
+                    </td>
+                    <td>
+                        <div class="m-b-5">
+                            <div class="form-group">
+                                <input name="cbxIsBase_@item.CODE"
+                                       class="filled-in"
+                                       id="cbxIsBase_@item.CODE"
+                                       @(item.ACTIVE ? "checked" : "")
+                                       review-temp-name="checkOne"
+                                       type="checkbox"
+                                       value="@item.ACTIVE"
+                                       onchange="toggleStatusTemplate('@item.CODE', @item.ACTIVE.ToString().ToLower())"
+                                       data-val="true">
+                                <label for="cbxIsBase_@item.CODE" class="p-r-5"></label>
+                                @if (item.ACTIVE)
+                                {
+                                    <text><span class="text-success">Actived</span></text>
+                                }
+                                else
+                                {
+                                    <text><span class="text-danger">Deactived</span></text>
+                                }
+                            </div>
+                        </div>
+                    </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{ Html.RenderPartial("Paging", Model); }
+
+

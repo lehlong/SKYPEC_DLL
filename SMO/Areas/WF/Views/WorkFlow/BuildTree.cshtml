@@ -1,0 +1,22 @@
+﻿
+<input type="hidden" id="hddParent" value="" />
+<ul id="treeWF" class="ztree"></ul>
+
+<script type="text/javascript">
+    var zNodes = jQuery.parseJSON('@Html.Raw(ViewBag.zNode)');
+    $(function () {
+        $.fn.zTree.init($("#treeWF"), setting, zNodes);
+        var zTree = $.fn.zTree.getZTreeObj("treeWF");
+        setTimeout(function () {
+            zTree.expandAll(true);
+            var selected = "@ViewBag.IdSelected";
+            if (selected != null && selected !== "") {
+                var node = zTree.getNodesByParam("id", selected, null);
+                if (node != null) {
+                    zTree.selectNode(node[0]);
+                }
+            }
+        }, 500);
+    });
+</script>
+

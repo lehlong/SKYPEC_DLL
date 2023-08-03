@@ -1,0 +1,150 @@
+﻿@model IList<T_MD_COST_PL_ELEMENT>
+@using SMO.Core.Entities;
+@using SMO.Core.Entities.MD;
+@using System.Text;
+@using SMO.Service.Class;
+
+@{
+    var detailCostElements = ViewBag.detailCostElements as IList<T_MD_TEMPLATE_DETAIL_COST_PL>;
+    var costPLHeader = ViewBag.costPLHeader as T_BP_COST_PL_VERSION;
+    var dataCenterModel = ViewBag.dataCenterModel as ViewDataCenterModel;
+}
+
+@if (Model == null || Model.Count == 0 ||
+    detailCostElements == null || detailCostElements.Count == 0 || costPLHeader == null)
+{
+    Html.RenderPartial("_NothingData");
+}
+else
+{
+    Html.RenderPartial("_PartialViewSearchAndDetail", dataCenterModel);
+    <div class="sticky-table sticky-headers sticky-ltr-cells">
+        <table class="table-condensed table-bordered table-striped font-13" id="table">
+            <tbody>
+                <tr class="sticky-row strong" data-xls-row="header">
+                    @if (!string.IsNullOrEmpty(costPLHeader.TEMPLATE_CODE) && costPLHeader.Template.IS_BASE)
+                    {
+                        <td class="sticky-cell pre-whitespace"></td>
+                    }
+                    <td class="sticky-cell pre-whitespace">MÃ ĐƠN VỊ</td>
+                    <td class="sticky-cell pre-whitespace">TÊN ĐƠN VỊ</td>
+                    <td class="sticky-cell pre-whitespace">MÃ KHOẢN MỤC</td>
+                    <td class="sticky-cell pre-whitespace">TÊN KHOẢN MỤC</td>
+                    <td class="pre-whitespace">THÁNG 1</td>
+                    <td class="pre-whitespace">THÁNG 2</td>
+                    <td class="pre-whitespace">THÁNG 3</td>
+                    <td class="pre-whitespace">THÁNG 4</td>
+                    <td class="pre-whitespace">THÁNG 5</td>
+                    <td class="pre-whitespace">THÁNG 6</td>
+                    <td class="pre-whitespace">THÁNG 7</td>
+                    <td class="pre-whitespace">THÁNG 8</td>
+                    <td class="pre-whitespace">THÁNG 9</td>
+                    <td class="pre-whitespace">THÁNG 10</td>
+                    <td class="pre-whitespace">THÁNG 11</td>
+                    <td class="pre-whitespace">THÁNG 12</td>
+                    <td class="pre-whitespace">TỔNG NĂM</td>
+                    <td class="pre-whitespace">TỔNG NĂM (DP)</td>
+                    <td class="pre-whitespace">TRUNG BÌNH THÁNG</td>
+                    <td>GHI CHÚ</td>
+                </tr>
+                @* display sum element first *@
+                @{
+                    var sumElement = Model.FirstOrDefault(x => string.IsNullOrEmpty(x.CODE));
+                    if (sumElement != null)
+                    {
+                        <tr class="strong">
+                            @if (!string.IsNullOrEmpty(costPLHeader.TEMPLATE_CODE) && costPLHeader.Template.IS_BASE)
+                            {
+                                <td class="sticky-cell"></td>
+                            }
+                            <td class="sticky-cell pre-whitespace"></td>
+                            <td class="sticky-cell pre-whitespace"></td>
+                            <td level="0" class="sticky-cell pre-whitespace"></td>
+                            <td class="sticky-cell pre-whitespace strong">@(sumElement.NAME)</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[0].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[1].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[2].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[3].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[4].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[5].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[6].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[7].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[8].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[9].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[10].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[11].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[12].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@sumElement.Values[13].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@((sumElement.Values[12] / 12).ToStringVN())</td>
+                            <td></td>
+                        </tr>
+                    }
+                }
+                @foreach (var detail in detailCostElements.GroupBy(x => x.CENTER_CODE).Select(x => x.First()).OrderBy(x => x.CENTER_CODE))
+                {
+                    foreach (var item in Model
+                        .Where(x => x.CENTER_CODE == detail.CENTER_CODE)
+                        .OrderBy(x => x.C_ORDER)
+                        .GroupBy(x => x.CODE)
+                        .Select(x => x.First()))
+                    {
+                        var space = new StringBuilder();
+                        for (int i = 0; i < item.LEVEL; i++)
+                        {
+                            space.Append("\t");
+                        }
+                        var classParent = item.IS_GROUP ? "strong" : string.Empty;
+                        <tr class="@classParent">
+                            @if (!string.IsNullOrEmpty(costPLHeader.TEMPLATE_CODE) && costPLHeader.Template.IS_BASE)
+                            {
+                                if (item.IsChildren)
+                                {
+                                    <td id="@item.CODE"
+                                        center_code="@detail.CENTER_CODE"
+                                        template_code="@dataCenterModel.TEMPLATE_CODE"
+                                        version="@dataCenterModel.VERSION"
+                                        level="@item.LEVEL"
+                                        root="true"
+                                        type="template"
+                                        class="child sticky-cell"
+                                        onclick="DrillDownTemplate(this);">
+                                        <i class="material-icons swap-icon-drill-down">unfold_more</i>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="sticky-cell"></td>
+                                }
+                            }
+                            <td class="sticky-cell pre-whitespace">@(detail.CENTER_CODE)</td>
+                            <td class="sticky-cell pre-whitespace">@(detail.Center.NAME)</td>
+                            <td level="@item.LEVEL" class="sticky-cell pre-whitespace">@item.CODE</td>
+                            <td class="sticky-cell pre-whitespace @classParent">@($"{space.ToString()}{item.NAME}")</td>
+                            <td class="align-right pre-whitespace">@item.Values[0].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[1].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[2].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[3].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[4].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[5].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[6].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[7].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[8].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[9].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[10].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[11].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[12].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@item.Values[13].ToStringVN()</td>
+                            <td class="align-right pre-whitespace">@((item.Values[12] / 12).ToStringVN())</td>
+                            <td>@item.DESCRIPTION</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    <script>
+        $(document).on("keyup", "#text-search-table", () => SearchTable(3, 0, 2, 3));
+    </script>
+}

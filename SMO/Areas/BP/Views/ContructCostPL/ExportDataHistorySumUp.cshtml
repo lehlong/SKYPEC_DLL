@@ -1,0 +1,123 @@
+﻿@model SMO.Service.BP.ContructCostPLService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    var orgCode = ViewBag.OrgCode as string;
+    var viewParentId = ViewBag.ViewId as string;
+    var formParentId = ViewBag.FormId as string;
+
+    var org = Model.UnitOfWork.Repository<SMO.Repository.Implement.MD.CostCenterRepo>().Queryable().Where(
+        x => x.CODE == orgCode).FirstOrDefault();
+
+    var lstVersionSumUp = Model.ObjListSumUpHistory.Select(x => x.SUM_UP_VERSION).Distinct().OrderByDescending(x => x);
+}
+<div id='@Model.ViewId'>
+    <div class="p-l-5">
+        @if (Model.ObjListSumUpHistory.Count == 0)
+        {
+            <h5>ĐƠN VỊ CHƯA TỔNG HỢP DỮ LIỆU</h5>
+        }
+        else
+        {
+            foreach (var version in lstVersionSumUp)
+            {
+                var lstSumUpDetail = Model.ObjListSumUpHistory.Where(x => x.SUM_UP_VERSION == version).OrderBy(x => x.FROM_ORG_CODE).ThenBy(x => x.TEMPLATE_CODE);
+                var versionItem = Model.ObjListSumUpHistory.First(x => x.SUM_UP_VERSION == version);
+                <div style="display: flex">
+                    <div class="title">
+                        <span class="font-13 col-deep-orange">LẦN TỔNG HỢP THỨ @version</span>
+                    </div>
+                    <div class="right" style="margin-top: -10px;">
+                        @Html.MyButton("cmdBack", "", $"ViewDataVersion({version});", "Alt+N", "pageview")
+                    </div>
+                </div>
+
+                <table class="table table-nowrap font-13">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Đơn vị nhập</th>
+                            <th>Mẫu khai báo</th>
+                            <th class="align-center">Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in lstSumUpDetail)
+                        {
+                            <tr>
+                                <td class="align-center">
+                                    @Html.MyButton("cmdBack", "", $"ViewData({item.DATA_VERSION}, '{item.TEMPLATE_CODE}', {item.TIME_YEAR}, '{item.FROM_ORG_CODE}');", "Alt+N", "search")
+                                </td>
+                                <td>
+                                    @(item.FromCostCenter?.CODE)
+                                    <div>@(item.FromCostCenter?.NAME)</div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.TEMPLATE_CODE))
+                                    {
+                                        <div>@(item.Template?.CODE)</div>
+                                        <div>@(item.Template?.NAME)</div>
+                                    }
+                                    else
+                                    {
+                                        <span>Dữ liệu tổng hợp</span>
+                                    }
+                                </td>
+                                <td class="align-center">
+                                    @item.DATA_VERSION
+                                </td>
+                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+    </div>
+    <script>
+        function ViewData(version, templateCode, year, orgCode) {
+
+            let onChange = false;
+            var exists = 0 != $('#@viewParentId #ORG_CODE option[value=' + orgCode + ']').length;
+            if (exists) {
+                $('#@viewParentId #ORG_CODE').val(orgCode);
+                $('#@viewParentId #ORG_CODE').selectpicker('refresh');
+
+                OnChangeOrg(templateCode, year, version, true);
+                onChange = true;
+            }
+
+            if (!onChange) {
+            $("#@viewParentId #TEMPLATE_CODE").val(templateCode);
+            $('#@viewParentId #TEMPLATE_CODE').selectpicker('refresh');
+                OnChangeTemplate(year, version, true);
+                onChange = true;
+            }
+
+            if (!onChange) {
+            $("#@viewParentId #YEAR").val(year);
+            $('#@viewParentId #YEAR').selectpicker('refresh');
+                OnChangeYear(version, true);
+                onChange = true;
+            }
+
+            if (!onChange) {
+            $("#@viewParentId #VERSION").val(version);
+            $('#@viewParentId #VERSION').selectpicker('refresh');
+                OnChangeVersion();
+            }
+
+            RefreshHeaderBtns();
+            GetInformationActiveTab();
+
+            //Forms.SubmitForm('@formParentId');
+        }
+
+        function ViewDataVersion(version) {
+            $("#@viewParentId #VERSION").val(version);
+            $('#@viewParentId #VERSION').selectpicker('refresh');
+
+            RefreshHeaderBtns();
+            Forms.SubmitForm('@formParentId');
+        }
+    </script>
+</div>

@@ -1,0 +1,371 @@
+﻿@using Newtonsoft.Json
+@using SMO.Core.Entities
+@using SMO.Service.CM
+@{
+    var isChangePass = "0";
+    if (ProfileUtilities.User.LAST_CHANGE_PASS_DATE.HasValue)
+    {
+        TimeSpan ts = DateTime.Now.Subtract(ProfileUtilities.User.LAST_CHANGE_PASS_DATE.Value);
+        if (ts.TotalDays > 60)
+        {
+            isChangePass = "1";
+        }
+    }
+
+    var checkSessionExpire = false;
+    if (ProfileUtilities.User == null || string.IsNullOrEmpty(ProfileUtilities.User.USER_NAME))
+    {
+        checkSessionExpire = true;
+    }
+
+    var lang = "vi";
+    if (ProfileUtilities.User != null)
+    {
+        lang = ProfileUtilities.User.LANGUAGE;
+    }
+}
+
+@if (checkSessionExpire)
+{
+    <script>
+        window.open('/Authorize/Logout', '_self');
+    </script>
+    return;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>SKYPEC</title>
+    <link rel="icon" href="~/Content/Images/icon-budget.png" sizes="32x32">
+    <!-- Google Fonts -->
+    <link href="~/Theme/css/google_roboto.css" rel="stylesheet" type="text/css">
+    <link href="~/Theme/css/google_material_icon.css" rel="stylesheet" type="text/css">
+
+    <!-- Bootstrap Core Css -->
+    <link href="~/Theme/plugins/bootstrap-3.4.1/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Waves Effect Css -->
+    <link href="~/Theme/plugins/node-waves/waves.css" rel="stylesheet" />
+
+    <!-- Animation Css -->
+    <link href="~/Theme/plugins/animate-css/animate.css" rel="stylesheet" />
+
+    <!-- Morris Chart Css-->
+    <link href="~/Theme/plugins/morrisjs/morris.css" rel="stylesheet" />
+
+    <!-- Bootstrap Select Css -->
+    <link href="~/Theme/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+
+    <!-- Custom Css -->
+    <link href="~/Theme/css/style.css?v=11.2" rel="stylesheet">
+    <link href="~/Content/Site.css?v=1.1" rel="stylesheet" />
+
+    <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
+    <link href="~/Theme/css/themes/theme-indigo.min.css" rel="stylesheet" />
+    <link href="~/Theme/plugins/multi-select/css/multi-select.css" rel="stylesheet" />
+
+    <!-- Jquery Core Js -->
+    @*<script src="~/Theme/plugins/jquery/jquery.min.js"></script>*@
+
+    <link href="~/Theme/css/materialize.css" rel="stylesheet" />
+    <link href="~/Theme/plugins/bootstrap-datepicker-1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+    <link href="~/Theme/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.js?v=1.1"></script>
+    @*<script
+        src="https://code.jquery.com/jquery-2.2.4.js"
+        integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+        crossorigin="anonymous"></script>*@
+</head>
+<body class="theme-indigo ls-closed">
+    @Html.Hidden("antiForgeryToken", Html.GetAntiForgeryToken())
+    <!-- Page Loader -->
+    <div class="page-loader-wrapper" id="divLoading">
+        <div class="loader">
+            <div class="preloader pl-size-xl">
+                <div class="spinner-layer pl-orange">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <p>Hệ thống đang xử lý ...</p>
+        </div>
+    </div>
+    <!-- #END# Page Loader -->
+    <!-- Overlay For Sidebars -->
+    <div class="overlay"></div>
+    <!-- #END# Overlay For Sidebars -->
+    <!-- Top Bar -->
+
+    <nav class="navbar navbar-home">
+        <div class="container-fluid d-flex">
+
+            <a href="javascript:void(0);" class="bars"></a>
+            @*<i class="material-icons navbar-icons" style="position: absolute; left: 10px; cursor: pointer;" onclick="$('body').addClass('ls-closed'); $(this).remove();">apps</i>*@
+            <a class="navbar-brand" href="/" style="margin-top: 0">
+                @*<img src="~/Content/Images/icon-budget.png" style="height: 40px; margin-top:3px; " />*@
+                <b onclick="window.location.reload()" style="margin-top: 10px; display: block; width: 140px;">SKYPEC</b>
+            </a>
+
+            @*<div class="center-elements">
+                    <strong>Lưu ý: các đơn vị không tự lập ngân sách chi lương thưởng và chi hành chính, Ban Tổ chức nhân sự và Ban Hành chính sẽ phụ trách các khoản mục này</strong>
+                </div>*@
+            <div class="right-elements">
+
+
+                <div style="float: right; margin-top: 9px; margin-right: 10px;">
+                    @if (ProfileUtilities.User != null && ProfileUtilities.User.LANGUAGE == "vi")
+                    {
+                        <img style="width: 25px; cursor: pointer;" src="~/Content/Images/icon_flag_vn.png" onclick="ChangeLanguage('en')" />
+                    }
+                    else
+                    {
+                        <img style="width: 25px; cursor: pointer;" src="~/Content/Images/icon_flag_eng.png" onclick="ChangeLanguage('vi')" />
+                    }
+                </div>
+
+                <div style="float: right;margin-right: 10px;margin-top: 10px;">
+                    <a href="/HDSD_THM/HƯỚNG DẪN SỬ DỤNG HỆ THỐNG THM BUDGET.html" class="navbar-icons" target="_blank">
+                        <i class="material-icons">help_outline</i>
+                    </a>
+                </div>
+                <div id="divNotify">
+                    <a href="javascript:void(0);" id="tagAShowNotify" onclick="SendNotifyIsViewed();" class="dropdown-toggle navbar-icons" data-target="ulNotification" data-toggle="dropdown" role="button" style="float:right; position: relative; margin-right: 10px;">
+                        <i class="material-icons">notifications</i>
+                        <span class="label-count" style="top: 0; right: 0" data-bind="text: IntCountNew"></span>
+                    </a>
+
+                    <ul class="dropdown-menu" style="right: 0;top: 80px !important; left: unset; min-width: 320px; overflow-y: auto;" id="ulNotification">
+                        <li class="header">
+                            @if (lang == "vi")
+                            {
+                                <span>THÔNG BÁO</span>
+                            }
+                            else
+                            {
+                                <span>NOTIFICATIONS</span>
+                            }
+                        </li>
+                        <li class="body">
+                            <ul class="menu" data-bind="template: { name: 'RowTemplateNotify', foreach: ObjListNotify }">
+                            </ul>
+                        </li>
+                        <li class="footer">
+                            <a href="#" onclick="$('#frmViewAllNotify').remove(); Forms.LoadAjax('/Notify')">
+                                @if (lang == "vi")
+                                {
+                                    <span>XEM TẤT CẢ</span>
+                                }
+                                else
+                                {
+                                    <span>VIEW ALL</span>
+                                }
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <a href="javascript:void(0);" class="dropdown-toggle navbar-icons" data-toggle="dropdown" role="button" style="float:right;" data-target="ulProfile">
+                        @*<i class="material-icons navbar-icons" >person_outline</i>*@
+                        <i class="material-icons" style="margin-right: -7px;">person</i>
+                        <i class="material-icons">arrow_drop_down</i>
+                    </a>
+                    <ul class="dropdown-menu" style="right: 0;top: 80px !important; left: auto; width: 250px;" id="ulProfile">
+                        <li><a href="javascript:void(0);"><i class="material-icons col-fecon">person_outline</i> @ProfileUtilities.User.FULL_NAME</a></li>
+                        @*@if (!string.IsNullOrWhiteSpace(ProfileUtilities.User.CONTRACTOR_ID))
+                            {
+                                <li><a href="#" onclick="@($"Forms.LoadAjax('/EB/Contractor/Detail?id={ProfileUtilities.User.CONTRACTOR_ID}')")"><i class="material-icons">edit</i> Thông tin công ty</a></li>
+                            }*@
+                        <li>
+                            <a href="#" onclick="Forms.LoadAjaxModal('/Authorize/ChangePassword')">
+                                <i class="material-icons col-fecon">vpn_key</i>
+                                @if (lang == "vi")
+                                {
+                                    <span>Đổi mật khẩu</span>
+                                }
+                                else
+                                {
+                                    <span>Change password</span>
+                                }
+                            </a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <a href="/Authorize/Logout">
+                                <i class="material-icons col-fecon">exit_to_app</i>
+                                @if (lang == "vi")
+                                {
+                                    <span>Đăng xuất</span>
+                                }
+                                else
+                                {
+                                    <span>Sign out</span>
+                                }
+                            </a>
+                        </li>
+                        @if (ProfileUtilities.UserOrg.Count > 0)
+                        {
+                            foreach (var item in ProfileUtilities.UserOrg)
+                            {
+                                if (item.ORG_CODE == ProfileUtilities.User?.ORGANIZE_CODE)
+                                {
+                                    <li>
+                                        <a><b class="col-deep-orange">@item.Organize.NAME</b></a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a href="/Admin/ChangeOrg?orgCode=@item.ORG_CODE"><span>@item.Organize.NAME</span></a>
+                                    </li>
+                                }
+                            }
+                            <li role="separator" class="divider"></li>
+                        }
+
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+    <section>
+        <!-- Left Sidebar -->
+        <aside id="leftsidebar" class="sidebar">
+            <div class="user-info">
+                <div class="image">
+                    <img src="~/Theme/images/user.png" width="48" height="48" alt="User" />
+                </div>
+
+                <div class="info-container">
+                    <div class="name">@ProfileUtilities.User.FULL_NAME</div>
+                    <div class="name">@ProfileUtilities.User.Organize.NAME</div>
+                    <div class="name">@ProfileUtilities.User.TITLE</div>
+                </div>
+            </div>
+
+            <!-- Menu -->
+            @*@Html.Partial("Menu")*@
+            @{ Html.RenderAction("Menu", "Admin"); }
+            <!-- #Menu -->
+            <!-- Footer -->
+
+
+            <div class="legal">
+                <div class="copyright">
+                    &copy; 2019 <a href="http://d2s.com.vn" target="_blank">d2s.com.vn</a>
+                </div>
+            </div>
+            <!-- #Footer -->
+        </aside>
+        <!-- #END# Left Sidebar -->
+    </section>
+
+    <section class="content row">
+        <div class="right-content col-md-4 col-sm-6 col-xs-12" id="rightContent">
+
+        </div>
+        <div id="mainContent">
+            @RenderBody()
+        </div>
+
+    </section>
+
+    <script type="text/html" id="RowTemplateNotify">
+        <li data-bind="html: CONTENTS, css: CLASS_IS_NOT_READED, attr : {id : PKID}"></li>
+    </script>
+    <script src="~/Scripts/jquery.signalR-2.3.0.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script src="~/Theme/plugins/momentjs/moment.js"></script>
+
+    <script src="~/Theme/plugins/bootstrap-datepicker-1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/Theme/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/Theme/plugins/bootstrap-datepicker-1.6.4/locales/bootstrap-datepicker.vi.min.js"></script>
+    <script src="~/Theme/plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
+    @*<script src="~/Theme/plugins/jquery-inputmask/inputmask/inputmask.js"></script>*@
+    <!-- Bootstrap Core Js -->
+    <script src="~/Theme/plugins/bootstrap-3.4.1/js/bootstrap.js"></script>
+
+    <!-- Slimscroll Plugin Js -->
+    <script src="~/Theme/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
+
+    <!-- Waves Effect Plugin Js -->
+    <script src="~/Theme/plugins/node-waves/waves.js"></script>
+
+    <!-- Jquery CountTo Plugin Js -->
+    <script src="~/Theme/plugins/jquery-countto/jquery.countTo.js"></script>
+
+    <!-- Morris Plugin Js -->
+    @*<script src="~/Theme/plugins/raphael/raphael.min.js"></script>
+        <script src="~/Theme/plugins/morrisjs/morris.js"></script>*@
+    <script src="~/Theme/plugins/ckeditor_full/ckeditor.js"></script>
+    <script src="~/Theme/plugins/bootstrap-select/js/bootstrap-select.js"></script>
+    <script src="~/Theme/plugins/bootstrap-notify/bootstrap-notify.js"></script>
+    <!-- Custom Js -->
+    <script src="~/Theme/plugins/multi-select/js/jquery.multi-select.js"></script>
+    <script src="~/Theme/plugins/quicksearch/js/jquery.quicksearch.js"></script>
+    <script src="~/Scripts/jquery.floatingscroll.js"></script>
+
+    <script src="~/Theme/js/admin.js?v=2"></script>
+    <script src="~/Scripts/D2SCoreJS/D2SCoreJS.js?v=2.1"></script>
+    <script src="~/Scripts/D2SCoreJS/Utilities.js?v=2"></script>
+    @*Export excel từ table bất kỳ*@
+    <script src="~/Scripts/D2SCoreJS/ExcelUtilities.js"></script>
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+    @*@Scripts.Render("~/bundles/jqueryunobtrusive")*@
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/knockout-3.4.2.js"></script>
+    <script src="~/Scripts/knockout.mapping-latest.js"></script>
+    <script src="~/Scripts/ko.model.Notify.js"></script>
+    <script src="~/Scripts/D2SCoreJS/ReviewCheckboxUtilities.js?v=1.01"></script>
+    @{
+        JsonSerializerSettings serializerSetting = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+    }
+    <script type="text/javascript">
+        var notifyService = @Html.Raw(JsonConvert.SerializeObject(ViewBag.NotifyService, serializerSetting));
+    </script>
+    <script src="~/Scripts/layout.js?v=2"></script>
+    <script type="text/javascript">
+
+        function SendNotifyIsViewed() {
+            if (modelNotify.IntCountNew() != "" || modelNotify.IntCountNew() != 0) {
+                notification.server.notifyIsViewed('@ProfileUtilities.User.USER_NAME');
+            }
+        }
+
+        function SendNotifyIsReaded(pkId) {
+            notification.server.notifyIsReaded(pkId,'@ProfileUtilities.User.USER_NAME');
+        }
+
+        function ChangeLanguage(lang) {
+            document.cookie = "lang=" + lang;
+            location.reload();
+        }
+
+        $(function () {            if ("@isChangePass" == 1) {
+                //Forms.LoadAjaxModal('/Authorize/ChangePassword')
+            }
+
+            @*@if(ProfileUtilities.User.USER_TYPE == UserType.Fecon)
+            {
+                @: $('.bars').click();
+            }*@
+
+
+            history.pushState(null, null, location.href);
+            window.onpopstate = function () {
+                history.go(1);
+            };
+        });
+    </script>
+</body>
+</html>

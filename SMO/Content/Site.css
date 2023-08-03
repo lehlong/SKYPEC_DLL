@@ -1,0 +1,61 @@
+﻿
+.table td{
+    vertical-align: middle !important;
+}
+
+.pre-whitespace {
+    white-space: pre;
+}
+
+.bg-change {
+    background-color: #ffff80;
+}
+
+.bg-add {
+    background-color: #99ff66;
+}
+
+.bg-delete {
+    background-color: #F6CECE;
+}
+
+.strong {
+    font-weight: bold;
+}
+
+.progress {
+    border-radius: 1em;
+}
+
+.table-pre-whitespace {
+    white-space: pre;
+}
+
+.min-height-100 {
+    min-height: 100px;
+}
+
+.rounded {
+    border-radius: 10px;
+}
+
+.vertical-center {
+    vertical-align: middle;
+}
+
+.display-table {
+    display: table;
+    width: 100%;
+    height: 100%;
+}
+
+.display-table-cell {
+    vertical-align: middle;
+    display: table-cell;
+}
+
+.card-thm-center:hover {
+    cursor: pointer;
+    background-color: lightgrey;
+    color: black;
+}

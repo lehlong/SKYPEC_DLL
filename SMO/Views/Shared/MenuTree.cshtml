@@ -1,0 +1,243 @@
+﻿@model SMO.Service.AD.MenuService
+@using SMO.Core.Entities
+
+<script type="text/javascript">
+    function OnChangeUserOrg(obj) {
+        var org = $(obj).val();
+        var url = "/Admin/ChangeOrg?orgCode=" + org;
+        window.location.replace(url);
+    }
+
+</script>
+
+@if (ProfileUtilities.UserOrg.Count > 0)
+{
+    <div class="user-org m-l-15 m-t-5 m-r-10">
+        <label class="col-fecon">Chọn đơn vị</label>
+        <select class="form-control selectpicker show-tick" data-container="body" data-live-search="true" data-val="False" onchange="OnChangeUserOrg(this);" tabindex="-98">
+            @foreach (var item in ProfileUtilities.UserOrg)
+            {
+                if (item.ORG_CODE == ProfileUtilities.User.ORGANIZE_CODE)
+                {
+                    <option value="@item.ORG_CODE" selected>@item.Organize.NAME</option>
+                }
+                else
+                {
+                    <option value="@item.ORG_CODE">@item.Organize.NAME</option>
+                }
+            }
+        </select>
+    </div>
+}
+
+<div class="menu menu-home">
+    <ul class="list list-home">
+        @*<li>
+            <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this)" url="/Admin/TestExcel">
+                <i class="material-icons">edit</i>
+                <span>Test export excel</span>
+            </a>
+        </li>*@
+        @*@if (ProfileUtilities.User.USER_TYPE == UserType.NhaThau)
+        {
+            <li>
+                <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this)" url="/EB/Contractor/Detail">
+                    <i class="material-icons">edit</i>
+                    <span>Thông tin công ty</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this)" url="/EB/Bid/IndexBidContractor">
+                    <i class="material-icons">playlist_add_check</i>
+                    <span>Danh sách gói thầu đang tham gia</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this)" url="/EB/Bid/IndexBidContractorWait">
+                    <i class="material-icons">clear_all</i>
+                    <span>Danh sách gói thầu được mời</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this)" url="/EB/Bid/IndexBidContractorOpen">
+                    <i class="material-icons">playlist_play</i>
+                    <span>Danh sách gói thầu đang mở</span>
+                </a>
+            </li>
+        }
+        else*@
+        @*{
+        }*@
+        @*<li>
+            <a href="javascript:void(0);" class="menu-toggle waves-effect waves-block" onclick="">
+                <i class="material-icons">home</i>
+                <span>Cost PL</span>
+            </a>
+            <ul class="ml-menu">
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this);" url="/BP/CostPL">
+                        <i class="material-icons">home</i>
+                        <span>Dữ liệu CostPL của đơn vị</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this);" url="/BP/CostPLSent">
+                        <i class="material-icons">home</i>
+                        <span>Gửi dữ liệu lên cấp trên</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this);" url="/BP/CostPLSent/IndexOfParent">
+                        <i class="material-icons">home</i>
+                        <span>Phê duyệt dữ liệu cấp dưới</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this);" url="/BP/CostPL/SumUp">
+                        <i class="material-icons">home</i>
+                        <span>Tổng hợp dữ liệu</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="javascript:void(0);" class="menu-toggle waves-effect waves-block" onclick="">
+                <i class="material-icons">home</i>
+                <span>Revenue PL</span>
+            </a>
+            <ul class="ml-menu">
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this);" url="/BP/RevenuePL">
+                        <i class="material-icons">home</i>
+                        <span>Dữ liệu RevenuePL của đơn vị</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this);" url="/BP/RevenuePLSent">
+                        <i class="material-icons">home</i>
+                        <span>Gửi dữ liệu lên cấp trên</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this);" url="/BP/RevenuePLSent/IndexOfParent">
+                        <i class="material-icons">home</i>
+                        <span>Phê duyệt dữ liệu cấp dưới</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this);" url="/BP/RevenuePL/SumUp">
+                        <i class="material-icons">home</i>
+                        <span>Tổng hợp dữ liệu</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li>
+            <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this)" url="/MD/Template">
+                <i class="material-icons">home</i>
+                <span>Ngân sách</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" class="menu-toggle waves-effect waves-block" onclick="">
+                <i class="material-icons">home</i>
+                <span>BP</span>
+            </a>
+            <ul class="ml-menu">
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this)" url="/BP/CostPL/SummaryIndex">
+                        <span>Summary Cost PL</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this)" url="/BP/CostCF/SummaryIndex">
+                        <span>Summary Cost CF</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this)" url="/BP/RevenuePL/SummaryIndex">
+                        <span>Summary Revenue PL</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" onclick="Forms.LoadFormMenu(this)" url="/BP/RevenueCF/SummaryIndex">
+                        <span>Summary Revenue CF</span>
+                    </a>
+                </li>
+
+            </ul>
+        </li>*@
+        @ShowTree(Model.ListMenuRole.Where(x => x.PARENT == "" || x.PARENT == null).ToList())
+</div>
+@helper ShowTree(List<T_AD_MENU> ListMenu)
+{
+    foreach (var item in ListMenu)
+    {
+        if (ProfileUtilities.User.USER_TYPE == UserType.NhaThau
+            && (item.CODE == "MNU_INFO_CONTRACTOR"
+            || item.CODE == "MNU_CONTRACTOR_BID_INDEX"
+            || item.CODE == "MNU_CONTRACTOR_BID_INVITE"
+            || item.CODE == "MNU_CONTRACTOR_BID_OPEN"
+            || item.CODE == "MNU_CONTRACTOR_BID_CLOSE"
+            ))
+        {
+            <li>
+                @{
+                    var onclick = string.IsNullOrWhiteSpace(item.LINK) ? "" : "Forms.LoadFormMenu(this)";
+                    var clsParent = Model.ListMenuRole.Count(x => x.PARENT == item.CODE) > 0 ? "menu-toggle" : "";
+                }
+
+                <a href="javascript:void(0);" class="@clsParent" onclick="@onclick" url="@item.LINK">
+                    <i class="material-icons">@item.ICON</i>
+                    <span>@item.LANGUAGE_VALUE</span>
+                </a>
+            </li>
+        }
+        else if (item.CODE != "MNU_INFO_CONTRACTOR"
+                && item.CODE != "MNU_CONTRACTOR_BID_INDEX"
+                && item.CODE != "MNU_CONTRACTOR_BID_INVITE"
+                && item.CODE != "MNU_CONTRACTOR_BID_OPEN"
+                && item.CODE != "MNU_CONTRACTOR_BID_CLOSE"
+                )
+        {
+            <li>
+                @{
+                    var onclick = string.IsNullOrWhiteSpace(item.LINK) ? "" : "Forms.LoadFormMenu(this)";
+                    var clsParent = Model.ListMenuRole.Count(x => x.PARENT == item.CODE) > 0 ? "menu-toggle" : "";
+                }
+
+                <a href="javascript:void(0);" class="@clsParent" onclick="@onclick" url="@item.LINK">
+                    <i class="material-icons">@item.ICON</i>
+                    <span>@item.LANGUAGE_VALUE</span>
+                    @if (ViewBag.CountRequest > 0 && item.CODE == "MNU_REQUEST")
+                    {
+                        <span class="badge bg-blue col-white" style="position: absolute;right: 10px;font-size: 12px !important;font-weight: bold !important;color: white !important; ">@ViewBag.CountRequest</span>
+                    }
+
+                    @if (ViewBag.CountFeeback > 0 && item.CODE == "MNU_FEEDBACK")
+                    {
+                        <span class="badge bg-blue col-white" style="position: absolute;right: 10px;font-size: 12px !important;font-weight: bold !important;color: white !important; ">@ViewBag.CountFeeback</span>
+                    }
+                </a>
+
+                @if (Model.ListMenuRole.Count(x => x.PARENT == item.CODE) > 0)
+                {
+                    <ul class="ml-menu">
+                        @ShowTree(Model.ListMenuRole.Where(x => x.PARENT == item.CODE).ToList())
+                    </ul>
+                }
+            </li>
+        }
+
+    }
+}

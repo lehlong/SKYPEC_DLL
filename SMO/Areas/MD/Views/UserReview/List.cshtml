@@ -1,0 +1,95 @@
+﻿@model SMO.Service.MD.UserReviewService
+@{
+    var periodYears = ViewBag.PeriodYears as IEnumerable<int>;
+    var lookup = Model.ObjList.ToLookup(x => x.TIME_YEAR);
+}
+<style>
+    .user-review:hover {
+        text-decoration: line-through;
+        color: red;
+        cursor: pointer;
+    }
+</style>
+<div class="table-responsive" style="min-height: 80vh;">
+    <table class="table table-condensed table-bordered">
+        <thead>
+            <tr>
+                <th style="max-width: 150px; width: 150px;" class="align-center">Năm</th>
+                <th>Người thẩm định</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var year in periodYears)
+            {
+                <tr>
+                    <td class="align-center">@year</td>
+                    <td>
+                        @foreach (var item in lookup[year].OrderBy(x => x.USER_NAME))
+                        {
+                            <div>
+                                <span class="user-review" title="Xóa người thẩm định" onclick="Remove('@item.USER_NAME', @year)">@item.USER_NAME</span>
+                            </div>
+                        }
+                        <div class="form-group" style="width: 250px;">
+                            @Html.DropDownList("userNames", SelectListUtilities.GetReviewUsers(year),
+                            new
+                            {
+                            @multiple = "",
+                            @data_live_search="true",
+                            @data_selected_text_format = "count > 3",
+                            @data_none_selected_text = "Thêm người thẩm định",
+                            @data_actions_box = "true",
+                            @data_size = "7",
+                            @class = "selectpicker show-tick form-control",
+                            @id = $"userNames-{year}",
+                            @year = year
+                            })
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    $(function () {
+        Forms.CompleteUI();
+    });
+
+    $("select[name='userNames']").on('hidden.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        // do something...
+        var userNames = $(this).val();
+        var year = $(this).attr('year');
+        if (!year || userNames == null || userNames.length == 0) {
+            return;
+        }
+        var ajaxParams = {
+            url: '@Url.Action("Create")',
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: { userNames, year },
+            success: function (response) {
+                Message.execute(response);
+            }
+        }
+        Forms.Ajax(ajaxParams);
+    });
+
+    function Remove(userName, year) {
+        if (!year || userName == null) {
+            return;
+        }
+        var ajaxParams = {
+            url: '@Url.Action("Delete")',
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: { userName, year },
+            success: function (response) {
+                Message.execute(response);
+            }
+        };
+        Forms.Ajax(ajaxParams);
+    }
+</script>

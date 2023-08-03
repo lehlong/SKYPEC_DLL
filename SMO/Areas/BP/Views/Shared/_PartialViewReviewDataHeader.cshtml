@@ -1,0 +1,218 @@
+﻿@model SMO.Service.Class.ReviewDataCenterModel
+@using SMO.Core.Entities;
+
+@{
+    var allCurrencies = ViewBag.currencies as IEnumerable<T_MD_CURRENCY>;
+    //allCurrencies.ForEach(x => x.TEXT = $"{x.CODE} - {x.TEXT}");
+}
+
+@Html.AntiForgeryToken()
+@Html.HiddenFor(x => x.IS_COMPLETED)
+@Html.HiddenFor(x => x.IS_NOT_COMPLETED)
+@Html.HiddenFor(x => x.IS_CONTROL)
+@Html.HiddenFor(x => x.IS_COUNCIL_BUDGET)
+<b class="font-13">Hiển thị các khoản mục theo:</b>
+@*<div class="m-b-10 m-t-10">
+        <input type="checkbox" id="chkCoDuLieu" checked style="margin:0;" class="filled-in "
+               onchange="$('#IS_COMPLETED').val($(this).is(':checked'));" />
+        <label for="chkCoDuLieu"></label>
+        &nbsp;<span>Đã đạt</span>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" id="chkChuaCoDuLieu" checked style="margin:0;" class="filled-in"
+               onchange="$('#IS_NOT_COMPLETED').val($(this).is(':checked'));" />
+        <label for="chkChuaCoDuLieu"></label>
+        &nbsp;<span>Chưa đạt</span>
+    </div>*@
+<div class="m-b-10 m-t-10">
+    <input type="checkbox" id="chkControl" checked style="margin:0;" class="filled-in "
+           onchange="$('#IS_CONTROL').val($(this).is(':checked'));" />
+    <label for="chkControl"></label>
+    &nbsp;<span class="font-13">Kết quả TKS</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="checkbox" id="chkCouncil" checked style="margin:0;" class="filled-in"
+           onchange="$('#IS_COUNCIL_BUDGET').val($(this).is(':checked'));" />
+    <label for="chkCouncil"></label>
+    &nbsp;<span class="font-13">Kết quả HĐTĐ</span>
+</div>
+
+<div class="row">
+    <div class="col-xs-6">
+        @Html.MyDropDownListFor(x => x.YEAR, SelectListUtilities.GetTimeYear(),
+    new
+    {
+        @class = "selectpicker show-tick dropdown",
+        @onchange = "OnChangeYear();",
+        @data_container = "body",
+        @data_live_search = "true"
+    })
+    </div>
+
+    <div class="col-xs-6">
+        @Html.MyDropDownListFor(x => x.VERSION, new SelectList(new List<string>()),
+    new
+    {
+        @class = "selectpicker show-tick dropdown",
+        @data_container = "body",
+        @data_live_search = "true",
+        @onchange = "OnChangeVersion()"
+    })
+    </div>
+</div>
+<div class="m-b-10">
+    @Html.MyDropDownListFor(x => x.ORG_CODE, new SelectList(new List<string>()),
+        new
+        {
+            @class = "selectpicker show-tick dropdown",
+            @data_container = "body",
+            @data_live_search = "true",
+            @onchange = "OnChangeReviewUsers()"
+        })
+
+</div>
+<div class="row clearfix m-t-10">
+    @if (allCurrencies != null && allCurrencies.Count() > 0)
+    {
+        <div class="col-xs-6">
+            @Html.MyDropDownListFor(x => x.EXCHANGE_TYPE, new SelectList(allCurrencies, "CODE", "TEXT"),
+        new
+        {
+            @class = "selectpicker show-tick dropdown",
+            @data_container = "body",
+            @data_live_search = "true",
+            @onchange = "ChangeCurrency(this)"
+        })
+        </div>
+    }
+
+    <div class="col-xs-6">
+        <div class="form-group">
+            <div class="form-line">
+                @Html.MyTextBoxFor(x => x.EXCHANGE_RATE, new { @placeholder = "Tỉ giá tiền" })
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#EXCHANGE_TYPE').change();
+
+        Inputmask("integer", {
+            autoUnmask: true,
+            groupSeparator: ',',
+            min: 1,
+            autoGroup: true,
+            rightAlign: false
+        }).mask('#EXCHANGE_RATE');
+    });
+
+        function ChangeCurrency(e) {
+            var value = $(e).val();
+            var lstCurrencies = JSON.parse('@Html.Raw(Json.Encode(allCurrencies))');
+            $.each(lstCurrencies, function (i, v) {
+                if (v.CODE === value) {
+                    $('#EXCHANGE_RATE').val(v.EXCHANGE_RATE);
+                    return;
+                }
+            });
+    }
+
+    function formatNumber(number) {
+        var exchange = $('#EXCHANGE_RATE').val();
+            number = parseFloat(number / exchange).toFixed(2);
+        var tempStr = number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".").replace(/.([^.]+)$/, ',$1');
+        // xóa bỏ các số 0 cuối cùng sau dấu ,
+        var tempStr = tempStr.replace(/([0]+)(?!.*\1)$/, '');
+        if (tempStr.slice(-1) === ',') {
+            return tempStr.slice(0, -1);
+        } else {
+            return tempStr;
+        }
+    }
+
+
+    var byProperty = function (prop) {
+        return function (a, b) {
+            if (typeof a[prop] == "number") {
+                return (a[prop] - b[prop]);
+            } else {
+                return ((a[prop] < b[prop]) ? 1 : ((a[prop] > b[prop]) ? -1 : 0));
+            }
+        };
+    };
+
+    $('i.swap-icon-drill-down').hover(
+        function () {
+            $(this).addClass("col-fecon").css("cursor", "pointer");
+        },
+
+        function () {
+            $(this).removeClass("col-fecon");
+        }
+    );
+
+    function SearchTable(start, end, levelColumnIndex, parentColumnIndex) {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = $("#text-search-table");
+        filter = input.val().toUpperCase();
+        table = $("#table");
+        tr = table.find("tbody tr");
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            let found = false;
+            for (var j = start; j >= end; j--) {   // search first 2 columns
+                td = tr[i].getElementsByTagName("td")[j];
+                if ($(td).hasClass("strong")) {
+                    $(tr[i]).removeClass("hidden")
+                    found = true;
+                    break;
+                }
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        $(tr[i]).removeClass("hidden")
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                $(tr[i]).addClass("hidden")
+            }
+        }
+        CleanTable(levelColumnIndex, parentColumnIndex);
+    }
+
+    // Xóa những parent không có child
+    function CleanTable(levelColumnIndex, parentColumnIndex) {
+        var table, tr, td, i, value;
+        table = $("#table");
+        tr = table.find("tbody tr").not(".hidden");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[parentColumnIndex];
+            if (tr.length === 1) {
+                $(tr[i]).addClass("hidden");
+                break;
+            }
+            let previousIsChild = i === 0 ? true : !$(tr[i - 1].getElementsByTagName("td")[parentColumnIndex]).hasClass("strong");
+            let previousLevel = i === 0 ? 0 : $(tr[i - 1].getElementsByTagName("td")[levelColumnIndex]).attr("level");
+            if ($(td).hasClass("strong")) {
+                if (i === tr.length - 1) {
+                    $(tr[i]).addClass("hidden");
+                    i -= 2;
+                    tr = table.find("tbody tr").not(".hidden");
+                } else if (!previousIsChild) {
+                    var level = $(td).prev().attr("level");
+                    if (level <= previousLevel && previousLevel !== 0) {
+                        $(tr[i - 1]).addClass("hidden");
+                        i -= 2;
+                        tr = table.find("tbody tr").not(".hidden");
+                    } else {
+                        previousLevel = level;
+                    }
+                }
+            }
+        }
+    }
+
+</script>

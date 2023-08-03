@@ -1,0 +1,41 @@
+﻿@model SMO.Service.BP.COST_CF.OtherCostCFReviewService
+
+@if (Model.ListHistory.Count > 0)
+{
+
+
+<div class="table-responsive font-13" style="max-height: 435px">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Người dùng</th>
+                    <th class="align-center">Thời gian</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ListHistory.OrderByDescending(x => x.ACTION_DATE))
+                {
+                    <tr>
+                        <td>
+                            @item.ACTION_USER
+                            <div>@(item.USER_CREATE?.FULL_NAME)</div>
+                        </td>
+                        <td class="align-center">
+                            <b>@Approve_Action.GetStatusText(item.ACTION)</b>
+                            <div>@item.ACTION_DATE.ToString(Global.DateTimeToStringFormat)</div>
+                            @if (!string.IsNullOrWhiteSpace(item.NOTES))
+                            {
+                                <div title="@item.NOTES" style="cursor: pointer" onclick="$('#divNoteReview_@item.PKID').toggle(); $(this).hide();">@(item.NOTES.Length < 30 ? item.NOTES : item.NOTES.Substring(0, 30) + "...")</div>
+                                if (item.NOTES.Length >= 30)
+                                {
+                                    <div id="divNoteReview_@item.PKID" style="display: none;">@item.NOTES</div>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+</div>
+
+}

@@ -1,0 +1,67 @@
+﻿@model IEnumerable<SMO.Core.Entities.T_BP_REVENUE_PL_VERSION>
+@{
+    var viewId = Guid.NewGuid().ToString();
+    var orgCode = ViewBag.OrgCode as string;
+    var viewParentId = ViewBag.ViewId as string;
+    var formParentId = ViewBag.FormId as string;
+}
+<div id='@viewId'>
+    <div style="padding: 0 15px">
+        @if (Model.Count() == 0)
+        {
+            <h5>Không có dữ liệu</h5>
+        }
+        else
+        {
+            <table class="table table-nowrap">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="align-center">Version</th>
+                        <th class="align-center">Người nhập</th>
+                        <th style="width: 150px">File</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderByDescending(x => x.VERSION))
+                    {
+                    <tr>
+                        <td>
+                            @Html.MyButton("cmdBack", "", $"ViewData({item.VERSION}, '{item.ORG_CODE}', '{item.TIME_YEAR}');", "Alt+N", "search")
+                        </td>
+                        <td class="align-center">@item.VERSION</td>
+                        <td class="align-center">
+                            @item.CREATE_BY
+                            <div>@(item.CREATE_DATE?.ToString(Global.DateTimeToStringFormat))</div>
+                        </td>
+                        <td>
+                            @if (item.ORG_CODE == ProfileUtilities.User.ORGANIZE_CODE)
+                            {
+                                Html.RenderPartial("ListFile", new List<SMO.Core.Entities.T_CM_FILE_UPLOAD> { item.FileUpload});
+                            }
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+    <script>
+        function ViewData(version, orgCode, year) {
+            $("#@viewParentId #ORG_CODE").val(orgCode);
+            $('#@viewParentId #ORG_CODE').selectpicker('refresh');
+
+            $("#@viewParentId #YEAR").val(year);
+            $('#@viewParentId #YEAR').selectpicker('refresh');
+
+            $("#@viewParentId #VERSION").val(version);
+            $('#@viewParentId #VERSION').selectpicker('refresh');
+
+            Forms.SubmitForm('@formParentId');
+            GetInformationActiveTab();
+            RefreshHeaderBtns();
+        }
+    </script>
+</div>
+

@@ -1,0 +1,343 @@
+﻿@model SMO.Service.Class.OtherCostCFReviewViewModel
+
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    var title = Model.IsSummary ? $"TKS N.S CHI THƯỜNG XUYÊN KHÁC NĂM {Model.Year}"
+        : $"THẨM ĐỊNH N.S CHI THƯỜNG XUYÊN KHÁC NĂM {Model.Year}";
+    var viewIdTotal = Guid.NewGuid().ToString();
+    var viewId = Guid.NewGuid().ToString();
+    var formId = Guid.NewGuid().ToString();
+}
+
+<div id='@viewIdTotal' class="container-fluid child-content">
+    @Html.HiddenFor(m => m.IsCompleted)
+    @Html.HiddenFor(m => m.IsNotCompleted)
+    @Html.HiddenFor(m => m.IsEnd)
+    <div class="card border-grey">
+        <div style="border-bottom: 1px dotted #e4e4e4; display: flex" class="m-t-5 m-l-5 p-b-5">
+            <div class="fixed-btn">
+                @{
+                    Html.RenderPartial("_PartialViewButtonReviewData", Model, new ViewDataDictionary
+                                                           {
+                       new KeyValuePair<string, object>("formId", formId),
+                       new KeyValuePair<string, object>("viewId", viewId),
+                       new KeyValuePair<string, object>("elementsInvalid", Model.Elements == null || Model.Elements.Count == 0),
+                       new KeyValuePair<string, object>("viewIdTotal", viewIdTotal)
+                   });
+                }
+            </div>
+            <div style="position: absolute; right: 15px; top: 15px;"><b>@title</b></div>
+        </div>
+        <div id="divResultReview_@viewIdTotal" style="position: relative; padding-top: 30px;">
+            @if (Model.Elements == null || Model.Elements.Count == 0)
+            {
+                Html.RenderPartial("_NothingData");
+            }
+            else
+            {
+                var disabledChk = Model.IsEnd ? "return false;" : string.Empty;
+                var different = ViewBag.different as IDictionary<string, DiffType>;
+
+                <div style="position: absolute; top: 10px; left: 10px;">
+                    <input type="checkbox" id="chkCompleted" checked style="margin:0;" class="filled-in "
+                           onchange="$('#IsCompleted').val($(this).is(':checked')); SearchTable();" />
+                    <label for="chkCompleted"></label>
+                    &nbsp;<span>Khoản mục đã đạt</span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="checkbox" id="chkNotCompleted" checked style="margin:0;" class="filled-in"
+                           onchange="$('#IsNotCompleted').val($(this).is(':checked')); SearchTable();" />
+                    <label for="chkNotCompleted"></label>
+                    &nbsp;<span>Khoản mục chưa đạt</span>
+
+                </div>
+
+                <div style="position: absolute; right: 10px; top: 0px;">
+                    @{
+                        Html.RenderPartial("_PartialViewDescriptionColor");
+                    }
+                    <span class="waves-effect btn-default btn" onclick="ZoomInReview();" title="Phóng to">
+                        <i class="col-fecon material-icons">zoom_out</i>
+                    </span>
+                    <span class="waves-effect btn-default btn" onclick="ZoomOutReview();" title="Thu nhỏ">
+                        <i class="col-fecon material-icons">zoom_in</i>
+                    </span>
+                    <span class="waves-effect btn-default btn" onclick="$('#divResultReview_@viewIdTotal').toggleClass('full-screen');" title="Xem toàn màn hình">
+                        <i class="col-fecon material-icons">fullscreen</i>
+                    </span>
+                </div>
+
+                <div style="height: 100%; padding: 10px 5px 5px 5px;">
+                    @using (Ajax.BeginForm("UpdateReview", null, FormDataUtils.GetAjaxOptions(viewId), new { @id = formId, @style = "height: 100%;" }))
+                    {
+                        <div class="sticky-table sticky-headers sticky-ltr-cells body" id="@viewId">
+                            <table class="table table-condensed table-bordered table-striped font-13">
+                                <tbody>
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(x => x.OrgCode)
+                                    @Html.HiddenFor(x => x.Version)
+                                    @Html.HiddenFor(x => x.Year)
+                                    @Html.HiddenFor(x => x.IsEnd)
+                                    @Html.HiddenFor(x => x.IsSummary)
+
+                                    <tr class="sticky-row">
+                                        <td class="sticky-cell"></td>
+                                        <td class="sticky-cell align-center"><i class="material-icons p-t-5">comment</i></td>
+                                        <td class="sticky-cell align-center">
+                                            @Html.Hidden("checkAllHiddenApprove", false)
+                                            <label for="checkAllApprove" class="strong">Đạt</label>
+                                            <br />
+                                            <input name="checkAllApprove"
+                                                   class="filled-in cbxFilter check-all"
+                                                   id="checkAllApprove"
+                                                   onclick="@disabledChk"
+                                                   type="checkbox"
+                                                   data-val="true"
+                                                   onchange="$('#@viewId #checkAllHiddenApprove').val($(this).is(':checked') ? 'True' : 'False');
+    check_uncheck_all($('#@viewId #checkAllHiddenApprove').val(), 'checkOneApprove', 'ignore', 'review-temp-name', '#@viewId');
+    $('.check-all').not(this).prop('checked', false);">
+                                            <label for="checkAllApprove"></label>
+                                        </td>
+                                        <td class="sticky-cell align-center" style="min-width: 85px;">
+                                            @Html.Hidden("checkAllHiddenDenied", false)
+                                            <label for="checkAllDenied" class="strong">Không đạt</label>
+                                            <br />
+                                            <input name="checkAllDenied"
+                                                   class="filled-in cbxFilter check-all"
+                                                   id="checkAllDenied"
+                                                   onclick="@disabledChk"
+                                                   type="checkbox"
+                                                   data-val="true"
+                                                   onchange="$('#@viewId #checkAllHiddenDenied').val($(this).is(':checked') ? 'True' : 'False');
+    check_uncheck_all($('#@viewId #checkAllHiddenDenied').val(), 'checkOneDenied', 'ignore', 'review-temp-name', '#@viewId');
+    $('.check-all').not(this).prop('checked', false);">
+                                            <label for="checkAllDenied"></label>
+                                        </td>
+                                        <td class="sticky-cell strong">MÃ KHOẢN MỤC</td>
+                                        <td class="sticky-cell strong">TÊN KHOẢN MỤC</td>
+                                        <td class="strong">THÁNG 1</td>
+                                        <td class="strong">THÁNG 2</td>
+                                        <td class="strong">THÁNG 3</td>
+                                        <td class="strong">THÁNG 4</td>
+                                        <td class="strong">THÁNG 5</td>
+                                        <td class="strong">THÁNG 6</td>
+                                        <td class="strong">THÁNG 7</td>
+                                        <td class="strong">THÁNG 8</td>
+                                        <td class="strong">THÁNG 9</td>
+                                        <td class="strong">THÁNG 10</td>
+                                        <td class="strong">THÁNG 11</td>
+                                        <td class="strong">THÁNG 12</td>
+                                        <td class="strong">TỔNG NĂM</td>
+                                        <td class="strong">TỔNG NĂM (DP)</td>
+                                        <td class="strong">TRUNG BÌNH THÁNG</td>
+                                        <td class="strong">GHI CHÚ</td>
+                                    </tr>
+
+                                    @for (int i = 0; i < Model.Elements.Count(); i++)
+                                    {
+                                        @Html.HiddenFor(x => Model.Elements[i].CODE)
+                                        @Html.HiddenFor(x => Model.Elements[i].IS_GROUP)
+                                        var item = Model.Elements[i];
+                                        var space = new StringBuilder();
+                                        var childClass = item.IsChildren ? "child" : string.Empty;
+                                        var parentClass = item.IS_GROUP ? "strong" : string.Empty;
+                                        for (int j = 0; j < item.LEVEL; j++)
+                                        {
+                                            space.Append("\t");
+                                        }
+                                <tr class="root-element @parentClass" level="@item.LEVEL">
+                                    @if (item.IsChildren)
+                                    {
+                                        <td id="@item.CODE"
+                                            centerCode="@Model.OrgCode"
+                                            version="@Model.Version"
+                                            level="@item.LEVEL"
+                                            root="true"
+                                            class="@childClass sticky-cell"
+                                            onclick="DrillDown(this);">
+                                            <i class="material-icons swap-icon-drill-down">unfold_more</i>
+                                        </td>
+                                        <td class="align-center sticky-cell nowrap-white-space">
+                                            <a href="#"
+                                               id="comment-@item.CODE-@Model.OrgCode"
+                                               onclick="Forms.LoadAjaxModal('@Url.Action("ReviewData", "OtherCostCFReviewComment",
+                                                                new { orgCode = Model.OrgCode, elementCode = item.CODE, year = Model.Year, version = Model.Version, onOrgCode = Model.OrgCode })')">@Model.Elements[i].Comments | @Model.Elements[i].CommentsInOrg</a>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="sticky-cell"></td>
+                                                            <td class="sticky-cell"></td>
+                                                        }
+                                    <td class="align-center sticky-cell">
+                                        @if (!item.IS_GROUP)
+                                        {
+                                            @Html.HiddenFor(x => x.Elements[i].Status, new { @id = $"review_element_{i}" })
+                                            <input name="@($"Elements[{i}].Status")"
+                                                   class="filled-in cbxFilter cbx-element-@(i)"
+                                                   id="@($"reviewResultCbxApprove{i}")"
+                                                   @(item.Status.HasValue && item.Status.Value ? "checked" : "")
+                                                   review-temp-name="checkOneApprove"
+                                                   type="checkbox"
+                                                   onclick="@disabledChk"
+                                                   value="@item.Status"
+                                                   data-val="true"
+                                                   onchange="onChangeItemApprove('.cbx-element-@(i)', '#review_element_@(i)', this);">
+                                            <label for="@($"reviewResultCbxApprove{i}")"></label>
+                                        }
+                                    </td>
+                                    <td class="align-center sticky-cell">
+                                        @if (!item.IS_GROUP)
+                                        {
+                                            <input name="@($"Elements[{i}].Status")"
+                                                   class="filled-in cbxFilter cbx-element-@(i)"
+                                                   id="@($"reviewResultCbx{i}")"
+                                                   @(item.Status.HasValue && !item.Status.Value ? "checked" : "")
+                                                   review-temp-name="checkOneDenied"
+                                                   type="checkbox"
+                                                   onclick="@disabledChk"
+                                                   value="@item.Status"
+                                                   data-val="true"
+                                                   onchange="onChangeItemDenied('.cbx-element-@(i)', '#review_element_@(i)', this);">
+                                            <label for="@($"reviewResultCbx{i}")"></label>
+                                        }
+                                    </td>
+                                    <td id="@item.CODE" level="@item.LEVEL" class="@childClass sticky-cell">@item.CODE</td>
+                                    <td class="sticky-cell @parentClass">@($"{space.ToString()}{item.NAME}")</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_0")">@item.Values[0].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_1")">@item.Values[1].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_2")">@item.Values[2].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_3")">@item.Values[3].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_4")">@item.Values[4].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_5")">@item.Values[5].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_6")">@item.Values[6].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_7")">@item.Values[7].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_8")">@item.Values[8].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_9")">@item.Values[9].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_10")">@item.Values[10].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_11")">@item.Values[11].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_12")">@item.Values[12].ToStringVN()</td>
+                                    <td class="align-right @($"{Model.OrgCode}_{item.CODE}_Values_13")">@item.Values[13].ToStringVN()</td>
+                                    <td class="align-right">@((item.Values[12] / 12).ToStringVN())</td>
+                                    <td></td>
+                                </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+                        {
+                            Html.RenderPartial("_ScriptSearchTableReviewData", viewId);
+                            Html.RenderPartial("_ScriptAjaxParamsSumUpReview", new ViewDataDictionary {
+                                    { "url", Url.Action("GetDetailSumUpReview", "OtherCostCF") },
+                                    { "year", Model.Year },
+                                    { "viewId", viewId }
+                                });
+                        }
+
+        <script>
+                    var originalFormData = $('#@formId').serialize();
+                            function checkFormChanged() {
+                                var currentFormData = $('#@formId').serialize();
+                                return (originalFormData !== currentFormData);
+                    }
+
+                            function ConfirmFormDirty() {
+                                if (checkFormChanged()) {
+                                    if (confirm("Dữ liệu chưa được lưu, bạn có muốn thoát ra?")) {
+                                        Forms.Close('@viewIdTotal');
+                                    }
+                                } else {
+                                    Forms.Close('@viewIdTotal');
+                                }
+                    }
+
+                            function UpdateFormData() {
+                                originalFormData = $('#@formId').serialize();
+                            }
+
+                            function LoadComments(elementCode, year, version, onOrgCode) {
+                                var url = '@Url.Action("ReviewData", "OtherCostCFReviewComment")';
+                                var params = {
+                                    url,
+                                    data: { elementCode, year, version, orgCode: '@Model.OrgCode', onOrgCode }
+                                };
+                                Forms.LoadAjaxModal(params);
+                            }
+
+                            function RefreshComment(elementCode, onOrgCode) {
+                                if (!elementCode) {
+                                    return;
+                                } else {
+                                    Forms.ShowLoading();
+                                    var ajaxParams = {
+                                        url: '@Url.Action("RefreshComment", "OtherCostCFReviewComment")',
+                                        type: "GET",
+                                        contentType: "application/json; charset=utf-8",
+                                        dataType: "json",
+                                        data: { elementCode, year: @Model.Year, orgCode: '@Model.OrgCode', onOrgCode },
+                                        success: function (comment) {
+                                            $(`#@viewId #comment-${elementCode}-${onOrgCode}`).html(comment);
+                                        }
+                                    };
+                                    Forms.Ajax(ajaxParams);
+                                }
+                            }
+
+                    function UpdateStatusIsEnd() {
+                        $("#@viewId #IsEnd").val(false);
+                    }
+                            function CloseView() {
+                                Forms.Close('@viewIdTotal');
+                    }
+
+                    $(window).on('resize', () => SetSizeView());
+                    function SetSizeView() {
+                        var windowHeight = $(window).height();
+                        $("#divResultReview_@viewIdTotal").height(windowHeight - 140);
+                    }
+
+                    $(document).ready(function () {
+                        SetSizeView();
+                        StickyTable();
+                        SearchTable();
+                        check_uncheck_one('checkOneApprove', '#@viewId #checkAllApprove', 'ignore', 'review-temp-name', '#@viewId');
+                        check_uncheck_one('checkOneDenied', '#@viewId #checkAllDenied', 'ignore', 'review-temp-name', '#@viewId');
+                        UpdateFormData();
+                setCellPadding();
+                    });
+
+                    function ZoomReview(fontSize) {
+                        var $table = $('#divResultReview_@viewIdTotal table');
+                        $('#divResultReview_@viewIdTotal table').attr('class', $table.get(0).className.replace(/\bfont-\S+/g, ''));
+                        $("#divResultReview_@viewIdTotal table").addClass("font-" + fontSize);
+                    }
+        </script>
+
+                if (different != null)
+                {
+                    <text>
+                        <script>
+                                $(function () {
+                                    var lstDiff = JSON.parse('@Html.Raw(JsonConvert.SerializeObject(different))');
+                                    $.each(lstDiff, function (index, value) {
+                                        if (value === @((int)DiffType.MODIFIED)) {
+                                            $(`.${index}`).addClass("bg-change");
+                                        } else if (value === @((int)DiffType.ADD)) {
+                                             $(`td[class*='${index}_Values_'`).addClass("bg-add");
+                                        } else {
+                                            $(`.${index}`).addClass("bg-delete");
+                                        }
+                                    });
+                                });
+                        </script>
+                    </text>
+                }
+            }
+        </div>
+    </div>
+
+</div>
+

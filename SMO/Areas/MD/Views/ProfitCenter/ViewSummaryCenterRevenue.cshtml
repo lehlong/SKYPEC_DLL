@@ -1,0 +1,148 @@
+﻿@model IList<T_MD_REVENUE_PL_ELEMENT>
+
+@using SMO.Core.Entities.MD;
+@using SMO.Core.Entities;
+@using System.Text;
+
+@{
+    Layout = null;
+    var detailRevenueElements = ViewBag.detailRevenueElements as IList<T_BP_REVENUE_PL_DATA>;
+    var lookupTemplateCodes = detailRevenueElements.ToLookup(x => x.TEMPLATE_CODE);
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ViewSummaryCenterRevenue</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-condensed table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Mã template</th>
+                        <th>Mã Org</th>
+                        <th>Mã khoản mục</th>
+                        <th>Tên khoản mục</th>
+                        <th>Tháng 1</th>
+                        <th>Tháng 2</th>
+                        <th>Tháng 3</th>
+                        <th>Tháng 4</th>
+                        <th>Tháng 5</th>
+                        <th>Tháng 6</th>
+                        <th>Tháng 7</th>
+                        <th>Tháng 8</th>
+                        <th>Tháng 9</th>
+                        <th>Tháng 10</th>
+                        <th>Tháng 11</th>
+                        <th>Tháng 12</th>
+                        <th>Tổng năm</th>
+                        <th>Trung bình tháng</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                    foreach (var item in Model?
+                                        .OrderBy(x => x.C_ORDER)
+                                        .GroupBy(x => x.CODE)
+                                        .Select(x => x.First()))
+                    {
+                        var lstElements = Model.Where(x => x.CODE.Equals(item.CODE) && x.IsChildren).ToList();
+                        if (lstElements.Count() <= 1)
+                        {
+                            var space = new StringBuilder();
+                            for (int i = 0; i < item.LEVEL; i++)
+                            {
+                                space.Append("\t");
+                            }
+                            <tr>
+                                <td>@(item.TEMPLATE_CODE)</td>
+                                <td>@(item.ORG_CODE)</td>
+                                <td>@item.CODE</td>
+                                <td class="pre-whitespace">@($"{space.ToString()}{item.NAME}")</td>
+                                <td>@item.Values[0]</td>
+                                <td>@item.Values[1]</td>
+                                <td>@item.Values[2]</td>
+                                <td>@item.Values[3]</td>
+                                <td>@item.Values[4]</td>
+                                <td>@item.Values[5]</td>
+                                <td>@item.Values[6]</td>
+                                <td>@item.Values[7]</td>
+                                <td>@item.Values[8]</td>
+                                <td>@item.Values[9]</td>
+                                <td>@item.Values[10]</td>
+                                <td>@item.Values[11]</td>
+                                <td>@item.Values.Sum()</td>
+                                <td>@(item.Values.Sum() / 12)</td>
+                                <td></td>
+                            </tr>
+                        }
+                        else
+                        {
+                            var space = new StringBuilder();
+                            for (int i = 0; i < item.LEVEL; i++)
+                            {
+                                space.Append("\t");
+                            }
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td>@item.CODE</td>
+                                <td class="pre-whitespace">@($"{space.ToString()}{item.NAME}")</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[0])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[1])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[2])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[3])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[4])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[5])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[6])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[7])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[8])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[9])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[10])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values[11])</td>
+                                <td class="pre-whitespace">@lstElements.Sum(x => x.Values.Sum())</td>
+                                <td class="pre-whitespace">@(lstElements.Sum(x => x.Values.Sum()) / 12)</td>
+                                <td class="pre-whitespace"></td>
+                            </tr>
+                            foreach (var element in lstElements)
+                            {
+                                <tr>
+                                    <td>@element.TEMPLATE_CODE</td>
+                                    <td>@element.ORG_CODE</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="pre-whitespace">&#09;@element.Values[0]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[1]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[2]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[3]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[4]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[5]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[6]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[7]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[8]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[9]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[10]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values[11]</td>
+                                    <td class="pre-whitespace">&#09;@element.Values.Sum()</td>
+                                    <td class="pre-whitespace">&#09;@(element.Values.Sum() / 12)</td>
+                                    <td class="pre-whitespace"></td>
+                                </tr>
+                            }
+                        }
+                    }
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+<script src="~/Scripts/jquery-1.10.2.js?v=1.1"></script>

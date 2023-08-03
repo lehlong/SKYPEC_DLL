@@ -1,0 +1,206 @@
+﻿@model IList<T_MD_COST_PL_ELEMENT>
+
+@using SMO.Core.Entities.MD;
+@using SMO.Core.Entities;
+@using SMO.Service.Class;
+@using System.Text;
+@{
+
+    var header = ViewBag.costPLHeader as T_BP_COST_PL_VERSION;
+    var dataCenterModel = ViewBag.dataCenterModel as ViewDataCenterModel;
+}
+@if (Model == null || Model.Count == 0 || header == null)
+{
+    Html.RenderPartial("_NothingData");
+}
+else
+{
+    var detailCostElements = ViewBag.detailCostElements as IList<T_BP_COST_PL_DATA>;
+    Html.RenderPartial("_PartialViewSearchAndDetail", dataCenterModel);
+    <div class="sticky-table sticky-headers sticky-ltr-cells">
+        <table class="table-condensed table-bordered table-striped font-13" id="table">
+            <tbody>
+                <tr class="sticky-row" data-xls-row="header">
+                    <td class="sticky-cell"></td>
+                    <td class="sticky-cell strong">MÃ KHOẢN MỤC</td>
+                    <td class="sticky-cell strong">TÊN KHOẢN MỤC</td>
+                    <td class="pre-whitespace strong">THÁNG 1</td>
+                    <td class="pre-whitespace strong">THÁNG 2</td>
+                    <td class="pre-whitespace strong">THÁNG 3</td>
+                    <td class="pre-whitespace strong">THÁNG 4</td>
+                    <td class="pre-whitespace strong">THÁNG 5</td>
+                    <td class="pre-whitespace strong">THÁNG 6</td>
+                    <td class="pre-whitespace strong">THÁNG 7</td>
+                    <td class="pre-whitespace strong">THÁNG 8</td>
+                    <td class="pre-whitespace strong">THÁNG 9</td>
+                    <td class="pre-whitespace strong">THÁNG 10</td>
+                    <td class="pre-whitespace strong">THÁNG 11</td>
+                    <td class="pre-whitespace strong">THÁNG 12</td>
+                    <td class="pre-whitespace strong">TỔNG NĂM</td>
+                    <td class="pre-whitespace strong">TỔNG NĂM (DP)</td>
+                    <td class="pre-whitespace strong">TRUNG BÌNH THÁNG</td>
+                    <td class="pre-whitespace strong">GHI CHÚ</td>
+                </tr>
+
+                @foreach (var item in Model?
+                                    .OrderBy(x => x.C_ORDER)
+                                    .GroupBy(x => x.CODE)
+                                    .Select(x => x.First()))
+                {
+                    var lstElements = Model.Where(x => !item.IS_GROUP && x.CODE.Equals(item.CODE) && x.IsChildren).ToList();
+                    var classParent = item.IS_GROUP ? "strong" : string.Empty;
+                    if (lstElements.Count() < 1 || !dataCenterModel.IS_DRILL_DOWN)
+                    {
+                        var space = new StringBuilder();
+                        for (int i = 0; i < item.LEVEL; i++)
+                        {
+                            space.Append("\t");
+                        }
+                        var childClass = item.IsChildren ? "child" : string.Empty;
+
+                        <tr class="@classParent">
+                            @*chỉ xuất hiện biểu tượng drilldown ở khoản mục con*@
+                            @if (item.IsChildren)
+                            {
+                                <td id="@item.CODE"
+                                    centerCode="@dataCenterModel.ORG_CODE"
+                                    version="@dataCenterModel.VERSION"
+                                    level="@item.LEVEL"
+                                    root="true"
+                                    type="sumup"
+                                    class="@childClass sticky-cell"
+                                    onclick="DrillDown(this);">
+                                    <i class="material-icons swap-icon-drill-down">unfold_more</i>
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="sticky-cell"></td>
+                            }
+                            @if (item.IS_GROUP)
+                            {
+                                <td class="sticky-cell @childClass" level="@item.LEVEL" type="sumup">@item.CODE</td>
+                                <td class="sticky-cell @classParent">@($"{space.ToString()}{item.NAME}")</td>
+                                <td class="align-right">@item.Values[0].ToStringVN()</td>
+                                <td class="align-right">@item.Values[1].ToStringVN()</td>
+                                <td class="align-right">@item.Values[2].ToStringVN()</td>
+                                <td class="align-right">@item.Values[3].ToStringVN()</td>
+                                <td class="align-right">@item.Values[4].ToStringVN()</td>
+                                <td class="align-right">@item.Values[5].ToStringVN()</td>
+                                <td class="align-right">@item.Values[6].ToStringVN()</td>
+                                <td class="align-right">@item.Values[7].ToStringVN()</td>
+                                <td class="align-right">@item.Values[8].ToStringVN()</td>
+                                <td class="align-right">@item.Values[9].ToStringVN()</td>
+                                <td class="align-right">@item.Values[10].ToStringVN()</td>
+                                <td class="align-right">@item.Values[11].ToStringVN()</td>
+                                <td class="align-right">@item.Values[12].ToStringVN()</td>
+                                <td class="align-right">@item.Values[13].ToStringVN()</td>
+                                <td class="align-right">@((item.Values[12] / 12).ToStringVN())</td>
+                                <td></td>
+                            }
+                            else
+                            {
+                                <td class="sticky-cell" level="@item.LEVEL">@item.CODE</td>
+                                <td class="sticky-cell @classParent">@($"{space.ToString()}{item.NAME}")</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[0]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[1]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[2]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[3]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[4]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[5]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[6]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[7]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[8]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[9]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[10]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[11]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[12]).ToStringVN()</td>
+                                <td class=" align-right">@lstElements.Sum(x => x.Values[13]).ToStringVN()</td>
+                                <td class=" align-right">@((lstElements.Sum(x => x.Values[12]) / 12).ToStringVN())</td>
+                                <td class=""></td>
+                            }
+                        </tr>
+                    }
+                    else
+                    {
+                        var space = new StringBuilder();
+                        for (int i = 0; i < item.LEVEL; i++)
+                        {
+                            space.Append("\t");
+                        }
+                        <tr class="expanded @item.CODE">
+                            <td id="@item.CODE"
+                                centerCode="@dataCenterModel.ORG_CODE"
+                                version="@dataCenterModel.VERSION"
+                                level="@item.LEVEL"
+                                root="true"
+                                type="sumup"
+                                class="strong sticky-cell"
+                                onclick="DrillDown(this);">
+                                <i class="material-icons swap-icon-drill-down">unfold_more</i>
+                            </td>
+                            <td class="sticky-cell" level="@item.LEVEL">@item.CODE</td>
+                            <td class="sticky-cell @classParent">@($"{space.ToString()}{item.NAME}")</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[0]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[1]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[2]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[3]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[4]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[5]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[6]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[7]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[8]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[9]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[10]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[11]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[12]).ToStringVN()</td>
+                            <td class=" align-right">@lstElements.Sum(x => x.Values[13]).ToStringVN()</td>
+                            <td class=" align-right">@((lstElements.Sum(x => x.Values[12]) / 12).ToStringVN())</td>
+                            <td class=""></td>
+                        </tr>
+
+                        space.Append("\t");
+
+                        foreach (var element in detailCostElements.Where(x => x.COST_PL_ELEMENT_CODE == item.CODE).OrderBy(x => x.COST_CENTER_CODE))
+                        {
+                            <tr class="@element.COST_PL_ELEMENT_CODE @dataCenterModel.ORG_CODE-@element.COST_PL_ELEMENT_CODE">
+                                <td id="@element.COST_PL_ELEMENT_CODE"
+                                    centerCode="@element.COST_CENTER_CODE"
+                                    version="@element.VERSION"
+                                    level="@(item.LEVEL+1)"
+                                    class="sticky-cell"
+                                    sum_up_version="@dataCenterModel.VERSION"
+                                    onclick="DrillDown(this);">
+                                    <i class="material-icons swap-icon-drill-down">unfold_more</i>
+                                </td>
+                                <td class="sticky-cell"></td>
+                                <td class="sticky-cell">@($"{space.ToString()}{element.CostCenter.NAME}")</td>
+                                <td class=" align-right">@((element.VALUE_JAN ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_FEB ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_MAR ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_APR ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_MAY ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_JUN ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_JUL ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_AUG ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_SEP ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_OCT ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_NOV ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_DEC ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_SUM_YEAR ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_SUM_YEAR_PREVENTIVE ?? 0).ToStringVN())</td>
+                                <td class=" align-right">@((element.VALUE_SUM_YEAR ?? 0 / 12).ToStringVN())</td>
+                                <td class=""></td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).on("keyup", "#text-search-table", () => SearchTable(2, 1, 1, 2));
+
+    </script>
+}

@@ -1,0 +1,292 @@
+﻿@model SMO.Service.Class.FilterCommentCenterViewModel
+@using SMO.Core.Entities.MD;
+@using SMO.Repository.Implement.MD;
+@{
+    var viewId = Guid.NewGuid().ToString();
+    var formId = Guid.NewGuid().ToString();
+}
+
+<div class="modal-close">
+    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">✖</button>
+</div>
+<div class="modal-body">
+    <div id='@viewId'>
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a style="padding-left:0px"><i class="material-icons col-fecon">comment</i> THÔNG TIN TRAO ĐỔI</a></li>
+        </ul>
+        <div class="container-fluid child-content">
+            <div class="card m-t-10">
+                <div class="tab-content">
+                    <div class="page-function">
+                        <div class="m-r-20">
+
+                            @using (Ajax.BeginForm("Index", null, FormDataUtils.GetAjaxOptions(viewId), new { @id = formId }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(x => x.Year)
+                                            @Html.MyDropDownListFor(x => x.Year, SelectListUtilities.GetTimeYear(isAddBlank: false),
+      new
+      {
+          @class = "selectpicker show-tick dropdown",
+          @onchange = "OnChangeYear();",
+          @data_container = "body",
+          @data_live_search = "true"
+      })
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(x => x.ElementCode)
+                                            @Html.MyDropDownListFor(x => x.ElementCode, new SelectList(new List<string>()),
+      new
+      {
+          @class = "selectpicker show-tick dropdown",
+          @onchange = "OnChangeElement();",
+          @data_container = "body",
+          @data_live_search = "true"
+      })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(x => x.Version)
+                                            @Html.MyDropDownListFor(x => x.Version, new SelectList(new List<string>()),
+                                        new
+                                        {
+                                            @class = "selectpicker show-tick dropdown",
+                                            @data_container = "body",
+                                            @data_live_search = "true",
+                                            @onchange = "OnChangeVersion()"
+                                        })
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-xs-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(x => x.OrgCode)
+                                            @Html.MyDropDownListFor(x => x.OrgCode, SelectListUtilities.GetChildOrg<T_MD_COST_CENTER, CostCenterRepo>(isAddBlank: true),
+              new
+              {
+                  @class = "selectpicker show-tick dropdown",
+                  @data_container = "body",
+                  @data_live_search = "true",
+                  @onchange = "OnChangeOrgCode()"
+              })
+
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(x => x.UserComment)
+                                            @Html.MyDropDownListFor(x => x.UserComment, new SelectList(new List<string>()),
+              new
+              {
+                  @class = "selectpicker show-tick dropdown",
+                  @data_container = "body",
+                  @data_live_search = "true",
+                  @onchange = "OnChangeReviewUsers()"
+              })
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="tab-content" style="margin-top: 10px;">
+                <div id="divResult">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            Forms.CompleteUI();
+            OnChangeYear(null, null, null, null, true)
+        });
+                    @*$('#@viewId').closest('.modal').on('hidden.bs.modal', function () {
+                        try {
+                            RefreshComment('@Model.ElementCode', '@Model.OrgCode');
+                        } catch (e) {
+                            console.log("refresh comment not found!");
+                        }
+                    });*@
+        function OnChangeReviewUsers(submitForm) {
+            if (submitForm === true) {
+                Forms.SubmitForm('@formId');
+            }
+        }
+
+        function OnChangeOrgCode(userComment, submitForm) {
+            var year = $("#@viewId #Year").val();
+            var version = $("#@viewId #Version").val();
+            var elementCode = $("#@viewId #ElementCode").val();
+            var centerCode = $("#@viewId #OrgCode").val();
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("GetUsersComment")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { year, version, elementCode, centerCode },
+                success: function (response) {
+                    var lst = $('#@viewId #UserComment');
+                    lst.html('');
+                    if (response && response.length > 0) {
+                        lst.append($('<option>', { value: '', text: 'Tất cả người comment' }))
+                        $.each(response, function (index, value) {
+                            let td = '';
+                            if ('' !== '@Model.OrgCode' && value == '@Model.UserComment' && year == @Model.Year && version == '@Model.Version' && centerCode === '@Model.OrgCode' && elementCode === '@Model.ElementCode') {
+                                td = $('<option>', { value: value, text: value, selected: "selected" });
+                            }
+                            else {
+                                td = $('<option>', { value: value, text: value });
+                            }
+                            lst.append(td);
+                        });
+                        if (userComment) {
+                            lst.val(userComment);
+                        }
+
+                    } else {
+                        lst.append($('<option>', { value: '', text: 'Chưa có người comment' }))
+                    }
+                    OnChangeReviewUsers(submitForm)
+                    lst.selectpicker('refresh');
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function OnChangeElement(version, orgCode, userComment, submitForm) {
+            console.log(userComment);
+            var year = $("#@viewId #Year").val();
+            var elementCode = $("#@viewId #ElementCode").val();
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("GetVersions")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { year, elementCode },
+                success: function (response) {
+                    var lstVersion = $('#@viewId #Version');
+                    lstVersion.html('');
+                    if (response && response.length > 0) {
+                        lstVersion.append($('<option>', { value: '', text: 'Tất cả versions' }));
+                        $.each(response, function (index, value) {
+                            let td = '';
+                            if ('' != '@Model.Version' && value == '@Model.Version' && year == @Model.Year && elementCode === '@Model.ElementCode') {
+                                td = $('<option>', { value: value, text: value, selected: "selected" });
+                            }
+                            else {
+                                td = $('<option>', { value: value, text: value });
+                            }
+                            lstVersion.append(td);
+                        });
+                        if (version) {
+                            lstVersion.val(version);
+                        }
+                        if (lstVersion.val() === '') {
+                            $('#@viewId #VERSION').val(response[0]);
+                        }
+                    } else {
+                        lstVersion.append($('<option>', { value: '-1', text: 'Không có version của dữ liệu' }));
+                    }
+                    lstVersion.selectpicker('refresh');
+
+                    if (orgCode) {
+                        $('#OrgCode').val(orgCode);
+                        $('#OrgCode').selectpicker('refresh');
+                    } else {
+                        $('#OrgCode').val('@Model.OrgCode');
+                        $('#OrgCode').selectpicker('refresh');
+                    }
+                    OnChangeOrgCode(userComment, submitForm);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+
+        }
+
+        function OnChangeYear(elementCode, version, orgCode, userComment, submitForm) {
+            var year = $("#@viewId #Year").val();
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("GetElements")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { year },
+                success: function (response) {
+                    var lst = $('#@viewId #ElementCode');
+                    lst.html('');
+                        var lstElements = JSON.parse(response);
+                    if (lstElements && lstElements.length > 0) {
+                        lst.append($('<option>', { value: '', text: 'Tất cả khoản mục' }));
+                        $.each(lstElements, function (index, value) {
+                            let td = '';
+                            if (value.Value == '@Model.ElementCode' && year == @Model.Year) {
+                                td = $('<option>', { value: value.Value, text: value.Text, selected: "selected" });
+                            }
+                            else {
+                                td = $('<option>', { value: value.Value, text: value.Text});
+                            }
+                            lst.append(td);
+                        });
+                        if (elementCode) {
+                            lst.val(elementCode);
+                        }
+                    } else {
+                        lst.append($('<option>', { value: '', text: `Năm ${year} chưa khai báo danh sách khoản mục` }))
+                    }
+                    OnChangeElement(version, orgCode, userComment, submitForm)
+                    lst.selectpicker('refresh');
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function OnChangeVersion(orgCode, userComment, submitForm) {
+            if (orgCode) {
+                $('#OrgCode').val(orgCode);
+                $('#OrgCode').selectpicker('refresh');
+            }
+            OnChangeOrgCode(userComment, submitForm);
+        }
+
+        function UpdateCommentNumbers(elementCode, year, orgCode, version, onOrgCode) {
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("Index", "ContructCostPLReviewComment")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                data: { elementCode, year, orgCode, version, onOrgCode },
+                success: function (response) {
+                    $(`#@viewId #comment`).html(response);
+
+                    $('#divExportTab_@viewId a[href="#comment"]').tab('show');
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+    </script>
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Đóng</button>
+</div>

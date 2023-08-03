@@ -1,0 +1,30 @@
+﻿@model SMO.Service.AD.ConnectionService
+@{
+    var number = 1;
+}
+
+<div class="table-responsive">
+    <table class="table table-condensed table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Tên</th>
+                <th>Thư mục</th>
+                <th>Ghi ghú</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList)
+            {
+                number++;
+                var vdbclickAction = string.Format("Forms.LoadAjaxRight('{0}', this);", Url.Action("Edit", new { id = item.PKID }));
+                <tr>
+                    <td ondblclick="@vdbclickAction">
+                        <a href="#" onclick="@vdbclickAction">@item.NAME</a>
+                    </td>
+                    <td ondblclick="@vdbclickAction">@item.DIRECTORY</td>
+                    <td ondblclick="@vdbclickAction">@item.NOTES</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

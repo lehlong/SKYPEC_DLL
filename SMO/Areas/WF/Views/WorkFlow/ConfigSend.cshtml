@@ -1,0 +1,445 @@
+﻿<div class="container-fluid child-content">
+    <link href="~/Content/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/Ztree/jquery.ztree.core-3.5.min.js"></script>
+    <script src="~/Scripts/Ztree/jquery.ztree.excheck-3.5.min.js"></script>
+    <div class="card border-grey">
+        <div class="body" style="padding-top: 0px;">
+            <ul class="nav nav-tabs tab-nav-right" role="tablist">
+                <li role="presentation" class="active text-uppercase"><a href="#configSend" data-toggle="tab">Thiết lập bộ phận gửi và nhận</a></li>
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="configSend">
+                    <div class="card">
+                        <div class="body" style="padding-top: 0px;">
+                            <div class="tab-content">
+                                <div class="page-function">
+                                    <div class="page-function-button">
+                                        @*@Html.MyButton("cmdBack", "Quay lại", string.Format("Forms.Close('{0}');", @Model.ViewId), "Alt+N", "arrow_back")*@
+                                        @Html.MyButton("cmdSave", "Lưu lại", "saveDetailInformation()", "Alt+N", "done_all")
+                                    </div>
+                                </div>
+                                <div class="row m-t-20">
+                                    <div class="col-md-3" id="organize-tree">
+                                        <h5>Chọn Bộ phận</h5>
+                                        <div class="border-grey">
+                                            <ul id="divTreeOrganize" class="ztree" style="overflow-x: auto; overflow-y: auto">
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 hidden" id="workflow-tree">
+                                        <h5>Chọn Hành động</h5>
+                                        <div class="border-grey">
+                                            <ul id="divTreeWorkflow" class="ztree" style="overflow-x: auto; overflow-y: auto">
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 hidden" id="sender-tree">
+                                        <h5>Chọn Người gửi</h5>
+                                        <div class="border-grey">
+                                            <ul id="divTreeSender" class="ztree" style="overflow-x: auto; overflow-y: auto">
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 hidden" id="receiver-tree">
+                                        <h5>Chọn Người nhận</h5>
+                                        <div class="border-grey">
+                                            <ul id="divTreeReceiver" class="ztree" style="overflow-x: auto; overflow-y: auto">
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        var setting = {
+            check: {
+                enable: true,
+                chkStyle: "checkbox",
+                chkboxType: { "Y": "ps", "N": "ps" }
+            },
+            view: {
+                selectedMulti: true,
+                nameIsHTML: true,
+                showTitle: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: OnClick,
+                onCheck: OnCheck,
+                beforeCheck: BeforeCheckCallBack
+            }
+        };
+
+
+        $(window).on('resize', SetHeightTree);
+
+        $(function () {
+            Forms.CompleteUI();
+            BuildTree();
+            SetHeightTree();
+            setTimeout(() => triggerSelectOrganize(), 2000);
+        });
+
+        function SetHeightTree() {
+            $("#divTreeOrganize").height($(window).height() - 250);
+            $("#divTreeWorkflow").height($(window).height() - 250);
+            $("#divTreeSender").height($(window).height() - 250);
+            $("#divTreeReceiver").height($(window).height() - 250);
+        }
+
+        function BuildTree() {
+            var ajaxParams = {
+                url: '@Url.Action("BuildTreeConfigSend")',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.fn.zTree.init($("#divTreeWorkflow"), setting, response.workflows);
+                    $.fn.zTree.init($("#divTreeOrganize"), setting, response.organizes);
+
+                    $.fn.zTree.init($("#divTreeSender"), setting, response.users);
+                    $.each(response.users, function (index, value) {
+                        if (value.type === '@WorkFlowType.Sender.ToString()') {
+                            value.type = '@WorkFlowType.Receiver.ToString()';
+                        }
+                    });
+                    $.fn.zTree.init($("#divTreeReceiver"), setting, response.users);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function OnClick(event, treeId, treeNode) {
+            var treeObjSender = $.fn.zTree.getZTreeObj("divTreeSender");
+            var treeObjReceiver = $.fn.zTree.getZTreeObj("divTreeReceiver");
+            var treeObjOrganize = $.fn.zTree.getZTreeObj("divTreeOrganize");
+            var treeObjWorkflow = $.fn.zTree.getZTreeObj("divTreeWorkflow");
+
+            if (treeNode.isParent && treeId === "divTreeWorkflow" || treeNode.type === '@WorkFlowType.Process.ToString()') {
+                // uncheck all node in detail tree element
+                treeObjSender.checkAllNodes(false);
+                treeObjReceiver.checkAllNodes(false);
+
+                // hide tree user
+                $('#receiver-tree').addClass('hidden');
+                $('#sender-tree').addClass('hidden');
+                return;
+            }
+            if (treeNode.type === "@WorkFlowType.Activity.ToString()"
+                || treeNode.type === "@WorkFlowType.Organize.ToString()"
+                || treeNode.type === "@WorkFlowType.Sender.ToString()") {
+                if (treeId == "divTreeWorkflow") {
+                    // show tree user
+                    $('#sender-tree').removeClass('hidden');
+
+                    // click on workflow tree
+                    // uncheck all node in detail tree
+                    treeObjSender.checkAllNodes(false);
+                    treeObjReceiver.checkAllNodes(false);
+
+                    var nodeSenders = treeObjOrganize.transformToArray(treeObjSender.getNodes());
+                    $.each(nodeSenders, function (index, value) {
+                        var findNode = treeObjSender.getNodesByParam("id", nodeSenders[index].id, null);
+                        findNode[0].name = findNode[0].name.replace("<span class='col-red'>", "").replace("</span>", "");
+                        treeObjSender.updateNode(findNode[0]);
+                    });
+
+                    // get detail information
+                    //Forms.ShowLoading();
+                    var ajaxParams = {
+                        url: '@Url.Action("GetDetailInformationSenders")',
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: {
+                            workflow: `${treeNode.id}`,
+                            organize: treeObjOrganize.getSelectedNodes()[0].id,
+                        },
+                        success: function (response) {
+                            $.each(response, function (index, id) {
+                                var node = treeObjSender.getNodeByParam("id", id, null);
+                                if (node) {
+                                    node.name = "<span class='col-red'>" + node.name + "</span>";
+                                    treeObjSender.checkNode(node, true, true, false);
+                                    treeObjSender.updateNode(node);
+                                }
+                            });
+                            triggerSelectSender();
+                        }
+                    };
+                    Forms.Ajax(ajaxParams);
+                }
+                else if (treeId == "divTreeOrganize") {
+                    $('#workflow-tree').removeClass('hidden');
+
+                    // click on organize tree
+                    // uncheck all node in detail tree
+                    treeObjSender.checkAllNodes(false);
+                    treeObjReceiver.checkAllNodes(false);
+                    treeObjWorkflow.checkAllNodes(false);
+
+                    var nodeSenders = treeObjSender.transformToArray(treeObjSender.getNodes());
+                    $.each(nodeSenders, function (index, value) {
+                        var findNode = treeObjSender.getNodesByParam("id", nodeSenders[index].id, null);
+                        findNode[0].name = findNode[0].name.replace("<span class='col-red'>", "").replace("</span>", "");
+                        treeObjSender.updateNode(findNode[0]);
+                    });
+
+                    var nodeReceivers = treeObjReceiver.transformToArray(treeObjReceiver.getNodes());
+                    $.each(nodeReceivers, function (index, value) {
+                        var findNode = treeObjReceiver.getNodesByParam("id", nodeReceivers[index].id, null);
+                        findNode[0].name = findNode[0].name.replace("<span class='col-red'>", "").replace("</span>", "");
+                        treeObjReceiver.updateNode(findNode[0]);
+                    });
+
+                    var nodeWorkflows = treeObjWorkflow.transformToArray(treeObjWorkflow.getNodes());
+                    $.each(nodeWorkflows, function (index, value) {
+                        var findNode = treeObjWorkflow.getNodesByParam("id", nodeWorkflows[index].id, null);
+                        findNode[0].name = findNode[0].name.replace("<span class='col-red'>", "").replace("</span>", "");
+                        treeObjWorkflow.updateNode(findNode[0]);
+                    });
+
+                    // get detail information
+                    //Forms.ShowLoading();
+                    var ajaxParams = {
+                        url: '@Url.Action("GetDetailInformationWorkflow")',
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: {
+                            organize: treeNode.id
+                        },
+                        success: function (response) {
+                            $.each(response, function (index, id) {
+                                var node = treeObjWorkflow.getNodeByParam("id", id, null);
+                                if (node) {
+                                    node.name = "<span class='col-red'>" + node.name + "</span>";
+
+                                    treeObjWorkflow.updateNode(node);
+                                    treeObjWorkflow.checkNode(node, true, true, false);
+                                }
+                            });
+                            triggerSelectWorkflow();
+                        }
+                    };
+                    Forms.Ajax(ajaxParams);
+                }
+                else if (treeId == "divTreeSender") {
+                    if (treeNode.type === '@WorkFlowType.Sender.ToString()') {
+                        $('#receiver-tree').removeClass('hidden');
+                    } else {
+                        $('#receiver-tree').addClass('hidden');
+                    }
+                    treeObjReceiver.checkAllNodes(false);
+                    var nodeReceivers = treeObjReceiver.transformToArray(treeObjReceiver.getNodes());
+                    $.each(nodeReceivers, function (index, value) {
+                        var findNode = treeObjReceiver.getNodesByParam("id", nodeReceivers[index].id, null);
+                        findNode[0].name = findNode[0].name.replace("<span class='col-red'>", "").replace("</span>", "");
+                        treeObjReceiver.updateNode(findNode[0]);
+                    });
+
+                    // get detail information
+                    //Forms.ShowLoading();
+                    var ajaxParams = {
+                        url: '@Url.Action("GetDetailInformationReceivers")',
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: {
+                            workflow: treeObjWorkflow.getSelectedNodes()[0].id,
+                            organize: treeObjOrganize.getSelectedNodes()[0].id,
+                            sender: treeObjSender.getSelectedNodes()[0].id,
+                        },
+                        success: function (response) {
+                            $.each(response, function (index, id) {
+                                var node = treeObjReceiver.getNodeByParam("id", id, null);
+                                if (node) {
+                                    node.name = "<span class='col-red'>" + node.name + "</span>";
+                                    treeObjReceiver.updateNode(node);
+                                    treeObjReceiver.checkNode(node, true, true, false);
+                                }
+                            });
+                            triggerSelectReceiver();
+                        }
+                    };
+                    Forms.Ajax(ajaxParams);
+                }
+            }
+            else {
+                var treeObj = $.fn.zTree.getZTreeObj(treeId);
+                if (treeNode.checked) {
+                    treeObj.checkNode(treeNode, false, true, false);
+                    treeNode.name = treeNode.name.replace("<span class='col-red'>", "").replace("</span>", "");
+                }
+                else {
+                    treeObj.checkNode(treeNode, true, true, false);
+                    treeNode.name = "<span class='col-red'>" + treeNode.name + "</span>";
+                }
+                treeObj.updateNode(treeNode);
+            }
+        }
+
+        function OnCheck(event, treeId, treeNode) {
+            if (treeId === "divTreeReceiver") {
+                var treeObj = $.fn.zTree.getZTreeObj(treeId);
+
+                if (treeNode.checked) {
+                    treeNode.name = "<span class='col-red'>" + treeNode.name + "</span>";
+                }
+                else {
+                    treeNode.name = treeNode.name.replace("<span class='col-red'>", "").replace("</span>", "");
+                }
+                treeObj.updateNode(treeNode);
+            }
+        };
+
+        function triggerSelectWorkflow() {
+            var treeObj = $.fn.zTree.getZTreeObj("divTreeWorkflow");
+            var nodes = treeObj.getNodesByFilter(filter); // search the array of the nodes
+            $.each(nodes, function (index, node) {
+                if (!node.isParent) {
+                    treeObj.selectNode(node);
+                    OnClick(null, "divTreeWorkflow", node);
+                    return;
+                }
+            });
+            if (nodes.length === 0) {
+                // do not have any sender
+                // hide receiver
+                $('#sender-tree').addClass('hidden');
+            }
+
+        }
+        function triggerSelectOrganize() {
+            var treeObj = $.fn.zTree.getZTreeObj("divTreeOrganize");
+            var nodes = treeObj.getNodesByFilter(filter); // search the array of the nodes
+            $.each(nodes, function (index, node) {
+                if (!node.isParent) {
+                    treeObj.selectNode(node);
+                    OnClick(null, "divTreeOrganize", node);
+                    return false;
+                }
+            });
+
+        }
+
+        function triggerSelectSender() {
+            var treeObj = $.fn.zTree.getZTreeObj("divTreeSender");
+            var nodes = treeObj.getNodesByFilter(filter); // search the array of the nodes
+            $.each(nodes, function (index, node) {
+                if (!node.isParent) {
+                    treeObj.selectNode(node);
+                    OnClick(null, "divTreeSender", node);
+                    return false;
+                }
+            });
+            if (nodes.length === 0) {
+                // do not have any sender
+                // hide receiver
+                $('#receiver-tree').addClass('hidden');
+            }
+        }
+        function triggerSelectReceiver() {
+            var treeObj = $.fn.zTree.getZTreeObj("divTreeReceiver");
+            var nodes = treeObj.getNodesByFilter(filter); // search the array of the nodes
+            $.each(nodes, function (index, node) {
+                if (!node.isParent && node.type === '@WorkFlowType.Receiver.ToString()') {
+                    treeObj.selectNode(node, false, true);
+                    return false;
+                }
+            });
+
+        }
+
+        function filter(node) {
+            return node != null && node.checked;
+        }
+
+        function BeforeCheckCallBack(treeId, treeNode) {
+            if (treeId !== "divTreeReceiver") {
+                return false;
+            }
+        }
+
+        function saveDetailInformation() {
+            var treeObj = $.fn.zTree.getZTreeObj("divTreeOrganize");
+            var nodes = treeObj.getSelectedNodes();
+
+            var treeObjWorkflow = $.fn.zTree.getZTreeObj("divTreeWorkflow");
+            var nodesWorkflow = treeObjWorkflow.getSelectedNodes();
+
+            var treeObjSender = $.fn.zTree.getZTreeObj("divTreeSender");
+            var nodesSender = treeObjSender.getSelectedNodes();
+
+            var treeObjReceiver = $.fn.zTree.getZTreeObj("divTreeReceiver");
+            var nodesReceivers = treeObjReceiver.getCheckedNodes(true);
+
+            var detailCodes = [];
+            $.each(nodesReceivers, function (index, node) {
+                if (!node.isParent && node.type === '@WorkFlowType.Receiver.ToString()') {
+                    detailCodes.push(node.id);
+                }
+            });
+            if (nodes.length === 0 || nodesWorkflow.length === 0 || nodesSender.length === 0) {
+                return;
+            }
+            Forms.ShowLoading();
+                var ajaxParams = {
+                    url: '@Url.Action("UpdateUserInformation")',
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {
+                        OrgCode: nodes[0].id,
+                        ActivityCode: nodesWorkflow[0].id,
+                        Sender: nodesSender[0].id,
+                        Receivers: detailCodes,
+                    },
+                    success: function (response) {
+                        Message.execute(response);
+                        if (detailCodes === [] || detailCodes.length === 0) {
+                            var checkedSenders = treeObjSender.getCheckedNodes(true);
+                            var childNodes = checkedSenders.filter(filterChild).length;
+                            treeObjSender.checkNode(nodesSender[0], false, true);
+                            if (childNodes === 1) {
+                                var checkedWorkflow = treeObjWorkflow.getCheckedNodes(true);
+                                childNodes = checkedWorkflow.filter(filterChild).length;
+
+                                treeObjWorkflow.checkNode(nodesWorkflow[0], false, true);
+
+                                if (childNodes === 1) {
+                                    treeObj.checkNode(nodes[0], false, false);
+                                }
+                            }
+                        } else {
+                            treeObjWorkflow.checkNode(nodesWorkflow[0], true, true);
+                            treeObjSender.checkNode(nodesSender[0], true, true);
+                            treeObj.checkNode(nodes[0], true, false);
+                        }
+                    }
+                };
+                Forms.Ajax(ajaxParams);
+
+        }
+
+        function filterChild(node) {
+            return !node.isParent;
+        }
+
+    </script>
+</div>
+
+

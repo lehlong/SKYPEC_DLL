@@ -1,0 +1,105 @@
+﻿@model SMO.Service.MD.TemplateBaseService
+@using SMO.Core.Entities.MD;
+@using SMO.Repository.Implement.MD;
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    var frmIndexId = Guid.NewGuid().ToString();
+    var frmUploadId  = Guid.NewGuid().ToString();
+    var templateService = new SMO.Service.MD.TemplateService();
+    templateService.Get(Model.ObjDetail.TEMPLATE_CODE);
+
+    if (templateService.ObjDetail == null)
+    {
+        <label class="p-l-10">Không có dữ liệu</label>
+        return;
+    }
+}
+
+    <div id='@Model.ViewId'>
+        <script src="~/Scripts/D2SCoreJS/UploadFile.js"></script>
+
+        @using (Ajax.BeginForm("List", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = @frmIndexId }))
+        {
+            @Html.HiddenFor(m => m.ObjDetail.TEMPLATE_CODE)
+            @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR)
+
+            if (templateService.ObjDetail.ORG_CODE == ProfileUtilities.User.ORGANIZE_CODE)
+            {
+                @Html.MyButton("cmdFileHoSo", "Chọn file", "UploadFile.InsertFile();", "", "attach_file")
+                @Html.MyButton("cmdAdd", "Upload file", "SubmitFile();", "Alt+N", "cloud_upload")
+
+                <div id="divPreviewFile">
+
+                </div>
+                <hr />
+            }
+            <div id="divResult">
+
+            </div>
+        }
+
+        @using (Ajax.BeginForm("UploadFile", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = frmUploadId }))
+        {
+            @Html.HiddenFor(m => m.ObjDetail.TEMPLATE_CODE)
+            @Html.HiddenFor(m => m.ObjDetail.TIME_YEAR)
+
+        }
+
+        <script type="text/javascript">
+            function SubmitIndexTemplateBase() {
+                Forms.SubmitForm('@frmIndexId');
+            }
+
+            function SubmitFile() {
+                if (UploadFile.ListFile.length == 0) {
+                    alert("Hãy chọn ít nhất một file!");
+                    return;
+                }
+                var formData = new FormData($('#@frmUploadId')[0]);
+
+                for (var i = 0; i < UploadFile.ListFile.length; i++) {
+                    formData.append("files", UploadFile.ListFile[i].DataFile);
+                }
+
+                Forms.ShowLoading();
+
+                var headers = {
+                    'RequestVerificationToken': $('#antiForgeryToken').val(),
+                };
+                $.ajax({
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+
+                        xhr.upload.addEventListener("progress", function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = evt.loaded / evt.total;
+                                percentComplete = parseInt(percentComplete * 100);
+                                console.log(percentComplete);
+
+                                if (percentComplete === 100) {
+                                    //alert("kakalot");
+                                }
+                            }
+                        }, false);
+
+                        return xhr;
+                    },
+                    type: "POST",
+                    url: "@Url.Action("UploadFile")",
+                    data: formData,
+                    headers: headers,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        Message.execute(response);
+                        Forms.HideLoading();
+                    },
+                    error: Forms.AjaxErrorHandler
+                });
+            }
+
+            $(function () {
+                SubmitIndexTemplateBase();
+            })
+        </script>
+    </div>

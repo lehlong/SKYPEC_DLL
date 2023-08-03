@@ -1,0 +1,36 @@
+﻿@model SMO.Service.MD.MaterialService
+@{
+    var number = 1;
+}
+@if (Model.ObjList.Count > 30)
+{
+    Html.RenderPartial("Paging", Model);
+}
+<div class="table-responsive">
+    <table class="table table-condensed table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Mã hàng hóa</th>
+                <th>Tên hàng hóa</th>
+                <th>Loại hàng hóa</th>
+                <th>Đơn vị tính</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList)
+            {
+                number++;
+                var vdbclickAction = string.Format("Forms.LoadAjax('{0}', this);", Url.Action("Edit", new { id = item.CODE }));
+                <tr>
+                    <td ondblclick="@vdbclickAction">
+                        <a href="#" onclick="@vdbclickAction">@item.CODE</a>
+                    </td>
+                    <td>@item.TEXT</td>
+                    <td>@(item.Types!= null ? item.Types.TEXT:"")</td>
+                    <td>@(item.Units != null ? item.Units.TEXT : "")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{ Html.RenderPartial("Paging", Model); }

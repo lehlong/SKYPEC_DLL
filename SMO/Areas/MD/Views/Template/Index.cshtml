@@ -1,0 +1,194 @@
+﻿@model SMO.Service.MD.TemplateService
+@using SMO.Core.Entities.MD;
+@using SMO.Repository.Implement.MD;
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+    var title = "DANH SÁCH MẪU BIỂU KHAI BÁO";
+    if (
+        Model.ObjDetail.OBJECT_TYPE == TemplateObjectType.Department &&
+        Model.ObjDetail.BUDGET_TYPE == BudgetType.KinhDoanh &&
+        Model.ObjDetail.ELEMENT_TYPE == ElementType.ChiPhi
+        )
+    {
+        title = "DANH SÁCH MẪU BIỂU KẾ HOẠCH CHI PHÍ";
+    }
+
+    else if (
+        Model.ObjDetail.OBJECT_TYPE == TemplateObjectType.Department &&
+        Model.ObjDetail.BUDGET_TYPE == BudgetType.KinhDoanh &&
+        Model.ObjDetail.ELEMENT_TYPE == ElementType.DoanhThu
+        )
+    {
+        title = "DANH SÁCH MẪU BIỂU KẾ HOẠCH DOANH THU";
+    }
+
+    else if (
+        Model.ObjDetail.OBJECT_TYPE == TemplateObjectType.Department &&
+        Model.ObjDetail.BUDGET_TYPE == BudgetType.DongTien &&
+        Model.ObjDetail.ELEMENT_TYPE == ElementType.DoanhThu
+        )
+    {
+        title = "DANH SÁCH MẪU BIỂU KẾ HOẠCH THU THƯỜNG XUYÊN";
+    }
+
+    else if (
+        Model.ObjDetail.OBJECT_TYPE == TemplateObjectType.Department &&
+        Model.ObjDetail.BUDGET_TYPE == BudgetType.DongTien &&
+        Model.ObjDetail.ELEMENT_TYPE == ElementType.ChiPhi
+        )
+    {
+        title = "DANH SÁCH MẪU BIỂU KẾ HOẠCH CHI THƯỜNG XUYÊN";
+    }
+
+    else if (
+        Model.ObjDetail.OBJECT_TYPE == TemplateObjectType.DevelopProject &&
+        Model.ObjDetail.BUDGET_TYPE == BudgetType.KinhDoanh &&
+        Model.ObjDetail.ELEMENT_TYPE == ElementType.ChiPhi
+        )
+    {
+        title = "DANH SÁCH MẪU BIỂU CHI PHÍ DỰ ÁN";
+    }
+
+    else if (
+        Model.ObjDetail.OBJECT_TYPE == TemplateObjectType.Department &&
+        Model.ObjDetail.BUDGET_TYPE == BudgetType.KinhDoanh &&
+        Model.ObjDetail.ELEMENT_TYPE == ElementType.ChiPhi
+        )
+    {
+        title = "DANH SÁCH MẪU BIỂU CHI PHÍ KHÁC DỰ ÁN";
+    }
+
+    else if (
+        Model.ObjDetail.OBJECT_TYPE == TemplateObjectType.DevelopProject &&
+        Model.ObjDetail.BUDGET_TYPE == BudgetType.DongTien &&
+        Model.ObjDetail.ELEMENT_TYPE == ElementType.ChiPhi
+        )
+    {
+        title = "DANH SÁCH MẪU BIỂU CHI THƯỜNG XUYÊN DỰ ÁN";
+    }
+
+    else if (
+        Model.ObjDetail.OBJECT_TYPE == TemplateObjectType.Project &&
+        Model.ObjDetail.BUDGET_TYPE == BudgetType.KinhDoanh &&
+        Model.ObjDetail.ELEMENT_TYPE == ElementType.ChiPhi
+        )
+    {
+        title = "DANH SÁCH MẪU BIỂU CHI THƯỜNG XUYÊN KHÁC DỰ ÁN";
+    }
+
+    else if (
+        Model.ObjDetail.OBJECT_TYPE == TemplateObjectType.Project &&
+        Model.ObjDetail.BUDGET_TYPE == BudgetType.DongTien &&
+        Model.ObjDetail.ELEMENT_TYPE == ElementType.DoanhThu
+        )
+    {
+        title = "DANH SÁCH MẪU BIỂU THU THƯỜNG XUYÊN DỰ ÁN";
+    }
+}
+<div id='@Model.ViewId' class="container-fluid child-content">
+    <link href="~/Properties/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" />
+    <style>
+        .swal2-container .swal2-popup {
+            font-size: 14px;
+        }
+    </style>
+    @using (Ajax.BeginForm("List", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.FormId)
+        @Html.HiddenFor(m => m.ObjDetail.BUDGET_TYPE)
+        @Html.HiddenFor(m => m.ObjDetail.ELEMENT_TYPE)
+        @Html.HiddenFor(m => m.ObjDetail.OBJECT_TYPE)
+        <div class="card border-grey">
+            <div class="body" style="padding-top: 0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a style="padding-left:0px" class="text-uppercase"><i class="material-icons col-fecon">clear_all</i> @title</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="page-function">
+                        <div class="page-function-button m-r-20" style="float:left">
+                            @Html.MyButton("cmdBack", "Quay lại", string.Format("Forms.Close('{0}');", @Model.ViewId), "Alt+N", "arrow_back")
+                            @Html.MyButton("cmdAdd", "Thêm mới", string.Format("Forms.LoadAjax('{0}');", @Url.Action("Create", new { objectType = Model.ObjDetail.OBJECT_TYPE, budgetType = Model.ObjDetail.BUDGET_TYPE, elementType = Model.ObjDetail.ELEMENT_TYPE })), "Alt+N", "add")
+                        </div>
+                        <div class="input-group page-function-search">
+                            <div class="form-line">
+                                @Html.MyTextBoxFor(m => m.ObjDetail.CODE, new { placeholder = "Tìm kiếm theo mã hoặc tên", @class = "align-center", @data_val = false })
+                            </div>
+
+                            <span class="input-group-addon" title="Tìm kiếm" onclick="Forms.SubmitForm('@Model.FormId')">
+                                <i class="material-icons">search</i>
+                            </span>
+
+                            <span class="input-group-addon" title="Tìm theo các chỉ tiêu khác" id="spShowMore" onclick="$('#spHideMore').toggle(); $(this).toggle(); $('.page-search-advance').toggle();">
+                                <i class="material-icons">expand_more</i>
+                            </span>
+                            <span class="input-group-addon" title="Ẩn các chỉ tiêu tìm kiếm khác" style="display:none;" id="spHideMore" onclick="$('#spShowMore').toggle(); $(this).toggle(); $('.page-search-advance').toggle();">
+                                <i class="material-icons">expand_less</i>
+                            </span>
+
+                            <span class="input-group-addon" title="Làm mới ô tìm kiếm" onclick="Forms.ResetForm('@Model.FormId')">
+                                <i class="material-icons">refresh</i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="page-search-advance" style="display:none">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <label for="email_address">Đơn vị nhập kế hoạch</label>
+                                <div class="form-group">
+                                    @Html.MyDropDownListFor(x => x.ObjDetail.ORG_CODE,
+                                    SelectListUtilities.GetChildOrg<T_MD_COST_CENTER, CostCenterRepo>("", true),
+                                        new
+                                        {
+                                            @class = "selectpicker show-tick",
+                                            @data_live_search = "true",
+                                            @data_container = "body"
+                                        })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="divResult">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script src="~/Properties/sweetalert2/dist/sweetalert2.all.min.js"></script>
+
+    <script type="text/javascript">
+        function SubmitIndex() {
+            Forms.SubmitForm('@Model.FormId');
+        }
+
+        $(function () {
+            Forms.SubmitForm('@Model.FormId');
+            Forms.CompleteUI();
+            Forms.SubmitByEnter("@Model.FormId");
+        });
+
+        function toggleStatusTemplate(templateId, currentStatus) {
+            Forms.ShowLoading();
+                var ajaxParams = {
+                    url: '@Url.Action("ToggleStatusTemplate")',
+                    type: "POST",
+                    data: { templateId, currentStatus },
+                    dataType: "json",
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (response) {
+                        Message.execute(response);
+                    }
+                };
+                Forms.Ajax(ajaxParams);
+        }
+    </script>
+</div>
+

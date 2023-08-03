@@ -1,0 +1,29 @@
+﻿@model SMO.Service.MD.ProjectService
+@{
+    var frmFormCode = "frmProjectIndex";
+    var number = 1;
+}
+ 
+<div class="table-responsive">
+    <table class="table table-condensed table-bordered table-striped">
+        <thead>
+            <tr>
+                <th style="max-width: 120px;">Mã dự án</th>
+                <th>Tên dự án</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList)
+            {
+                number++;
+                var vdbclickAction = "";
+                <tr>
+                    <td ondblclick="@vdbclickAction">
+                        <a href="#" onclick="@vdbclickAction">@item.CODE</a>
+                    </td>
+                    <td ondblclick="@vdbclickAction">@item.NAME</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

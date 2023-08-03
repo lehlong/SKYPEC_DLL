@@ -1,0 +1,56 @@
+﻿@model SMO.Service.MD.InternalOrderService
+@{
+    var number = 1;
+}
+ 
+@{ Html.RenderPartial("Paging", Model); }
+
+<div class="table-responsive">
+    <table class="table table-condensed table-bordered table-striped table-nowrap">
+        <thead>
+            <tr>
+                <th>Dự án</th>
+                <th>Tòa</th>
+                <th>Hạng mục cấp 1</th>
+                <th>Hạng mục cấp 2</th>
+                <th>Mã IO</th>
+                <th>Tên IO</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList)
+            {
+            <tr>
+                <td>
+                    <div>@item.PROJECT_CODE</div>
+                    <div>@item.PROJECT_NAME</div>
+                </td>
+
+                <td>
+                    <div>@item.BLOCK_CODE</div>
+                    <div>@item.BLOCK_NAME</div>
+                </td>
+
+                <td>
+                    <div>@item.IO_LEVEL1_CODE</div>
+                    <div>@item.IO_LEVEL1_NAME</div>
+                </td>
+
+                <td>
+                    <div>@item.IO_LEVEL2_CODE</div>
+                    <div>@item.IO_LEVEL2_NAME</div>
+                </td>
+
+                <td>
+                    @item.CODE
+                </td>
+
+                <td>
+                    @item.NAME 
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{ Html.RenderPartial("Paging", Model); }

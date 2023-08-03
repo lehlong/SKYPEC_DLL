@@ -1,0 +1,37 @@
+﻿@model SMO.Service.MD.PeriodTimeService
+
+@{ Html.RenderPartial("Paging", Model); }
+
+<div class="table-responsive">
+    <table class="table table-condensed table-bordered table-striped">
+        <thead>
+            <tr>
+                <th style="max-width: 120px;">Năm kế hoạch</th>
+                <th>Trạng thái</th>
+                @*<th>Kì nộp</th>*@
+                <th style="max-width: 120px;" class="center-align"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList)
+            {
+                <tr>
+                    <td>
+                        @item.TIME_YEAR
+                    </td>
+                    <td>
+                        @(item.IS_CLOSE ? "Đóng kế hoạch" : "Đang nộp kế hoạch")
+                    </td>
+                    <td>
+                        @Html.MyButton("toggleStatus", item.IS_CLOSE ? "Mở năm NS" : "Đóng năm NS", $"toggleStatus({item.TIME_YEAR})", item.IS_CLOSE ? "Mở năm NS" : "Đóng năm NS", item.IS_CLOSE ? "lock_open" : "lock")
+                        @if (!item.IS_DEFAULT)
+                        {
+                            @Html.MyButton("setDefault", "Mặc định năm NS", $"setDefaultTimeYear({item.TIME_YEAR})", "Mặc định năm NS", "event")
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{ Html.RenderPartial("Paging", Model); }

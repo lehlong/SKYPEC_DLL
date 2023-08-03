@@ -1,0 +1,78 @@
+﻿@model SMO.Service.MD.PeriodTimeService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+}
+<div id='@Model.ViewId' class="container-fluid child-content">
+    @using (Ajax.BeginForm("List", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.FormId)
+        <div class="card border-grey">
+            <div class="body" style="padding-top: 0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a style="padding-left:0px"><i class="material-icons col-fecon">clear_all</i> DANH SÁCH NĂM KẾ HOẠCH</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="page-function">
+                        <div class="page-function-button m-r-20">
+                            @Html.MyButton("cmdAdd", "Thêm mới", string.Format("Forms.LoadAjax('{0}');", @Url.Action("Create")), "Alt+N", "add")
+                        </div>
+                    </div>
+
+                    <div id="divResult">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script type="text/javascript">
+        function SubmitIndex() {
+            Forms.SubmitForm('@Model.FormId');
+        }
+
+        $(function () {
+            Forms.SubmitForm('@Model.FormId');
+            Forms.CompleteUI();
+            Forms.SubmitByEnter("@Model.FormId");
+        });
+
+        function toggleStatus(year) {
+            Forms.ShowLoading();
+            var ajaxParams = {
+                url: '@Url.Action("ToggleStatus")',
+                type: "POST",
+                data: { year },
+                dataType: "json",
+                contentType: 'application/json; charset=UTF-8',
+                success: function (response) {
+                    Message.execute(response);
+                }
+            };
+            Forms.Ajax(ajaxParams);
+        }
+
+        function setDefaultTimeYear(year) {
+                Forms.ShowLoading();
+                var ajaxParams = {
+                    url: '@Url.Action("SetDefaultTimeYear")',
+                    type: "POST",
+                    data: { year},
+                    dataType: "json",
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (response) {
+                        Message.execute(response);
+                    }
+                };
+                Forms.Ajax(ajaxParams);
+        }
+
+    </script>
+</div>
+
+

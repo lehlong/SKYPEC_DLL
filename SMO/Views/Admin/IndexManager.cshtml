@@ -1,0 +1,12 @@
+﻿<div id="divDashBoard" style="height: 100%; width: 100%"></div>
+
+<script type="text/javascript">
+    $(function () {
+        $.ajax({
+            url: "@Url.Action("DashboardTableau")",
+            success : function (reponse) {
+                $("#divDashBoard").html(reponse);
+            }
+        });
+    });
+</script>

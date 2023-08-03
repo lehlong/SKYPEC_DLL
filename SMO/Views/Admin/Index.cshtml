@@ -1,0 +1,127 @@
+﻿
+<div class="container-fluid child-content">
+    <div class="row clearfix">
+        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+            <div class="m-b-20">
+                <div class="card border-grey" id="divTopNotify">
+                    <div class="header">
+                        <span class="font-15 col-fecon">@LanguageUtilities.LangText("lblTitle", "frm_EB_TopNotify")</span>
+                        <ul class="header-dropdown m-r--5">
+                            <li class="dropdown">
+                                <a href="#" role="button" title="Xem tất cả" onclick="$('#frmViewAllNotify').remove(); Forms.LoadAjax('/Notify')">
+                                    <i class="material-icons">clear_all</i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="body dropdown-menu all-notify" id="divTopNotifyBody" style="box-shadow: none !important; height: 400px;">
+                        <ul class="menu" data-bind="template: { name: 'RowTemplateNotify', foreach: ObjListNotify }"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="card border-grey" id="divTopQuestionContractor">
+                <div class="header">
+                    <span class="font-15 col-fecon">@LanguageUtilities.LangText("lblTitle", "frm_EB_TopQuestionContractor")</span>
+                    <ul class="header-dropdown m-r--5">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" role="button" title="Tải lại danh sách" onclick="$('#divTopQuestionContractor .body').html(''); GetTopQuestionContractor();">
+                                <i class="material-icons">refresh</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body" style="height: 400px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="col-xs-12 col-sm-12">
+            <div class="card border-grey" id="divTopBidContractor">
+                <div class="header">
+                    <span class="font-15 col-fecon">@LanguageUtilities.LangText("lblTitle", "frm_EB_TopBidContractor")</span>
+                    <ul class="header-dropdown m-r--5">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" role="button" title="Refresh" onclick="$('#divTopBidContractor .body').html(''); GetTopBidContractor();">
+                                <i class="material-icons">refresh</i>
+                            </a>
+                            <a href="#" role="button" title="View all" onclick="Forms.LoadAjax('/EB/Bid/IndexBidContractor');">
+                                <i class="material-icons">clear_all</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body">
+                </div>
+            </div>
+
+            <div class="card border-grey m-t-20" id="divTopBidContractorWait">
+                <div class="header">
+                    <span class="font-15 col-fecon">@LanguageUtilities.LangText("lblTitle", "frm_EB_TopBidContractorWait")</span>
+                    <ul class="header-dropdown m-r--5">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" role="button" title="Refresh" onclick="$('#divTopBidContractorWait .body').html(''); GetTopBidContractorWait();">
+                                <i class="material-icons">refresh</i>
+                            </a>
+                            <a href="#" role="button" title="View all" onclick="Forms.LoadAjax('/EB/Bid/IndexBidContractorWait');">
+                                <i class="material-icons">clear_all</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body">
+                </div>
+            </div>
+
+            <div class="card border-grey m-t-20" id="divTopBidContractorOpen">
+                <div class="header">
+                    <span class="font-15 col-fecon">@LanguageUtilities.LangText("lblTitle", "frm_EB_TopBidContractorOpen")</span>
+                    <ul class="header-dropdown m-r--5">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" role="button" title="Refresh" onclick="$('#divTopBidContractorOpen .body').html(''); GetTopBidContractorOpen();">
+                                <i class="material-icons">refresh</i>
+                            </a>
+                            <a href="#" role="button" title="View all" onclick="Forms.LoadAjax('/EB/Bid/IndexBidContractorOpen');">
+                                <i class="material-icons">clear_all</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body">
+                </div>
+            </div>
+        </div>
+        @*<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="card border-grey" style="height: 100vh; overflow-y: auto;" id="divTopQuestionContractor">
+                <div class="header">
+                    <span class="font-15 col-fecon">TRAO ĐỔI VỚI FECON</span>
+                    <ul class="header-dropdown m-r--5">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" role="button" title="Tải lại danh sách" onclick="$('#divTopQuestionContractor .body').html(''); GetTopQuestionContractor();">
+                                <i class="material-icons">refresh</i>
+                            </a>
+                            <a href="#" role="button" title="Xem tất cả" onclick="Forms.LoadAjax('');">
+                                <i class="material-icons">clear_all</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body">
+                </div>
+            </div>
+        </div>*@
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        GetTopBidContractorWait();
+        GetTopBidContractor();
+        GetTopBidContractorOpen();
+        GetTopQuestionContractor();
+    });
+</script>

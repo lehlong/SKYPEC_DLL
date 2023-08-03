@@ -1,0 +1,81 @@
+﻿@model SMO.Service.MD.FrequentlyAskedService
+@{
+    Model.ViewId = Guid.NewGuid().ToString();
+    Model.FormId = Guid.NewGuid().ToString();
+}
+<div id='@Model.ViewId' class="container-fluid child-content">
+    @using (Ajax.BeginForm("Create", null, FormDataUtils.GetAjaxOptions(Model.ViewId), new { @id = Model.FormId }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="card border-grey">
+            <div class="body" style="padding-top: 0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a style="padding-left:0px"><i class="material-icons col-fecon">clear_all</i> TẠO MỚI CÂU HỎI</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="page-function">
+                        <div class="page-function-button m-r-20">
+                            @Html.MyButton("cmdBack", "Quay lại", string.Format("Forms.Close('{0}');", @Model.ViewId), "Alt+N", "arrow_back")
+                            @Html.MyButton("cmdSave", "Lưu lại", "Submit();", "Alt+N", "done_all")
+                        </div>
+                    </div>
+
+                    <div class="row m-t-20">
+                        <div class="col-xs-1"></div>
+                        <div class="col-md-10 col-xs-10">
+                            <label>Câu hỏi</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.MyTextBoxFor(m => m.ObjDetail.TIEU_DE)
+                                </div>
+                            </div>
+
+                            <label>Câu hỏi (tiếng anh)</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.MyTextBoxFor(m => m.ObjDetail.TIEU_DE_EN)
+                                </div>
+                            </div>
+
+                            <label>Câu trả lời</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.MyTextAreaFor(m => m.ObjDetail.NOI_DUNG, new { id = "txtNoiDung" })
+                                </div>
+                            </div>
+
+                            <label>Câu trả lời (tiếng anh)</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.MyTextAreaFor(m => m.ObjDetail.NOI_DUNG_EN, new { id = "txtNoiDung_EN" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    }
+    <script type="text/javascript">
+        $(function () {
+            CKEDITOR.replace('txtNoiDung', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            CKEDITOR.replace('txtNoiDung_EN', {
+                filebrowserImageBrowseUrl: '/FileBrowser/FileBrowser.aspx?type=images'
+            });
+
+            Forms.CompleteUI();
+        });
+
+        function Submit() {
+            $("#txtNoiDung").val(CKEDITOR.instances.txtNoiDung.getData());
+            $("#txtNoiDung_EN").val(CKEDITOR.instances.txtNoiDung_EN.getData());
+            Forms.SubmitForm('@Model.FormId');
+        }
+    </script>
+</div>

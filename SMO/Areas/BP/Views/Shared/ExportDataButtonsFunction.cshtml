@@ -1,0 +1,146 @@
+﻿@using SMO.Core.Entities;
+@using SMO.Core.Entities.BP;
+@{
+    var periodTime = ViewBag.periodTime as T_MD_PERIOD_TIME;
+    var header = (T_BP_BASE)ViewBag.header;    // header is inherit from T_BP_BASE
+    var viewId = ViewBag.ViewID as string;
+    var isCorpStaff = string.IsNullOrWhiteSpace(ProfileUtilities.User.Organize.PARENT_CODE);
+    var realControllerName = @HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var controllerName = realControllerName.ToUpper().Replace("REVIEW", string.Empty);
+    realControllerName = controllerName + "Review";
+}
+@if (header == null || !string.IsNullOrEmpty(header.TEMPLATE_CODE) && !header.Template.ACTIVE || header.IS_DELETED)
+{
+    return;
+}
+@if (header != null && header.ORG_CODE == ProfileUtilities.User.ORGANIZE_CODE)
+{
+    @Html.MyButton("cmdQuaTrinhPheDuyet", "Quá trình PD", $"Forms.LoadAjax('{Url.Action("StepperBudget", controllerName, new { year = header.TIME_YEAR, centerCode = header.ORG_CODE, templateCode = header.TEMPLATE_CODE })}');", "Alt+N", "offline_pin")
+
+    // nhân viên cấp dưới chịu ảnh hưởng bởi việc đóng năm ngân sách
+    if (periodTime.IS_CLOSE && !isCorpStaff)
+    {
+        return;
+    }
+    switch (header.STATUS)
+    {
+        case Approve_Status.ChoPheDuyet:
+            @Html.MyButton("cmdPheDuyet", "Phê duyệt", $"PheDuyet('{header.PKID}');", "", "done_all", right: "R305")
+            @Html.MyButton("cmdHuyTrinhDuyet", "Hủy trình duyệt", $"HuyTrinhDuyet('{header.PKID}');", "", "cancel", right: "R304")
+            @Html.MyButton("cmdTuChoi", "Từ chối", $"TuChoi('{header.PKID}');", "", "clear", right: "R307")
+            break;
+        case Approve_Status.ChuaTrinhDuyet:
+            @Html.MyButton("cmdTrinhDuyet", "Trình duyệt", $"TrinhDuyet('{header.PKID}');", "", "send", right: "R303")
+            break;
+        case Approve_Status.DaPheDuyet:
+            @Html.MyButton("cmdHuyPheDuyet", "Hủy phê duyệt", $"HuyPheDuyet('{header.PKID}');", "", "remove_circle", right: "R306")
+            if (isCorpStaff)
+            {
+                @Html.MyButton("cmdChuyenTKS", "Chuyển TKS", $"ChuyenTKS('{header.PKID}');", "", "done_all", right: "R309")
+                @Html.MyButton("cmdChuyenTGD", "Trình lên TGĐ", $"TrinhTGD('{header.PKID}');", "", "done_all", right: "R316")
+                if (header.IS_REVIEWED)
+                {
+                    @Html.MyButton("cmdChuyenHDNS", "Chuyển HDNS", $"ChuyenHDNS('{header.PKID}');", "", "done_all", right: "R313")
+                }
+            }
+            break;
+        case Approve_Status.TGD_ChoPheDuyet:
+            if (isCorpStaff)
+            {
+                @Html.MyButton("cmdPheDuyet", "TGĐ phê duyệt", $"TGDPheDuyet('{header.PKID}');", "", "done_all", right: "R317")
+                @Html.MyButton("cmdHuyTrinhDuyet", "Hủy trình duyệt", $"HuyTrinhDuyet('{header.PKID}');", "", "cancel", right: "R304")
+                @Html.MyButton("cmdTuChoi", "TGĐ từ chối", $"TGDTuChoi('{header.PKID}');", "", "clear", right: "R319")
+            }
+            break;
+        case Approve_Status.TGD_PheDuyet:
+            if (isCorpStaff)
+            {
+                @Html.MyButton("cmdHuyPheDuyet", "TGĐ hủy phê duyệt", $"TGDHuyPheDuyet('{header.PKID}');", "", "remove_circle", right: "R318")
+            }
+            break;
+        case Approve_Status.TGD_TuChoi:
+        case Approve_Status.TGD_HuyTrinh:
+            if (isCorpStaff)
+            {
+                @Html.MyButton("cmdChuyenTGD", "Trình lên TGĐ", $"TrinhTGD('{header.PKID}');", "", "done_all", right: "R316")
+                @Html.MyButton("cmdHuyPheDuyet", "Hủy phê duyệt", $"HuyPheDuyet('{header.PKID}');", "", "remove_circle", right: "R306")
+            }
+            break;
+        case Approve_Status.TuChoi:
+            @Html.MyButton("cmdTrinhDuyet", "Trình duyệt", $"TrinhDuyet('{header.PKID}');", "", "send", right: "R303")
+            break;
+        case Approve_Status.TKS_DuLieu:
+        case Approve_Status.TKS_TuChoi:
+            if (isCorpStaff)
+            {
+                @Html.MyButton("cmdTKS", "TKS dữ liệu", $"Forms.LoadAjax('{Url.Action("SummaryIndex", realControllerName, new { year = header.TIME_YEAR })}');", "Alt+N", "offline_pin", right: "R310")
+            }
+            break;
+        case Approve_Status.TKS_TrinhDuyet:
+            if (isCorpStaff)
+            {
+                @Html.MyButton("cmdTKS", "Đánh giá TKS", $"Forms.LoadAjax('{Url.Action("SummaryIndex", realControllerName, new { year = header.TIME_YEAR })}');", "Alt+N", "offline_pin", right: "R311")
+            }
+            break;
+
+        case Approve_Status.TKS_PheDuyet:
+            if (isCorpStaff)
+            {
+                @Html.MyButton("cmdChuyenTGD", "Trình lên TGĐ", $"TrinhTGD('{header.PKID}');", "", "done_all", right: "R316")
+                @Html.MyButton("cmdHuyPheDuyet", "Hủy phê duyệt", $"HuyPheDuyet('{header.PKID}');", "", "remove_circle", right: "R306")
+                @Html.MyButton("cmdChuyenHDNS", "Chuyển HDNS", $"ChuyenHDNS('{header.PKID}');", "", "done_all", right: "R313")
+            }
+            break;
+        case Approve_Status.ThamDinh_DuLieu:
+            if (isCorpStaff && ViewBag.showReviewBtn)
+            {
+                @Html.MyButton("cmdThamDinh", "Thẩm định dữ liệu", $"Forms.LoadAjax('{Url.Action("Index", realControllerName, new { year = header.TIME_YEAR })}');", "Alt+N", "offline_pin", right: "R314")
+            }
+            break;
+        case Approve_Status.ThamDinh_KetThuc:
+            if (isCorpStaff)
+            {
+                @Html.MyButton("cmdChuyenTGD", "Trình lên TGĐ", $"TrinhTGD('{header.PKID}');", "", "done_all", right: "R316")
+                @Html.MyButton("cmdHuyPheDuyet", "Hủy phê duyệt", $"HuyPheDuyet('{header.PKID}');", "", "remove_circle", right: "R306")
+            }
+            break;
+        case Approve_Status.TGD_HuyPheDuyet:
+        default:
+            break;
+    }
+
+    <script>
+        function refreshBtn(response) {
+            Message.execute(response);
+            console.log(response);
+            if (response.State) {
+                try {
+                    RefreshData();
+                    GetInformationActiveTab();
+                } finally {
+
+                    var orgCode = '@header.ORG_CODE';
+                    var templateId = '@header.TEMPLATE_CODE';
+                    var year = '@header.TIME_YEAR';
+                    var version = '@header.VERSION';
+
+                    var paramsHeader = {
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "html",
+                        data: { orgCode, templateId, year, version, viewId: '@viewId' },
+                        url: "@Url.Action("ExportDataButtonsFunction", controllerName)",
+                        success: function (result) {
+                            $('#@viewId #btn-function').html(result);
+                        }
+                    }
+                    Forms.Ajax(paramsHeader);
+                }
+            }
+        }
+    </script>
+
+    {
+        Html.RenderPartial("_ScriptButtonFunction");
+    }
+}

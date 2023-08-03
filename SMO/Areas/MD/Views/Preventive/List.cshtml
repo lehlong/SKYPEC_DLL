@@ -1,0 +1,38 @@
+﻿@model SMO.Service.MD.PreventiveService
+
+ 
+@{ Html.RenderPartial("Paging", Model); }
+
+<div class="table-responsive">
+    <table class="table table-condensed table-bordered table-striped">
+        <thead>
+            <tr>
+                <th style="max-width: 120px;">
+                    @Html.LabelFor(x => x.ObjDetail.TIME_YEAR)
+                </th>
+                <th>
+                    @Html.LabelFor(x => x.ObjDetail.ORG_CODE)
+                </th>
+                <th>
+                    @Html.LabelFor(x => x.ObjDetail.PERCENTAGE)
+                </th>
+                <th>
+                    @Html.LabelFor(x => x.ObjDetail.DESCRIPTION)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList)
+            {
+                var vdbclickAction = string.Format("Forms.LoadAjax('{0}');", Url.Action("Edit", new { id = item.ID }));
+            <tr>
+                <td ondblclick="@vdbclickAction">@item.TIME_YEAR</td>
+                <td ondblclick="@vdbclickAction">@(item.CostCenter?.NAME)</td>
+                <td ondblclick="@vdbclickAction">@item.PERCENTAGE%</td>
+                <td ondblclick="@vdbclickAction">@item.DESCRIPTION</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{ Html.RenderPartial("Paging", Model); }

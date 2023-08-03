@@ -1,0 +1,171 @@
+﻿@model string
+<script>
+    // Xóa những parent không có child
+    function CleanTable() {
+        var table, tr, td, i, value;
+        table = $('#@Model table');
+        tr = table.find('tbody tr').not('.hidden');
+        for (i = 0; i < tr.length && tr.length > 0; i++) {
+            let previousIsChild = i === 0 ? true : !$(tr[i - 1].getElementsByTagName('td')[5]).hasClass('strong');
+            let previousLevel = i === 0 ? 0 : $(tr[i - 1].getElementsByTagName('td')[4]).attr('level');
+            td = tr[i].getElementsByTagName('td')[5];
+            if ($(td).hasClass('strong')) {
+                if (i === tr.length - 1) {
+                    $(tr[i]).addClass('hidden');
+                    i -= 2;
+                    tr = table.find('tbody tr').not('.hidden');
+                } else if (!previousIsChild) {
+                    var level = $(td).prev().attr('level');
+                    if (level <= previousLevel && previousLevel !== 0) {
+                        $(tr[i - 1]).addClass('hidden');
+                        i -= 2;
+                        tr = table.find('tbody tr').not('.hidden');
+                    } else {
+                        previousLevel = level;
+                    }
+                }
+            }
+        }
+    }
+    function SearchTable() {
+        // Declare variables
+        var isCompleted = $('#IsCompleted').val().toLowerCase() == 'true';
+        var isNotCompleted = $('#IsNotCompleted').val().toLowerCase() == 'true';
+
+        var table, tr, td, i, value;
+        value = isCompleted ? isNotCompleted ? null : true : false;
+        const searchColumn = value ? 2 : 3;     // if search approve elements, find in column 3rd, else find in column 4th
+        table = $('#@Model table');
+        tr = table.find('tbody tr');
+        if (value != null) {
+            if (!value && !isNotCompleted) {
+                table.find('tbody').addClass('hidden');
+                $.each(tr, function (index, row) {
+                    // check box inside td 3th
+                    var td = row.getElementsByTagName('td')[searchColumn];
+                    // add attr hidden
+                    $(td).find('input.cbxFilter[type=checkbox]').attr('ignore', true);
+                });
+
+                // un-check select all checkbox
+                $('#checkAllHidden').val(false);
+                $('#checkAllHidden').change();
+
+                return;
+            } else {
+                $.each(tr, function (index, row) {
+                    // check box inside td 3th
+                    var td = row.getElementsByTagName('td')[searchColumn];
+                    // add attr hidden
+                    $(td).find('input.cbxFilter[type=checkbox]').removeAttr('ignore');
+                });
+
+                // check select all checkbox
+                $('#checkAllHidden').val(true);
+                $('#checkAllHidden').change();
+                table.find('tbody').removeClass('hidden');
+            }
+        } else {
+            // display all row
+            table.find('tbody').removeClass('hidden');
+
+            for (i = 0; i < tr.length; i++) {
+                $(tr[i]).removeClass('hidden');
+
+                // check box inside td 3th
+                var tdApprove = tr[i].getElementsByTagName('td')[2];
+                // remove attr hidden
+                $(tdApprove).find('input.cbxFilter[type=checkbox]').removeAttr('ignore');
+                // check box inside td 3th
+                var tdDenied = tr[i].getElementsByTagName('td')[3];
+                // remove attr hidden
+                $(tdDenied).find('input.cbxFilter[type=checkbox]').removeAttr('ignore');
+
+            }
+            check_uncheck_one('checkOneApprove', '#@Model #checkAllApprove', 'ignore', 'review-temp-name', '#@Model');
+            check_uncheck_one('checkOneDenied', '#@Model #checkAllDenied', 'ignore', 'review-temp-name', '#@Model');
+            return;
+        }
+        tr = table.find('tbody tr.root-element');
+
+        // filter
+        // Loop through all table rows, and hide those which don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            var elementCode = $(tr[i].getElementsByTagName('td')[0]).attr('id');
+            // search columns 2
+            td = tr[i].getElementsByTagName('td')[2];
+            if ($(td).html().trim() === '') {
+                $(tr[i]).removeClass('hidden');
+                $.each($(tr[i]).siblings(`.${elementCode}`), function (e, v) {
+                    $(v).removeClass('hidden');
+                });
+                continue;
+            }
+            if (td) {
+                const valueStringCbx = $(td).children(`#review_element_${i}`).val().trim().toLowerCase();
+                var valueCbx = valueStringCbx == 'true';
+                if (valueStringCbx && valueCbx === value) {
+                    // remove attr ignore
+                    $(td).find('input.cbxFilter[type=checkbox]').removeAttr('ignore');
+
+                    $(tr[i]).removeClass('hidden');
+                    $.each($(tr[i]).siblings(`.${elementCode}`), function (e, v) {
+                        $(v).removeClass('hidden');
+                    });
+                } else {
+                    // add attr ignore
+                    $(td).find('input.cbxFilter[type=checkbox]').attr('ignore', true);
+
+                    $.each($(tr[i]).siblings(`.${elementCode}`), function (e, v) {
+                        $(v).addClass('hidden');
+                    });
+                    $(tr[i]).addClass('hidden');
+                }
+            }
+        }
+        CleanTable();
+        check_uncheck_one('checkOneApprove', '#@Model #checkAllApprove', 'ignore', 'review-temp-name', '#@Model');
+        check_uncheck_one('checkOneDenied', '#@Model #checkAllDenied', 'ignore', 'review-temp-name', '#@Model');
+    }
+
+    var byProperty = function (prop) {
+        return function (a, b) {
+            if (typeof a[prop] == "number") {
+                return (a[prop] - b[prop]);
+            } else {
+                return ((a[prop] < b[prop]) ? 1 : ((a[prop] > b[prop]) ? -1 : 0));
+            }
+        };
+    };
+
+    function formatNumber(number) {
+        number = parseFloat(Math.round(number)).toFixed(2);
+
+        var tempStr = number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".").replace(/.([^.]+)$/, ',$1');
+        // xóa bỏ các số 0 cuối cùng sau dấu ,
+        var tempStr = tempStr.replace(/([0]+)(?!.*\1)$/, '');
+        if (tempStr.slice(-1) === ',') {
+            return tempStr.slice(0, -1);
+        } else {
+            return tempStr;
+        }
+    }
+
+    var fontSizeReview = 13;
+    function ZoomInReview() {
+        fontSizeReview--;
+        if (fontSizeReview < 6) {
+            fontSizeReview = 6;
+        }
+        ZoomReview(fontSizeReview);
+    }
+
+    function ZoomOutReview() {
+        fontSizeReview++;
+        if (fontSizeReview > 20) {
+            fontSizeReview = 20;
+        }
+        ZoomReview(fontSizeReview);
+    }
+
+</script>

@@ -1,0 +1,64 @@
+﻿@model SMO.Service.MD.SAPActualDataService
+@{
+    var frmFormCode = "frmProjectIndex";
+    var number = 1;
+}
+@{ Html.RenderPartial("Paging", Model); }
+<div class="table-responsive font-13">
+    <table class="table table-condensed table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Company Code</th>
+                <th>Document Number</th>
+                <th>Line number</th>
+                <th>Fiscal Year</th>
+                <th>Posting Date</th>
+                <th>Posting Key</th>
+                <th>Debit/Credit</th>
+                <th>Tax Code</th>
+                <th>G/L Account</th>
+                <th>G/L Amount</th>
+                <th>Currency</th>
+                <th>Tax Amount</th>
+                <th>Cost Center</th>
+                <th>Order</th>
+                <th>Profit Center</th>
+                <th>Fund Code</th>
+                <th>Payment Code</th>
+                <th>Expense Code</th>
+                <th>CreateDateSAP</th>
+                <th>UpdateDateSAP</th>
+                <th>CreateDateBPS</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ObjList)
+            {
+            <tr>
+                <td>@item.COMPANY_CODE</td>
+                <td>@item.DOCUMENT_NUMBER</td>
+                <td>@item.LINE_NUMBER</td>
+                <td>@item.FISCAL_YEAR</td>
+                <td>@item.POSTING_DATE</td>
+                <td>@item.POSTING_KEY</td>
+                <td>@item.DEBIT_CREDIT</td>
+                <td>@item.TAX_CODE</td>
+                <td>@item.GL_ACCOUNT</td>
+                <td>@item.GL_AMOUNT</td>
+                <td>@item.CURRENCY</td>
+                <td>@item.TAX_AMOUNT</td>
+                <td>@item.COST_CENTER</td>
+                <td>@item.C_ORDER</td>
+                <td>@item.PROFIT_CENTER</td>
+                <td>@item.FUND_CODE</td>
+                <td>@item.PAYMENT_CODE</td>
+                <td>@item.EXPENSE_CODE</td>
+                <td>@item.CREATE_DATE_SAP</td>
+                <td>@item.UPDATE_DATE_SAP</td>
+                <td>@item.CREATE_DATE</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{ Html.RenderPartial("Paging", Model); }

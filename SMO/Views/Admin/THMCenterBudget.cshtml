@@ -1,0 +1,167 @@
+﻿@{
+    var title = "";
+    if (ViewBag.Modul == "1")
+    {
+        title = "DỮ LIỆU KẾ HOẠCH";
+    }
+    else if (ViewBag.Modul == "2")
+    {
+        title = "TỔNG KIỂM SOÁT DỮ LIỆU";
+    }
+    else if (ViewBag.Modul == "3")
+    {
+        title = "THẨM ĐỊNH DỮ LIỆU";
+    }
+}
+
+    <div class="container-fluid child-content">
+        <h4 class="align-center m-b-15">@title</h4>
+        <div class="card border-grey">
+            <div class="body" style="padding-top: 0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a style="padding-left:0px" class="text-uppercase"><i class="material-icons col-fecon">clear_all</i>KẾ HOẠCH HOẠT ĐỘNG THƯỜNG XUYÊN</a>
+                    </li>
+                </ul>
+
+                <div class="p-t-10 p-b-5">
+                    <div class="row">
+                        @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box-3 border-grey hover-zoom-effect"
+                                 onclick="Forms.LoadAjax('@Url.Action("Index", "BP/CostPL")')">
+                                <div class="icon">
+                                    <i class="material-icons col-pink">indeterminate_check_box</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">NGÂN SÁCH CHI PHÍ</div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box-3 border-grey hover-zoom-effect"
+                                 onclick="Forms.LoadAjax('@Url.Action("Index", "BP/RevenuePL")')">
+                                <div class="icon">
+                                    <i class="material-icons col-indigo">add_box</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">NGÂN SÁCH DOANH THU</div>
+                                </div>
+                            </div>
+                        </div>*@
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box-3 border-grey hover-zoom-effect"
+                                 onclick="Forms.LoadAjax('@Url.Action("Index", "BP/RevenueCF")')">
+                                <div class="icon">
+                                    <i class="material-icons col-purple">publish</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">KẾ HOẠCH THU THƯỜNG XUYÊN</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box-3 border-grey hover-zoom-effect"
+                                 onclick="Forms.LoadAjax('@Url.Action("Index", "BP/CostCF")')">
+                                <div class="icon">
+                                    <i class="material-icons col-cyan">get_app</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">KẾ HOẠCH CHI THƯỜNG XUYÊN</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-grey m-t-10">
+            <div class="body" style="padding-top: 0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a style="padding-left:0px" class="text-uppercase"><i class="material-icons col-fecon">clear_all</i>KẾ HOẠCH DỰ ÁN</a>
+                    </li>
+                </ul>
+
+                <div class="p-t-10 p-b-5">
+                    <div class="row">
+                        @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box-3 border-grey hover-zoom-effect"
+                                 onclick="Forms.LoadAjax('@Url.Action("Index", "BP/ContructCostPL")')">
+                                <div class="icon">
+                                    <i class="material-icons col-teal">location_city</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">NGÂN SÁCH CHI PHÍ DỰ ÁN</div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box-3 border-grey hover-zoom-effect"
+                                 onclick="Forms.LoadAjax('@Url.Action("Index", "BP/OtherCostPL")')">
+                                <div class="icon">
+                                    <i class="material-icons col-orange">insert_chart</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">NGÂN SÁCH CHI PHÍ KHÁC CỦA DỰ ÁN</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box-3 border-grey hover-zoom-effect"
+                                 onclick="Forms.LoadAjax('@Url.Action("Index", "BP/RevenuePL")')">
+                                <div class="icon">
+                                    <i class="material-icons col-lime">monetization_on</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">NGÂN SÁCH DOANH THU DỰ ÁN</div>
+                                </div>
+                            </div>
+                        </div>*@
+
+                        <div class="clearfix"></div>
+
+
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box-3 border-grey hover-zoom-effect"
+                                 onclick="Forms.LoadAjax('@Url.Action("Index", "BP/ContructCostCF")')">
+                                <div class="icon">
+                                    <i class="material-icons col-amber">call_received</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">KẾ HOẠCH CHI DỰ ÁN</div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box-3 border-grey hover-zoom-effect"
+                                 onclick="Forms.LoadAjax('@Url.Action("Index", "BP/OtherCostCF")')">
+                                <div class="icon">
+                                    <i class="material-icons col-red">trending_up</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">KẾ HOẠCH CHI KHÁC CỦA DỰ ÁN</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box-3 border-grey hover-zoom-effect"
+                                 onclick="Forms.LoadAjax('@Url.Action("Index", "BP/RevenueCF")')">
+                                <div class="icon">
+                                    <i class="material-icons col-brown">call_made</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">KẾ HOẠCH THU DỰ ÁN</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
